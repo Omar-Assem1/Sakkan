@@ -1,1 +1,31 @@
-{}
+{
+  "APP": {
+    "TITLE": "Sakan"
+  },
+  "NAV": {
+    "MAIN": "Main navigation",
+    "LISTINGS": "Listings",
+    "VIEWINGS": "My Viewings",
+    "ADMIN": "Admin",
+    "LOGIN": "Sign In",
+    "LOGOUT": "Sign Out",
+    "TOGGLE_LANG": "العربية",
+    "TOGGLE_LANG_LABEL": "Switch to Arabic"
+  },
+  "AUTH": {
+    "TITLE": "Sign in to Sakan",
+    "PLACEHOLDER": "The login and registration forms will appear here."
+  },
+  "LISTINGS": {
+    "TITLE": "Property Listings",
+    "PLACEHOLDER": "Browse homes for sale and rent. Listings will appear here."
+  },
+  "VIEWINGS": {
+    "TITLE": "My Viewings",
+    "PLACEHOLDER": "Your viewing appointments will appear here."
+  },
+  "ADMIN": {
+    "TITLE": "Admin Dashboard",
+    "PLACEHOLDER": "Moderation and platform management tools will appear here."
+  }
+}

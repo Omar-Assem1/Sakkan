@@ -34,7 +34,7 @@ describe('authInterceptor', () => {
     localStorage.clear();
   });
 
-  it('should attach Authorization: Bearer <token> header when token exists', () => {
+  it('should attach Authorization: Bearer <token> header when token exists on /api/ requests', () => {
     tokenStorage.saveToken('mock-jwt-token-123');
 
     http.get('/api/v1/viewings/my').subscribe();
@@ -53,6 +53,21 @@ describe('authInterceptor', () => {
     const req = httpMock.expectOne('/api/v1/properties');
     expect(req.request.headers.has('Authorization')).toBe(false);
     req.flush({ content: [] });
+  });
+
+  it('should NOT leak Authorization header to non-API asset or external URLs even when token exists', () => {
+    tokenStorage.saveToken('secret-jwt-token');
+
+    http.get('/assets/i18n/en.json').subscribe();
+    http.get('https://example.com/public-config').subscribe();
+
+    const assetReq = httpMock.expectOne('/assets/i18n/en.json');
+    expect(assetReq.request.headers.has('Authorization')).toBe(false);
+    assetReq.flush({});
+
+    const externalReq = httpMock.expectOne('https://example.com/public-config');
+    expect(externalReq.request.headers.has('Authorization')).toBe(false);
+    externalReq.flush({});
   });
 
   it('should clear stored token and redirect to /auth on 401 Unauthorized response', () => {
@@ -76,5 +91,28 @@ describe('authInterceptor', () => {
     expect(tokenStorage.getToken()).toBeNull();
     expect(tokenStorage.getRole()).toBeNull();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/auth']);
+  });
+
+  it('should preserve token and NOT redirect to /auth on 403 Forbidden or 500 Server Error', () => {
+    tokenStorage.saveToken('valid-jwt-token');
+    tokenStorage.saveRole('BUYER_TENANT');
+
+    let errorStatus = 0;
+    http.post('/api/v1/properties/1/slots', {}).subscribe({
+      error: (err) => {
+        errorStatus = err.status;
+      },
+    });
+
+    const req = httpMock.expectOne('/api/v1/properties/1/slots');
+    req.flush(
+      { title: 'Forbidden', status: 403 },
+      { status: 403, statusText: 'Forbidden' }
+    );
+
+    expect(errorStatus).toBe(403);
+    expect(tokenStorage.getToken()).toBe('valid-jwt-token');
+    expect(tokenStorage.getRole()).toBe('BUYER_TENANT');
+    expect(routerSpy.navigate).not.toHaveBeenCalled();
   });
 });

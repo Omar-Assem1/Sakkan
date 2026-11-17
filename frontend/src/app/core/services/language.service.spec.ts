@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { DOCUMENT } from '@angular/common';
 import { TranslocoService } from '@jsverse/transloco';
-import { LanguageService } from './language.service';
+import { AppLang, LanguageService } from './language.service';
 
 describe('LanguageService', () => {
   let service: LanguageService;
@@ -28,6 +28,7 @@ describe('LanguageService', () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     localStorage.clear();
   });
 
@@ -84,6 +85,27 @@ describe('LanguageService', () => {
 
     expect(service.currentLang()).toBe('en');
     expect(service.isRtl()).toBe(false);
+    expect(doc.documentElement.dir).toBe('ltr');
+    expect(doc.documentElement.lang).toBe('en');
+  });
+
+  it('should coerce invalid runtime language input to "en" (ltr) and survive storage exceptions', () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new DOMException('Blocked', 'SecurityError');
+    });
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('Blocked', 'SecurityError');
+    });
+
+    service = TestBed.inject(LanguageService);
+    expect(service.currentLang()).toBe('en');
+
+    service.setLanguage('ar');
+    expect(doc.documentElement.dir).toBe('rtl');
+    expect(doc.documentElement.lang).toBe('ar');
+
+    service.setLanguage('fr' as unknown as AppLang);
+    expect(service.currentLang()).toBe('en');
     expect(doc.documentElement.dir).toBe('ltr');
     expect(doc.documentElement.lang).toBe('en');
   });

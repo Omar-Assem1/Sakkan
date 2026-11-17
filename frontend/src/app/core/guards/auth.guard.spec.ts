@@ -57,4 +57,13 @@ describe('authGuard', () => {
     expect(result instanceof UrlTree).toBe(true);
     expect(router.serializeUrl(result as UrlTree)).toBe('/listings');
   });
+
+  it('should redirect to /listings when user has a token but no stored role on a role-protected route', () => {
+    tokenStorage.saveToken('token-without-role');
+    const route = { data: { roles: ['ADMIN'] } } as unknown as ActivatedRouteSnapshot;
+
+    const result = TestBed.runInInjectionContext(() => authGuard(route, mockState));
+    expect(result instanceof UrlTree).toBe(true);
+    expect(router.serializeUrl(result as UrlTree)).toBe('/listings');
+  });
 });

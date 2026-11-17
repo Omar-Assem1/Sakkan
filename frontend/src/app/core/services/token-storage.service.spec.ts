@@ -13,6 +13,7 @@ describe('TokenStorageService', () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     localStorage.clear();
   });
 
@@ -27,10 +28,14 @@ describe('TokenStorageService', () => {
     expect(service.isAuthenticated()).toBe(true);
   });
 
-  it('should save and retrieve user role', () => {
+  it('should save and retrieve user role and check hasRole()', () => {
     expect(service.getRole()).toBeNull();
+    expect(service.hasRole('ADMIN')).toBe(false);
+
     service.saveRole('ADMIN');
     expect(service.getRole()).toBe('ADMIN');
+    expect(service.hasRole('ADMIN', 'OWNER')).toBe(true);
+    expect(service.hasRole('BUYER_TENANT')).toBe(false);
   });
 
   it('should clear both token and role on clear()', () => {
@@ -41,5 +46,33 @@ describe('TokenStorageService', () => {
     expect(service.getToken()).toBeNull();
     expect(service.getRole()).toBeNull();
     expect(service.isAuthenticated()).toBe(false);
+  });
+
+  it('should treat whitespace-only token in localStorage as unauthenticated on boot', () => {
+    localStorage.setItem('sakan_token', '   ');
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ providers: [TokenStorageService] });
+    const freshService = TestBed.inject(TokenStorageService);
+
+    expect(freshService.getToken()).toBeNull();
+    expect(freshService.isAuthenticated()).toBe(false);
+  });
+
+  it('should fall back gracefully without crashing when localStorage throws SecurityError', () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new DOMException('Blocked', 'SecurityError');
+    });
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('QuotaExceeded', 'QuotaExceededError');
+    });
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ providers: [TokenStorageService] });
+    const safeService = TestBed.inject(TokenStorageService);
+
+    expect(safeService.getToken()).toBeNull();
+    expect(() => safeService.saveToken('in-memory-jwt')).not.toThrow();
+    expect(safeService.getToken()).toBe('in-memory-jwt');
+    expect(safeService.isAuthenticated()).toBe(true);
   });
 });

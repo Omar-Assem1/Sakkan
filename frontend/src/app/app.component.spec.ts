@@ -3,8 +3,23 @@ import { provideRouter } from '@angular/router';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
+import { AuthPageComponent } from './features/auth/auth-page.component';
+import { AdminPageComponent } from './features/admin/admin-page.component';
+import { ListingsPageComponent } from './features/listings/listings-page.component';
+import { ViewingsPageComponent } from './features/viewings/viewings-page.component';
+import enTranslations from '../../public/assets/i18n/en.json';
+import arTranslations from '../../public/assets/i18n/ar.json';
 
-describe('AppComponent & Lazy Routes (SCRUM-38)', () => {
+function flattenKeys(obj: Record<string, unknown>, prefix = ''): string[] {
+  return Object.entries(obj).flatMap(([key, val]) => {
+    const path = prefix ? `${prefix}.${key}` : key;
+    return val && typeof val === 'object' && !Array.isArray(val)
+      ? flattenKeys(val as Record<string, unknown>, path)
+      : [path];
+  });
+}
+
+describe('AppComponent, Lazy Routes & RTL/i18n Audit (SCRUM-38)', () => {
   beforeEach(async () => {
     localStorage.clear();
     await TestBed.configureTestingModule({
@@ -12,8 +27,8 @@ describe('AppComponent & Lazy Routes (SCRUM-38)', () => {
         AppComponent,
         TranslocoTestingModule.forRoot({
           langs: {
-            en: { APP: { TITLE: 'Sakan' }, NAV: { LISTINGS: 'Listings', VIEWINGS: 'Viewings', ADMIN: 'Admin', LOGIN: 'Sign In', LOGOUT: 'Sign Out', TOGGLE_LANG: 'العربية' } },
-            ar: { APP: { TITLE: 'سكن' }, NAV: { LISTINGS: 'العقارات', VIEWINGS: 'المعاينات', ADMIN: 'الإدارة', LOGIN: 'تسجيل الدخول', LOGOUT: 'تسجيل الخروج', TOGGLE_LANG: 'English' } },
+            en: enTranslations,
+            ar: arTranslations,
           },
           translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' },
         }),
@@ -50,6 +65,35 @@ describe('AppComponent & Lazy Routes (SCRUM-38)', () => {
         const loaded = await (routeDef.loadComponent() as Promise<unknown>);
         expect(loaded).toBeTruthy();
       }
+    }
+  });
+
+  it('should maintain 100% translation key parity between en.json and ar.json', () => {
+    const enKeys = flattenKeys(enTranslations).sort();
+    const arKeys = flattenKeys(arTranslations).sort();
+
+    expect(enKeys.length).toBeGreaterThan(0);
+    expect(arKeys).toEqual(enKeys);
+  });
+
+  it('should use only logical Tailwind classes and zero physical directional classes across shell and feature stubs', () => {
+    const components = [
+      AppComponent,
+      AuthPageComponent,
+      AdminPageComponent,
+      ListingsPageComponent,
+      ViewingsPageComponent,
+    ];
+
+    for (const cmp of components) {
+      const fixture = TestBed.createComponent(cmp);
+      fixture.detectChanges();
+      const elements = fixture.nativeElement.querySelectorAll('*');
+      elements.forEach((el: Element) => {
+        expect(el.className).not.toMatch(
+          /\b(ml-|mr-|pl-|pr-|text-left|text-right|left-|right-|border-l|border-r)/
+        );
+      });
     }
   });
 });
