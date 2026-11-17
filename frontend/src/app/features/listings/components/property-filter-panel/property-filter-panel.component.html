@@ -9,7 +9,7 @@
   <div class="mt-6 space-y-5">
     <!-- Purpose Selection -->
     <div>
-      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.PURPOSE' | transloco }}</label>
+      <span class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.PURPOSE' | transloco }}</span>
       <div class="grid grid-cols-2 gap-2">
         <button
           type="button"
@@ -32,29 +32,36 @@
 
     <!-- Cascading Location Filters -->
     <div>
-      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.LOCATION' | transloco }}</label>
+      <label for="governorate-select" class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.LOCATION' | transloco }}</label>
       <div class="space-y-2">
         <select
+          id="governorate-select"
           [ngModel]="selectedGovernorateId()"
           (ngModelChange)="onGovernorateChange($event)"
           class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
         >
           <option [ngValue]="null">{{ 'LISTINGS.FILTERS.SELECT_GOV' | transloco }}</option>
-          <option *ngFor="let gov of governorates()" [value]="gov.id">
-            {{ isRtl() ? gov.nameAr : gov.nameEn }}
-          </option>
+          @for (gov of governorates(); track gov.id) {
+            <option [value]="gov.id">
+              {{ isRtl() ? gov.nameAr : gov.nameEn }}
+            </option>
+          }
         </select>
 
         <select
+          id="district-select"
+          [attr.aria-label]="'LISTINGS.FILTERS.SELECT_DISTRICT' | transloco"
           [ngModel]="selectedDistrictId()"
           (ngModelChange)="selectedDistrictId.set($event ? +$event : null)"
           [disabled]="districts().length === 0"
           class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden disabled:opacity-40"
         >
           <option [ngValue]="null">{{ 'LISTINGS.FILTERS.SELECT_DISTRICT' | transloco }}</option>
-          <option *ngFor="let dist of districts()" [value]="dist.id">
-            {{ isRtl() ? dist.nameAr : dist.nameEn }}
-          </option>
+          @for (dist of districts(); track dist.id) {
+            <option [value]="dist.id">
+              {{ isRtl() ? dist.nameAr : dist.nameEn }}
+            </option>
+          }
         </select>
       </div>
     </div>
@@ -62,7 +69,7 @@
     <!-- Price Range with Currency -->
     <div>
       <div class="flex justify-between items-center mb-2">
-        <label class="text-sm font-semibold text-slate-700">{{ 'LISTINGS.FILTERS.PRICE_RANGE' | transloco }}</label>
+        <label for="min-price-input" class="text-sm font-semibold text-slate-700">{{ 'LISTINGS.FILTERS.PRICE_RANGE' | transloco }}</label>
         <div class="inline-flex rounded-md shadow-2xs">
           <button
             type="button"
@@ -84,6 +91,7 @@
       </div>
       <div class="grid grid-cols-2 gap-2">
         <input
+          id="min-price-input"
           type="number"
           min="0"
           [placeholder]="'LISTINGS.FILTERS.MIN_PRICE' | transloco"
@@ -92,8 +100,10 @@
           class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
         />
         <input
+          id="max-price-input"
           type="number"
           min="0"
+          [attr.aria-label]="'LISTINGS.FILTERS.MAX_PRICE' | transloco"
           [placeholder]="'LISTINGS.FILTERS.MAX_PRICE' | transloco"
           [ngModel]="maxPrice()"
           (ngModelChange)="maxPrice.set($event ? +$event : null)"
@@ -104,48 +114,54 @@
 
     <!-- Property Type -->
     <div>
-      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.TYPE' | transloco }}</label>
+      <label for="property-type-select" class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.TYPE' | transloco }}</label>
       <select
+        id="property-type-select"
         [ngModel]="selectedPropertyTypeId()"
         (ngModelChange)="selectedPropertyTypeId.set($event ? +$event : null)"
         class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
       >
         <option [ngValue]="null">{{ 'LISTINGS.FILTERS.ALL_TYPES' | transloco }}</option>
-        <option *ngFor="let t of propertyTypes" [value]="t.id">
-          {{ isRtl() ? t.nameAr : t.nameEn }}
-        </option>
+        @for (t of propertyTypes; track t.id) {
+          <option [value]="t.id">
+            {{ isRtl() ? t.nameAr : t.nameEn }}
+          </option>
+        }
       </select>
     </div>
 
     <!-- Minimum Bedrooms -->
     <div>
-      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.BEDROOMS' | transloco }}</label>
+      <span class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.BEDROOMS' | transloco }}</span>
       <div class="flex gap-2">
-        <button
-          *ngFor="let bed of [1, 2, 3, 4, 5]"
-          type="button"
-          (click)="minBedrooms.set(minBedrooms() === bed ? null : bed)"
-          [class]="minBedrooms() === bed ? 'bg-emerald-600 text-white' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'"
-          class="flex-1 py-1.5 text-sm font-medium rounded-lg border border-slate-200 transition"
-        >
-          {{ bed }}+
-        </button>
+        @for (bed of [1, 2, 3, 4, 5]; track bed) {
+          <button
+            type="button"
+            (click)="minBedrooms.set(minBedrooms() === bed ? null : bed)"
+            [class]="minBedrooms() === bed ? 'bg-emerald-600 text-white' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'"
+            class="flex-1 py-1.5 text-sm font-medium rounded-lg border border-slate-200 transition"
+          >
+            {{ bed }}+
+          </button>
+        }
       </div>
     </div>
 
     <!-- Amenities Checkboxes -->
     <div>
-      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.AMENITIES' | transloco }}</label>
+      <span class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.AMENITIES' | transloco }}</span>
       <div class="space-y-2 max-h-40 overflow-y-auto ps-1">
-        <label *ngFor="let amenity of amenities" class="flex items-center gap-2 cursor-pointer text-sm text-slate-600">
-          <input
-            type="checkbox"
-            [checked]="selectedAmenityIds().includes(amenity.id)"
-            (change)="toggleAmenity(amenity.id)"
-            class="rounded-sm border-slate-300 text-emerald-600 focus:ring-emerald-500"
-          />
-          <span>{{ isRtl() ? amenity.nameAr : amenity.nameEn }}</span>
-        </label>
+        @for (amenity of amenities; track amenity.id) {
+          <label class="flex items-center gap-2 cursor-pointer text-sm text-slate-600">
+            <input
+              type="checkbox"
+              [checked]="selectedAmenityIds().includes(amenity.id)"
+              (change)="toggleAmenity(amenity.id)"
+              class="rounded-sm border-slate-300 text-emerald-600 focus:ring-emerald-500"
+            />
+            <span>{{ isRtl() ? amenity.nameAr : amenity.nameEn }}</span>
+          </label>
+        }
       </div>
     </div>
 
