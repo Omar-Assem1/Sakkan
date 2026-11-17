@@ -1,10 +1,10 @@
 package com.sakan.support;
 
-import org.junit.jupiter.api.Tag;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 import com.sakan.TestcontainersConfiguration;
+import com.sakan.support.tags.IntegrationTest;
 
 /**
  * Base class for integration tests that need the full Spring context and a real database.
@@ -40,6 +40,6 @@ import com.sakan.TestcontainersConfiguration;
  */
 @SpringBootTest
 @Import(TestcontainersConfiguration.class)
-@Tag("integration")
+@IntegrationTest
 public abstract class AbstractIntegrationTest {
 }

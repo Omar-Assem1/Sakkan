@@ -32,7 +32,9 @@ import com.sakan.property.domain.PropertyPurpose;
 import com.sakan.property.domain.PropertyStatus;
 import com.sakan.property.dto.PropertySummaryResponse;
 import com.sakan.property.service.PropertyService;
+import com.sakan.support.tags.RegressionTest;
 
+@RegressionTest
 @ExtendWith(MockitoExtension.class)
 class PropertySecurityTest {
 

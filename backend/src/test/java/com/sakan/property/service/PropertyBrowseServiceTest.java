@@ -31,7 +31,9 @@ import com.sakan.property.dto.PropertyMapper;
 import com.sakan.property.dto.PropertySearchCriteria;
 import com.sakan.property.dto.PropertySummaryResponse;
 import com.sakan.property.repository.PropertyRepository;
+import com.sakan.support.tags.RegressionTest;
 
+@RegressionTest
 @ExtendWith(MockitoExtension.class)
 class PropertyBrowseServiceTest {
 
