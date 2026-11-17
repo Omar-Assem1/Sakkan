@@ -19,4 +19,6 @@ public interface PropertyMapper {
     void updateEntity(PropertyRequest request, @MappingTarget Property property);
 
     PropertyResponse toResponse(Property property);
+
+    PropertySummaryResponse toSummaryResponse(Property property);
 }

@@ -1,6 +1,8 @@
 package com.sakan.property.web;
 
+import java.math.BigDecimal;
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,19 +14,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sakan.common.domain.Currency;
 import com.sakan.common.response.PageResponse;
 import com.sakan.common.security.CurrentUserProvider;
+import com.sakan.property.domain.PropertyPurpose;
 import com.sakan.property.dto.PropertyRequest;
 import com.sakan.property.dto.PropertyResponse;
+import com.sakan.property.dto.PropertySearchCriteria;
+import com.sakan.property.dto.PropertySummaryResponse;
 import com.sakan.property.service.PropertyService;
 
 import jakarta.validation.Valid;
 
 /**
- * REST API for listings. The controller only translates HTTP to service calls; every rule lives in
- * {@link PropertyService}.
+ * REST API for listings.
  *
  * <pre>
+ * GET  /api/properties               public search & browse  (public)
  * POST /api/properties               create a draft          (owner, agent)   201
  * GET  /api/properties/{id}          one listing             (public if published)
  * GET  /api/properties/mine          my listings, paginated  (owner, agent)
@@ -43,6 +49,36 @@ public class PropertyController {
     public PropertyController(PropertyService service, CurrentUserProvider currentUser) {
         this.service = service;
         this.currentUser = currentUser;
+    }
+
+    @GetMapping
+    public ResponseEntity<PageResponse<PropertySummaryResponse>> browse(
+            @RequestParam(name = "locationId", required = false) Long locationId,
+            @RequestParam(name = "minPrice", required = false) BigDecimal minPrice,
+            @RequestParam(name = "maxPrice", required = false) BigDecimal maxPrice,
+            @RequestParam(name = "currency", required = false) Currency currency,
+            @RequestParam(name = "propertyTypeId", required = false) Long propertyTypeId,
+            @RequestParam(name = "purpose", required = false) PropertyPurpose purpose,
+            @RequestParam(name = "minBedrooms", required = false) Integer minBedrooms,
+            @RequestParam(name = "amenityIds", required = false) List<Long> amenityIds,
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "size", defaultValue = "12") Integer size,
+            @RequestParam(name = "sort", defaultValue = "createdAt,desc") String sort
+    ) {
+        PropertySearchCriteria criteria = new PropertySearchCriteria(
+                locationId,
+                minPrice,
+                maxPrice,
+                currency,
+                propertyTypeId,
+                purpose,
+                minBedrooms,
+                amenityIds,
+                page,
+                size,
+                sort
+        );
+        return ResponseEntity.ok(service.browse(criteria));
     }
 
     @PostMapping

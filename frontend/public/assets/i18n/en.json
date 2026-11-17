@@ -18,7 +18,56 @@
   },
   "LISTINGS": {
     "TITLE": "Property Listings",
-    "PLACEHOLDER": "Browse homes for sale and rent. Listings will appear here."
+    "PLACEHOLDER": "Browse homes for sale and rent. Listings will appear here.",
+    "FOUND_COUNT": "properties found",
+    "SORT": {
+      "LABEL": "Sort by",
+      "NEWEST": "Newest",
+      "PRICE_ASC": "Price: Low to High",
+      "PRICE_DESC": "Price: High to Low",
+      "BEDROOMS": "Bedrooms",
+      "AREA": "Area"
+    },
+    "FILTERS": {
+      "TITLE": "Filters",
+      "CLEAR": "Clear All",
+      "PURPOSE": "Purpose",
+      "FOR_SALE": "For Sale",
+      "FOR_RENT": "For Rent",
+      "LOCATION": "Location",
+      "SELECT_GOV": "Select Governorate",
+      "SELECT_DISTRICT": "Select District",
+      "PRICE_RANGE": "Price Range",
+      "MIN_PRICE": "Min Price",
+      "MAX_PRICE": "Max Price",
+      "TYPE": "Property Type",
+      "ALL_TYPES": "All Types",
+      "BEDROOMS": "Bedrooms",
+      "AMENITIES": "Amenities",
+      "APPLY": "Apply Filters"
+    },
+    "CARD": {
+      "FOR_SALE": "For Sale",
+      "FOR_RENT": "For Rent",
+      "NO_IMAGE": "No Image Available",
+      "BEDS": "Beds",
+      "BATHS": "Baths",
+      "SQM": "m²"
+    },
+    "EMPTY": {
+      "TITLE": "No properties found",
+      "DESCRIPTION": "Try adjusting your filters or price bounds to find what you are looking for.",
+      "CLEAR": "Reset Filters"
+    },
+    "ERROR": {
+      "TITLE": "Error loading properties",
+      "DESCRIPTION": "An unexpected error occurred while communicating with the server.",
+      "RETRY": "Try Again"
+    },
+    "PAGINATION": {
+      "PREVIOUS": "Previous",
+      "NEXT": "Next"
+    }
   },
   "VIEWINGS": {
     "TITLE": "My Viewings",
