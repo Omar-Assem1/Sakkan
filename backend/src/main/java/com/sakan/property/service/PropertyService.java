@@ -1,11 +1,15 @@
 package com.sakan.property.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,24 +23,74 @@ import com.sakan.property.domain.PropertyStatus;
 import com.sakan.property.dto.PropertyMapper;
 import com.sakan.property.dto.PropertyRequest;
 import com.sakan.property.dto.PropertyResponse;
+import com.sakan.property.dto.PropertySearchCriteria;
+import com.sakan.property.dto.PropertySummaryResponse;
 import com.sakan.property.repository.PropertyRepository;
-
 
 @Service
 @Transactional
 public class PropertyService {
 
-    static final int DEFAULT_PAGE_SIZE = 20;
+    static final int DEFAULT_PAGE_SIZE = 12;
     static final int MAX_PAGE_SIZE = 50;
 
     private static final Logger log = LoggerFactory.getLogger(PropertyService.class);
 
     private final PropertyRepository repository;
     private final PropertyMapper mapper;
+    private final LocationHierarchyService locationHierarchyService;
+    private final PropertySortValidator sortValidator;
 
-    public PropertyService(PropertyRepository repository, PropertyMapper mapper) {
+    @Autowired
+    public PropertyService(
+            PropertyRepository repository,
+            PropertyMapper mapper,
+            LocationHierarchyService locationHierarchyService,
+            PropertySortValidator sortValidator) {
         this.repository = repository;
         this.mapper = mapper;
+        this.locationHierarchyService = locationHierarchyService;
+        this.sortValidator = sortValidator;
+    }
+
+    public PropertyService(PropertyRepository repository, PropertyMapper mapper) {
+        this(repository, mapper, new DefaultLocationHierarchyService(), new PropertySortValidator());
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<PropertySummaryResponse> browse(PropertySearchCriteria criteria) {
+        Sort sort = sortValidator.validateAndBuildSort(criteria.sort());
+        Pageable pageable = PageRequest.of(criteria.page(), criteria.size(), sort);
+
+        Specification<Property> spec = PropertySpecifications.isPublished();
+
+        if (criteria.locationId() != null) {
+            List<Long> locationIds = locationHierarchyService.findDescendantLocationIds(criteria.locationId());
+            spec = spec.and(PropertySpecifications.inLocationIds(locationIds));
+        }
+
+        if (criteria.minPrice() != null || criteria.maxPrice() != null || criteria.currency() != null) {
+            spec = spec.and(PropertySpecifications.hasPriceBetween(criteria.minPrice(), criteria.maxPrice(), criteria.currency()));
+        }
+
+        if (criteria.propertyTypeId() != null) {
+            spec = spec.and(PropertySpecifications.hasPropertyTypeId(criteria.propertyTypeId()));
+        }
+
+        if (criteria.purpose() != null) {
+            spec = spec.and(PropertySpecifications.hasPurpose(criteria.purpose()));
+        }
+
+        if (criteria.minBedrooms() != null) {
+            spec = spec.and(PropertySpecifications.hasMinBedrooms(criteria.minBedrooms()));
+        }
+
+        if (criteria.amenityIds() != null && !criteria.amenityIds().isEmpty()) {
+            spec = spec.and(PropertySpecifications.hasAllAmenities(criteria.amenityIds()));
+        }
+
+        Page<Property> pageResult = repository.findAll(spec, pageable);
+        return PageResponse.from(pageResult.map(mapper::toSummaryResponse));
     }
 
     public PropertyResponse create(PropertyRequest request, AuthenticatedUser actor) {
