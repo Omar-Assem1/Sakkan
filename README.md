@@ -1,15 +1,20 @@
 # Sakan (سكن)
 
-Real-estate platform. CSE322 Software Engineering, Alexandria University.
-
-## Structure
-- `backend/` Spring Boot API (Java 21)
-- `frontend/` Angular app
-- `docs/` design and milestone documents
-- `.github/` CI and PR template
+Real-estate platform. Angular + Spring Boot modular monolith + PostgreSQL.
 
 ## Run
-Run guide coming with SCRUM-14 (Docker Compose).
+
+    cp .env.example .env
+    docker compose up -d db
+    cd backend && ./mvnw spring-boot:run
+    cd frontend && npm start
+
+## Layout
+
+- backend/  Spring Boot API (feature modules under com.sakan)
+- frontend/ Angular SPA
+- docs/     Milestone documents, requirements, diagrams
 
 ## Branches
 `main` (release) <- `stage` (testing) <- `dev` (integration) <- `milestone_1/feat-SCRUM-<id>-<description>`
+Pull requests only. Commit messages and PR titles start with the Jira key (for example `SCRUM-51`).

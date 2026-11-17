@@ -1,15 +1,9 @@
 ## Jira
-SCRUM-
+SKN-XX
 
 ## What changed
 
-
-## Tests (written first)
-- [ ] Tests written before the code
-- [ ] All tests pass locally
-
-## Checklist
-- [ ] CI is green
-- [ ] Swagger / Flyway updated
-- [ ] Time logged in Jira
-- [ ] Reviewed by a non-author
+## How it was tested
+- [ ] Tests written first and passing
+- [ ] Flyway / Swagger updated
+- [ ] Jira time logged

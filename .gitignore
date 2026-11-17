@@ -1,16 +1,18 @@
 # Java / Maven
 target/
 *.class
+*.log
 # Node / Angular
 node_modules/
 dist/
 .angular/
-# Environment and secrets
-.env
-# IDE / OS
+# IDE
 .idea/
 .vscode/
 *.iml
-.DS_Store
-# Uploads
+# Secrets and uploads
+.env
+uploads/
+
+.env
 uploads/
