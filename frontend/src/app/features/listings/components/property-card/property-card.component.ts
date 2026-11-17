@@ -12,4 +12,5 @@ import { PropertySummaryDto } from '../../models/property-browse.model';
 })
 export class PropertyCardComponent {
   @Input({ required: true }) property!: PropertySummaryDto;
+  @Input() locationName: string = '';
 }

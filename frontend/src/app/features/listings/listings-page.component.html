@@ -78,6 +78,7 @@
           <app-property-card
             *ngFor="let property of properties()"
             [property]="property"
+            [locationName]="getLocationName(property.locationId)"
           ></app-property-card>
         </div>
 

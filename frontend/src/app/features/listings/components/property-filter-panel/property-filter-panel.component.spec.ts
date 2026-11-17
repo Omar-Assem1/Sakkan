@@ -89,6 +89,52 @@ describe('PropertyFilterPanelComponent', () => {
     );
   });
 
+  it('should reset all filter signals and emit resetFilters on onReset()', () => {
+    const resetSpy = vi.spyOn(component.resetFilters, 'emit');
+    component.selectedGovernorateId.set(1);
+    component.minPrice.set(500000);
+    component.purpose.set('SALE');
+    component.selectedAmenityIds.set([1, 2]);
+
+    component.onReset();
+
+    expect(component.selectedGovernorateId()).toBeNull();
+    expect(component.minPrice()).toBeNull();
+    expect(component.purpose()).toBeNull();
+    expect(component.selectedAmenityIds()).toEqual([]);
+    expect(resetSpy).toHaveBeenCalled();
+  });
+
+  it('should update signals on ngOnChanges when initialFilters changes', () => {
+    component.locations = [
+      { id: 1, nameEn: 'Alexandria', nameAr: 'الإسكندرية', type: 'GOVERNORATE', parentId: null },
+      { id: 10, nameEn: 'Smouha', nameAr: 'سموحة', type: 'DISTRICT', parentId: 1 },
+    ];
+    component.initialFilters = {
+      minPrice: 800000,
+      maxPrice: 2000000,
+      currency: 'USD',
+      purpose: 'RENT',
+      locationId: 10,
+    };
+
+    component.ngOnChanges({
+      initialFilters: {
+        currentValue: component.initialFilters,
+        previousValue: {},
+        firstChange: false,
+        isFirstChange: () => false,
+      },
+    });
+
+    expect(component.minPrice()).toBe(800000);
+    expect(component.maxPrice()).toBe(2000000);
+    expect(component.currency()).toBe('USD');
+    expect(component.purpose()).toBe('RENT');
+    expect(component.selectedDistrictId()).toBe(10);
+    expect(component.selectedGovernorateId()).toBe(1);
+  });
+
   it('should contain zero physical directional Tailwind classes in filter panel template', () => {
     const allElements = fixture.nativeElement.querySelectorAll('*');
     allElements.forEach((el: Element) => {

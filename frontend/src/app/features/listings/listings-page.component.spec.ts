@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 import { of, throwError } from 'rxjs';
 import { ListingsPageComponent } from './listings-page.component';
@@ -108,6 +108,41 @@ describe('ListingsPageComponent', () => {
 
     expect(component.hasError()).toBe(true);
     expect(component.isLoading()).toBe(false);
+  });
+
+  it('should resolve localized location names via getLocationName', () => {
+    component.locations.set([
+      { id: 10, nameEn: 'Alexandria', nameAr: 'الإسكندرية', type: 'GOVERNORATE', parentId: null },
+    ]);
+
+    expect(component.getLocationName(10)).toBe('Alexandria');
+    expect(component.getLocationName(999)).toBe('');
+  });
+
+  it('should navigate to page 0 and default query params on resetAllFilters', () => {
+    const router = TestBed.inject(Router);
+    const navSpy = vi.spyOn(router, 'navigate');
+
+    component.resetAllFilters();
+
+    expect(navSpy).toHaveBeenCalledWith([], {
+      relativeTo: expect.anything(),
+      queryParams: { page: 0, size: 12, sort: 'createdAt,desc' },
+    });
+  });
+
+  it('should navigate to new page on goToPage when within bounds', () => {
+    const router = TestBed.inject(Router);
+    const navSpy = vi.spyOn(router, 'navigate');
+    component.totalPages.set(5);
+
+    component.goToPage(2);
+
+    expect(navSpy).toHaveBeenCalledWith([], {
+      relativeTo: expect.anything(),
+      queryParams: expect.objectContaining({ page: 2 }),
+      queryParamsHandling: 'merge',
+    });
   });
 
   it('should contain zero physical directional Tailwind classes in listings page template', () => {

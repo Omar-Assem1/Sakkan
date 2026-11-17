@@ -3,8 +3,10 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   computed,
   inject,
   signal
@@ -28,7 +30,7 @@ import {
   imports: [CommonModule, FormsModule, TranslocoPipe],
   templateUrl: './property-filter-panel.component.html'
 })
-export class PropertyFilterPanelComponent implements OnInit {
+export class PropertyFilterPanelComponent implements OnInit, OnChanges {
   private readonly languageService = inject(LanguageService);
 
   @Input() initialFilters: PropertyFilterCriteria = {};
@@ -64,13 +66,50 @@ export class PropertyFilterPanelComponent implements OnInit {
   isRtl = computed(() => this.languageService.currentLang() === 'ar');
 
   ngOnInit(): void {
-    if (this.initialFilters.minPrice) this.minPrice.set(this.initialFilters.minPrice);
-    if (this.initialFilters.maxPrice) this.maxPrice.set(this.initialFilters.maxPrice);
-    if (this.initialFilters.currency) this.currency.set(this.initialFilters.currency);
-    if (this.initialFilters.propertyTypeId) this.selectedPropertyTypeId.set(this.initialFilters.propertyTypeId);
-    if (this.initialFilters.purpose) this.purpose.set(this.initialFilters.purpose);
-    if (this.initialFilters.minBedrooms) this.minBedrooms.set(this.initialFilters.minBedrooms);
-    if (this.initialFilters.amenityIds) this.selectedAmenityIds.set(this.initialFilters.amenityIds);
+    this.syncFromFilters(this.initialFilters);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialFilters']) {
+      this.syncFromFilters(this.initialFilters);
+    }
+    if (changes['locations']) {
+      this.resolveLocationHierarchy(this.initialFilters.locationId ?? null);
+    }
+  }
+
+  private syncFromFilters(filters: PropertyFilterCriteria): void {
+    this.minPrice.set(filters.minPrice ?? null);
+    this.maxPrice.set(filters.maxPrice ?? null);
+    this.currency.set(filters.currency ?? 'EGP');
+    this.selectedPropertyTypeId.set(filters.propertyTypeId ?? null);
+    this.purpose.set(filters.purpose ?? null);
+    this.minBedrooms.set(filters.minBedrooms ?? null);
+    this.selectedAmenityIds.set(filters.amenityIds ? [...filters.amenityIds] : []);
+    this.resolveLocationHierarchy(filters.locationId ?? null);
+  }
+
+  private resolveLocationHierarchy(locationId: number | null): void {
+    if (!locationId || this.locations.length === 0) {
+      if (!locationId) {
+        this.selectedGovernorateId.set(null);
+        this.selectedCityId.set(null);
+        this.selectedDistrictId.set(null);
+      }
+      return;
+    }
+    const loc = this.locations.find((l) => l.id === locationId);
+    if (loc) {
+      if (loc.type === 'DISTRICT') {
+        this.selectedDistrictId.set(loc.id);
+        if (loc.parentId) {
+          this.selectedGovernorateId.set(loc.parentId);
+        }
+      } else if (loc.type === 'GOVERNORATE') {
+        this.selectedGovernorateId.set(loc.id);
+        this.selectedDistrictId.set(null);
+      }
+    }
   }
 
   onGovernorateChange(idVal: string | number | null): void {

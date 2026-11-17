@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { LanguageService } from '../../core/services/language.service';
 import { PropertyBrowseService } from './services/property-browse.service';
 import { PropertyFilterPanelComponent } from './components/property-filter-panel/property-filter-panel.component';
 import { PropertyCardComponent } from './components/property-card/property-card.component';
@@ -38,6 +39,7 @@ export class ListingsPageComponent implements OnInit {
   private readonly browseService = inject(PropertyBrowseService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly languageService = inject(LanguageService);
 
   properties = signal<PropertySummaryDto[]>([]);
   locations = signal<LocationNode[]>([]);
@@ -55,6 +57,12 @@ export class ListingsPageComponent implements OnInit {
 
   activeFilters = signal<PropertyFilterCriteria>({});
   isEmpty = computed(() => !this.isLoading() && this.properties().length === 0);
+
+  getLocationName(locationId: number): string {
+    const loc = this.locations().find((l) => l.id === locationId);
+    if (!loc) return '';
+    return this.languageService.currentLang() === 'ar' ? loc.nameAr : loc.nameEn;
+  }
 
   ngOnInit(): void {
     this.loadMetadata();
