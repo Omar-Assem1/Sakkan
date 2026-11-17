@@ -6,7 +6,10 @@ import { AppLang, LanguageService } from './language.service';
 describe('LanguageService', () => {
   let service: LanguageService;
   let doc: Document;
-  let translocoSpy: { setActiveLang: ReturnType<typeof vi.fn>; getActiveLang: ReturnType<typeof vi.fn> };
+  let translocoSpy: {
+    setActiveLang: ReturnType<typeof vi.fn>;
+    getActiveLang: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
     localStorage.clear();
@@ -16,10 +19,7 @@ describe('LanguageService', () => {
     };
 
     TestBed.configureTestingModule({
-      providers: [
-        LanguageService,
-        { provide: TranslocoService, useValue: translocoSpy },
-      ],
+      providers: [LanguageService, { provide: TranslocoService, useValue: translocoSpy }],
     });
 
     doc = TestBed.inject(DOCUMENT);

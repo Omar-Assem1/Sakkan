@@ -26,7 +26,8 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
               routerLinkActive="bg-emerald-50 text-emerald-700"
               class="rounded-md ps-3 pe-3 py-2 text-slate-700 hover:bg-slate-100"
               data-testid="nav-listings"
-            >{{ 'NAV.LISTINGS' | transloco }}</a>
+              >{{ 'NAV.LISTINGS' | transloco }}</a
+            >
           </li>
           <li>
             <a
@@ -34,7 +35,8 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
               routerLinkActive="bg-emerald-50 text-emerald-700"
               class="rounded-md ps-3 pe-3 py-2 text-slate-700 hover:bg-slate-100"
               data-testid="nav-viewings"
-            >{{ 'NAV.VIEWINGS' | transloco }}</a>
+              >{{ 'NAV.VIEWINGS' | transloco }}</a
+            >
           </li>
           @if (isAdmin()) {
             <li>
@@ -43,7 +45,8 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
                 routerLinkActive="bg-emerald-50 text-emerald-700"
                 class="rounded-md ps-3 pe-3 py-2 text-slate-700 hover:bg-slate-100"
                 data-testid="nav-admin"
-              >{{ 'NAV.ADMIN' | transloco }}</a>
+                >{{ 'NAV.ADMIN' | transloco }}</a
+              >
             </li>
           }
         </ul>
@@ -54,7 +57,8 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
             data-testid="lang-toggle"
             [ariaLabel]="'NAV.TOGGLE_LANG_LABEL' | transloco"
             (clicked)="language.toggleLanguage()"
-          >{{ 'NAV.TOGGLE_LANG' | transloco }}</app-ui-button>
+            >{{ 'NAV.TOGGLE_LANG' | transloco }}</app-ui-button
+          >
 
           @if (isAuthenticated()) {
             <app-ui-button variant="secondary" data-testid="nav-logout" (clicked)="logout()">
@@ -65,7 +69,8 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
               routerLink="/auth"
               class="rounded-lg bg-emerald-600 ps-4 pe-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
               data-testid="nav-login"
-            >{{ 'NAV.LOGIN' | transloco }}</a>
+              >{{ 'NAV.LOGIN' | transloco }}</a
+            >
           }
         </div>
       </nav>

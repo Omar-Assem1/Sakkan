@@ -51,6 +51,8 @@ describe('UiButtonComponent', () => {
 
     expect(classes).toContain('ps-4');
     expect(classes).toContain('pe-4');
-    expect(classes).not.toMatch(/\b(ml-|mr-|pl-|pr-|text-left|text-right|left-|right-|border-l|border-r)/);
+    expect(classes).not.toMatch(
+      /\b(ml-|mr-|pl-|pr-|text-left|text-right|left-|right-|border-l|border-r)/,
+    );
   });
 });

@@ -79,7 +79,9 @@ describe('NavbarComponent', () => {
 
   it('should toggle language when the language switch button is clicked', () => {
     const toggleSpy = vi.spyOn(languageService, 'toggleLanguage');
-    const langBtn = fixture.nativeElement.querySelector('[data-testid="lang-toggle"] button') as HTMLButtonElement;
+    const langBtn = fixture.nativeElement.querySelector(
+      '[data-testid="lang-toggle"] button',
+    ) as HTMLButtonElement;
 
     expect(langBtn).toBeTruthy();
     langBtn.click();
@@ -91,7 +93,9 @@ describe('NavbarComponent', () => {
   it('should contain zero physical directional Tailwind classes in navbar template', () => {
     const allElements = fixture.nativeElement.querySelectorAll('*');
     allElements.forEach((el: Element) => {
-      expect(el.className).not.toMatch(/\b(ml-|mr-|pl-|pr-|text-left|text-right|left-|right-|border-l|border-r)/);
+      expect(el.className).not.toMatch(
+        /\b(ml-|mr-|pl-|pr-|text-left|text-right|left-|right-|border-l|border-r)/,
+      );
     });
   });
 });

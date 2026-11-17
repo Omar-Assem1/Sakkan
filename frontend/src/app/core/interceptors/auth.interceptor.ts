@@ -5,17 +5,18 @@ import { catchError, throwError } from 'rxjs';
 import { TokenStorageService } from '../services/token-storage.service';
 
 /** Only our backend API gets the JWT – never static assets (i18n JSON) or third-party URLs. */
-const API_PREFIX = '/api/';
+function isBackendApiUrl(url: string): boolean {
+  return url.startsWith('/api/') || /^https?:\/\/localhost(:\d+)?\/api\//.test(url);
+}
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenStorage = inject(TokenStorageService);
   const router = inject(Router);
 
   const token = tokenStorage.getToken();
-  const isApiRequest = req.url.startsWith(API_PREFIX);
 
   const authReq =
-    token && isApiRequest
+    token && isBackendApiUrl(req.url)
       ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
       : req;
 

@@ -9,12 +9,14 @@ export const routes: Routes = [
   },
   {
     path: 'listings',
-    loadChildren: () => import('./features/listings/listings.routes').then((m) => m.LISTINGS_ROUTES),
+    loadChildren: () =>
+      import('./features/listings/listings.routes').then((m) => m.LISTINGS_ROUTES),
   },
   {
     path: 'viewings',
     canActivate: [authGuard],
-    loadChildren: () => import('./features/viewings/viewings.routes').then((m) => m.VIEWINGS_ROUTES),
+    loadChildren: () =>
+      import('./features/viewings/viewings.routes').then((m) => m.VIEWINGS_ROUTES),
   },
   {
     path: 'admin',

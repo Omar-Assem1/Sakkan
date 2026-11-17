@@ -10,7 +10,8 @@ const BASE_CLASSES =
 const VARIANT_CLASSES: Record<UiButtonVariant, string> = {
   primary: 'bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:outline-emerald-600',
   secondary: 'bg-slate-100 text-slate-800 hover:bg-slate-200 focus-visible:outline-slate-400',
-  outline: 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 focus-visible:outline-slate-400',
+  outline:
+    'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 focus-visible:outline-slate-400',
   danger: 'bg-rose-600 text-white hover:bg-rose-700 focus-visible:outline-rose-600',
 };
 

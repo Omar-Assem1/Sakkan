@@ -82,10 +82,7 @@ describe('authInterceptor', () => {
     });
 
     const req = httpMock.expectOne('/api/v1/viewings/my');
-    req.flush(
-      { title: 'Unauthorized', status: 401 },
-      { status: 401, statusText: 'Unauthorized' }
-    );
+    req.flush({ title: 'Unauthorized', status: 401 }, { status: 401, statusText: 'Unauthorized' });
 
     expect(errorStatus).toBe(401);
     expect(tokenStorage.getToken()).toBeNull();
@@ -105,10 +102,7 @@ describe('authInterceptor', () => {
     });
 
     const req = httpMock.expectOne('/api/v1/properties/1/slots');
-    req.flush(
-      { title: 'Forbidden', status: 403 },
-      { status: 403, statusText: 'Forbidden' }
-    );
+    req.flush({ title: 'Forbidden', status: 403 }, { status: 403, statusText: 'Forbidden' });
 
     expect(errorStatus).toBe(403);
     expect(tokenStorage.getToken()).toBe('valid-jwt-token');
