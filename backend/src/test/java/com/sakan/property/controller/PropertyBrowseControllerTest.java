@@ -119,8 +119,6 @@ class PropertyBrowseControllerTest {
     @Test
     @DisplayName("400 Bad Request: Invalid sort field rejected by validator")
     void testInvalidSortFieldReturns400() throws Exception {
-        when(propertyService.browse(any())).thenThrow(new IllegalArgumentException("Invalid sort field 'ownerId'"));
-
         mvc.perform(get("/api/properties")
                         .param("sort", "ownerId,desc"))
                 .andExpect(status().isBadRequest());

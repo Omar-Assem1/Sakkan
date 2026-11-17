@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.sakan.common.domain.Currency;
 import com.sakan.property.domain.PropertyPurpose;
+import com.sakan.property.service.PropertySortValidator;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -38,6 +39,8 @@ public record PropertySearchCriteria(
 
         String sort
 ) {
+    private static final PropertySortValidator SORT_VALIDATOR = new PropertySortValidator();
+
     public PropertySearchCriteria {
         if (page == null) page = 0;
         if (size == null) size = 12;
@@ -52,5 +55,8 @@ public record PropertySearchCriteria(
         if (size < 1 || size > 50) {
             throw new IllegalArgumentException("Page size must be between 1 and 50");
         }
+
+        // Enforce strict sort whitelist at boundary to prevent injection (NFR-04)
+        SORT_VALIDATOR.validateAndBuildSort(sort);
     }
 }
