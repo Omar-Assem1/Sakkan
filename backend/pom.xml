@@ -39,7 +39,7 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <jacoco.version>0.8.14</jacoco.version>
         <!-- SCRUM-11: minimum line coverage for the whole backend (0.60 = 60%) -->
-        <jacoco.minimum.coverage>0.60</jacoco.minimum.coverage>
+        <jacoco.minimum.coverage>0.99</jacoco.minimum.coverage>
     </properties>
 
     <dependencies>
