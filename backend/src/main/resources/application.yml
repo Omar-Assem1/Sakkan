@@ -1,1 +1,14 @@
-spring.application.name=sakan
+spring:
+  application:
+    name: sakan
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/sakan}
+    username: ${SPRING_DATASOURCE_USERNAME:sakan}
+    password: ${SPRING_DATASOURCE_PASSWORD:change_me}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+  flyway:
+    enabled: true
