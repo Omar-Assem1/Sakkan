@@ -11,13 +11,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-/**
- * Reads the caller from Spring Security's context.
- *
- * <p><b>Contract with the login code (SKN-15):</b> {@code Authentication.getName()} must be the numeric user id, and
- * authorities must be the role names (with or without a {@code ROLE_} prefix). If the JWT filter uses a different
- * subject, this is the one place to adapt.
- */
 @Component
 public class SecurityContextCurrentUserProvider implements CurrentUserProvider {
 
