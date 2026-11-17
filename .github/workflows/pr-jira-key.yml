@@ -1,6 +1,6 @@
 name: PR Jira key
 
-# SCRUM-13: every PR must reference a Jira key (SCRUM-<number>) in its title
+# SCRUM-13: every PR must reference a Jira key (scrum + number) in its title or branch name
 on:
   pull_request:
     branches: [dev, stage, main]
@@ -14,14 +14,17 @@ jobs:
     name: PR title has Jira key
     runs-on: ubuntu-latest
     steps:
-      - name: Check PR title
+      - name: Check PR title or branch name
         env:
           TITLE: ${{ github.event.pull_request.title }}
+          BRANCH: ${{ github.head_ref }}
         run: |
           echo "PR title: $TITLE"
-          if echo "$TITLE" | grep -Eq 'SCRUM-[0-9]+'; then
+          echo "Branch:   $BRANCH"
+          # case-insensitive; accepts SCRUM-9, scrum 9, scrum_9, scrum9
+          if echo "$TITLE $BRANCH" | grep -Eiq 'scrum[-_ ]?[0-9]+'; then
             echo "Jira key found."
           else
-            echo "::error::PR title must contain a Jira key like 'SCRUM-10 add backend CI job'."
+            echo "::error::PR title or branch must contain a Jira key like 'SCRUM-10'."
             exit 1
           fi
