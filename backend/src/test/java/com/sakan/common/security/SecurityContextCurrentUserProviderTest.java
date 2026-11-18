@@ -13,6 +13,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sakan.support.tags.RegressionTest;
+
+@RegressionTest
 class SecurityContextCurrentUserProviderTest {
 
     private final SecurityContextCurrentUserProvider provider = new SecurityContextCurrentUserProvider();

@@ -39,6 +39,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.sakan.support.tags.RegressionTest;
+
+@RegressionTest
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 

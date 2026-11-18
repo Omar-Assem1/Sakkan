@@ -42,6 +42,9 @@ import com.sakan.property.dto.PropertyRequest;
 import com.sakan.property.dto.PropertyResponse;
 import com.sakan.property.service.PropertyService;
 
+import com.sakan.support.tags.RegressionTest;
+
+@RegressionTest
 @ExtendWith(MockitoExtension.class)
 class PropertyControllerTest {
 

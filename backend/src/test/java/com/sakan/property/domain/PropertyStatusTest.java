@@ -10,6 +10,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.sakan.support.tags.RegressionTest;
+
+@RegressionTest
 class PropertyStatusTest {
 
     private static final Set<String> ALLOWED = Set.of(
