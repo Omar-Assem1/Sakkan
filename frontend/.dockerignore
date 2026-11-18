@@ -1,0 +1,22 @@
+# Dependencies and build output
+node_modules/
+dist/
+.angular/
+tmp/
+out-tsc/
+coverage/
+
+# Playwright e2e artifacts
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Version control and IDEs
+.git/
+.gitignore
+.idea/
+.vscode/
+*.log
+.DS_Store
+Thumbs.db
