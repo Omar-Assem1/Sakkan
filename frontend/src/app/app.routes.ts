@@ -30,5 +30,10 @@ export const routes: Routes = [
     data: { roles: ['ADMIN'] },
     loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
   },
+  {
+    path: 'error',
+    loadComponent: () =>
+      import('./features/error/error-page.component').then((m) => m.ErrorPageComponent),
+  },
   { path: '**', redirectTo: 'listings' },
 ];
