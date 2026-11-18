@@ -44,7 +44,15 @@ describe('authInterceptor', () => {
     expect(req.request.headers.get('Authorization')).toBe('Bearer mock-jwt-token-123');
     req.flush({ content: [] });
   });
+  it('does not clear the token or redirect when /api/auth/login itself returns 401', () => {
+    tokenStorage.saveToken('existing-token');
 
+    http.post('/api/auth/login', {}).subscribe({ error: () => undefined });
+    httpMock.expectOne('/api/auth/login').flush({}, { status: 401, statusText: 'Unauthorized' });
+
+    expect(routerSpy.navigate).not.toHaveBeenCalled();
+    expect(tokenStorage.getToken()).toBe('existing-token');
+  });
   it('should omit Authorization header when no token exists', () => {
     tokenStorage.clear();
 

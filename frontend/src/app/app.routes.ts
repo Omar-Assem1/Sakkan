@@ -19,10 +19,21 @@ export const routes: Routes = [
       import('./features/viewings/viewings.routes').then((m) => m.VIEWINGS_ROUTES),
   },
   {
+    path: 'properties',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/properties/properties.routes').then((m) => m.PROPERTIES_ROUTES),
+  },
+  {
     path: 'admin',
     canActivate: [authGuard],
     data: { roles: ['ADMIN'] },
     loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+  },
+  {
+    path: 'error',
+    loadComponent: () =>
+      import('./features/error/error-page.component').then((m) => m.ErrorPageComponent),
   },
   { path: '**', redirectTo: 'listings' },
 ];

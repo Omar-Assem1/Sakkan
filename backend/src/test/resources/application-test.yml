@@ -1,0 +1,5 @@
+app:
+  security:
+    login-rate-limit:
+      max-attempts: 1000
+      window-minutes: 15

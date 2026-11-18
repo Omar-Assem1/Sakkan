@@ -1,10 +1,13 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
-import { AuthPageComponent } from './features/auth/auth-page.component';
 import { AdminPageComponent } from './features/admin/admin-page.component';
+import { SignInComponent } from './features/auth/sign-in/sign-in.component';
+import { SignUpComponent } from './features/auth/sign-up/sign-up.component';
 import { ListingsPageComponent } from './features/listings/listings-page.component';
 import { ViewingsPageComponent } from './features/viewings/viewings-page.component';
 import enTranslations from '../../public/assets/i18n/en.json';
@@ -33,7 +36,7 @@ describe('AppComponent, Lazy Routes & RTL/i18n Audit (SCRUM-38)', () => {
           translocoConfig: { availableLangs: ['en', 'ar'], defaultLang: 'en' },
         }),
       ],
-      providers: [provideRouter(routes)],
+      providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
   });
 
@@ -79,7 +82,8 @@ describe('AppComponent, Lazy Routes & RTL/i18n Audit (SCRUM-38)', () => {
   it('should use only logical Tailwind classes and zero physical directional classes across shell and feature stubs', () => {
     const components = [
       AppComponent,
-      AuthPageComponent,
+      SignInComponent,
+      SignUpComponent,
       AdminPageComponent,
       ListingsPageComponent,
       ViewingsPageComponent,
@@ -90,7 +94,8 @@ describe('AppComponent, Lazy Routes & RTL/i18n Audit (SCRUM-38)', () => {
       fixture.detectChanges();
       const elements = fixture.nativeElement.querySelectorAll('*');
       elements.forEach((el: Element) => {
-        const cls = typeof el.className === 'string' ? el.className : el.getAttribute('class') || '';
+        const cls =
+          typeof el.className === 'string' ? el.className : el.getAttribute('class') || '';
         expect(cls).not.toMatch(
           /\b(ml-|mr-|pl-|pr-|text-left|text-right|left-|right-|border-l|border-r)/,
         );
