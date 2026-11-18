@@ -23,6 +23,33 @@
 
 ---
 
+## Summary Results Table
+
+| Check | Command | Result | Status |
+|-------|---------|--------|--------|
+| Backend tests & coverage gate | `cd backend && ./mvnw -B verify` | 242 run, 0 failures, 0 errors, 0 skipped | ✅ PASS |
+| JaCoCo line coverage | `target/site/jacoco/jacoco.csv` (`index.html`) | **97.16%** (615 / 633 lines; gate ≥ 60%) | ✅ PASS |
+| Regression tests (before `@RegressionTest` expansion) | `./mvnw -B test -Dgroups=regression` | 51 tests (9 property test classes), 0 failures | ✅ PASS |
+| Regression tests (after `@RegressionTest` expansion) | `./mvnw -B test -Dgroups=regression` | **232 tests** (22 test classes), 0 failures | ✅ PASS |
+| Frontend install & lint | `cd frontend && npm ci && npm run lint` | 460 packages; `All files pass linting.` | ✅ PASS |
+| Frontend unit tests | `npm test -- --watch=false` | **22 test files, 110 tests passed**, 0 failures | ✅ PASS |
+| Frontend production build | `npm run build -- --configuration production` | 376.27 kB initial bundle (`dist/frontend/browser`) | ✅ PASS |
+| Playwright E2E smoke test | `npx playwright test` (`login-then-browse.spec.ts`) | **1 passed** (898 ms) against Docker stack | ✅ PASS |
+| Executable JAR build & run | `./mvnw -B -DskipTests package` + `java -jar target/sakan-api-0.0.1-SNAPSHOT.jar` | 67.29 MB fat JAR; connects to PostGIS, `/actuator/health` UP, `/v3/api-docs` HTTP 200 | ✅ PASS |
+| Clean-machine Docker rehearsal | Fresh `git clone --branch dev` (no `.env`) + `docker compose up --build -d` | `db`, `api`, `web` all `healthy`; web HTTP 200, API health UP, 4 Flyway migrations applied (v30) | ✅ PASS |
+
+---
+
+## Test / Build Failures & Root Causes
+
+No test or build failures occurred in the backend test suite (242/242 passed), frontend lint/unit tests/production build (110/110 passed), or Playwright E2E smoke test (1/1 passed).
+
+During the **SCRUM-120 README walkthrough**, two documentation omissions were discovered and fixed in `README.md`:
+1. **Standalone `java -jar` without `JWT_SECRET` set fails on startup** with `PlaceholderResolutionException: Could not resolve placeholder 'JWT_SECRET'` because `application.yml` deliberately sets `app.jwt.secret: ${JWT_SECRET}` without a default (`# no default on purpose: the app must fail fast without it`). Fixed in `README.md` by documenting `$env:JWT_SECRET` / `JWT_SECRET` in the Executable JAR and Local Development sections.
+2. **Playwright README example credentials (`E2E_USERNAME=tenant@sakan.com E2E_PASSWORD=secret`) fail registration validation** because `login-then-browse.spec.ts` constructs `email: ${username}@sakan.test` and `/api/auth/register` requires a password of at least 8 characters with uppercase, lowercase, and digit. Fixed in `README.md` to use `E2E_USERNAME=e2e_tenant` and `E2E_PASSWORD=Password123` (with both PowerShell and Bash examples).
+
+---
+
 ## SCRUM-119: Regression Suite Results
 
 ### Backend — Full Verify (`./mvnw -B verify`)
@@ -138,26 +165,63 @@ styles-MH4652EN.css | styles   |  30.79 kB |                 5.50 kB
 ```
 
 > **Note:** The current CI workflow (`.github/workflows/ci.yml`) does **NOT** run Playwright tests.
-> **Proposal:** Add a separate CI job or workflow step that:
-> 1. Starts the Docker stack (`docker compose up --build -d`)
-> 2. Waits for healthy containers
-> 3. Runs `npx playwright test`
-> 4. Tears down with `docker compose down -v`
->
-> This was **not** added in this PR to avoid scope creep; it should be a separate story.
+> **Proposed CI Job (not added in this PR — recommend tracking as an M2 story):**
+> ```yaml
+>   e2e-playwright:
+>     name: Playwright E2E Smoke (Docker stack)
+>     runs-on: ubuntu-latest
+>     needs: [backend, frontend]
+>     steps:
+>       - name: Checkout code
+>         uses: actions/checkout@v4
+>       - name: Start Docker Compose stack
+>         run: docker compose up --build -d --wait
+>       - name: Set up Node.js 24
+>         uses: actions/setup-node@v4
+>         with:
+>           node-version: 24
+>           cache: npm
+>           cache-dependency-path: frontend/package-lock.json
+>       - name: Install frontend dependencies & Playwright Chromium
+>         working-directory: frontend
+>         run: |
+>           npm ci
+>           npx playwright install --with-deps chromium
+>       - name: Run Playwright smoke tests
+>         working-directory: frontend
+>         env:
+>           BASE_URL: http://localhost:4200
+>           E2E_USERNAME: e2e_tenant
+>           E2E_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+>         run: npm run e2e
+>       - name: Tear down Docker Compose stack
+>         if: always()
+>         run: docker compose down -v
+> ```
 
 ---
 
 ## SCRUM-120: Executable Build & Docker Rehearsal
 
-### Executable JAR Build
+### Executable JAR Build & Run Against PostGIS
 
 | Metric | Value |
 |--------|-------|
-| Command | `./mvnw -B -DskipTests package` |
-| Artifact | `backend/target/sakan-api-0.0.1-SNAPSHOT.jar` |
+| Build command | `cd backend && ./mvnw -B -DskipTests package` |
+| Artifact | `backend/target/sakan-api-0.0.1-SNAPSHOT.jar` (repackaged fat JAR) |
 | Size | 67.29 MB |
-| Build result | ✅ **SUCCESS** (9 s) |
+| Build result | ✅ **SUCCESS** (9.032 s) |
+| Database container | `docker compose up -d db` (`postgis/postgis:16-3.4` on `localhost:5433`) |
+| Run command | `$env:JWT_SECRET="dev-only-jwt-secret-change-in-production-min-32-chars"; java -jar target/sakan-api-0.0.1-SNAPSHOT.jar` |
+| Health check | `/actuator/health` → `{"groups":["liveness","readiness"],"status":"UP"}` |
+| OpenAPI spec | `/v3/api-docs` → `HTTP 200 (13434 bytes)` |
+
+```
+2026-11-18T21:57:39.388+02:00  INFO 33092 --- [sakan] [main] com.sakan.SakanApplication       : Starting SakanApplication v0.0.1-SNAPSHOT using Java 21.0.13
+2026-11-18T21:57:42.734+02:00  INFO 33092 --- [sakan] [main] org.flywaydb.core.FlywayExecutor : Database: jdbc:postgresql://localhost:5433/sakan (PostgreSQL 16.4)
+2026-11-18T21:57:42.828+02:00  INFO 33092 --- [sakan] [main] o.f.core.internal.command.DbMigrate : Current version of schema "public": 30
+2026-11-18T21:57:46.170+02:00  INFO 33092 --- [sakan] [main] com.sakan.SakanApplication       : Started SakanApplication in 7.235 seconds (process running for 7.806)
+```
 
 ### Clean-Machine Docker Rehearsal
 
@@ -190,58 +254,90 @@ Successfully applied 4 migrations to schema "public", now at version v30
 
 ### README Walkthrough Findings
 
-| # | Finding | Severity |
-|---|---------|----------|
-| 1 | **No admin account seeder.** README mentions `ADMIN_USERNAME` and `ADMIN_PASSWORD` env vars and `.env.example` has them, but there is no `CommandLineRunner`/`ApplicationRunner` that seeds the admin user on startup. The `is_seeded_admin` column exists in `V10__auth_users_roles_extensions.sql` and `User.java`, but the actual seeding code is missing. A new teammate following the README would expect an admin account to exist after `docker compose up`. | Medium |
-| 2 | **Port 8080 conflict on Windows.** On some Windows machines (e.g., Huawei laptops with `MTAgentService`), port 8080 is occupied. The README troubleshooting section correctly documents this with the `API_PORT` override workaround. | Info (documented) |
-| 3 | **`docker compose up` works without `.env`.** The README correctly states this ("works out-of-the-box on a fresh clone using safe development defaults"). Confirmed in this rehearsal. | Info (positive) |
-| 4 | **First build speed.** Docker layer caching makes subsequent builds fast (< 10 s). First build requires downloading base images and dependencies. README documents this in troubleshooting. | Info (documented) |
+| # | Finding | Severity | Action Taken |
+|---|---------|----------|--------------|
+| 1 | **No admin account seeder.** README mentions `ADMIN_USERNAME` and `ADMIN_PASSWORD` env vars and `.env.example` has them, but there is no `CommandLineRunner`/`ApplicationRunner` that seeds the admin user on startup. The `is_seeded_admin` column exists in `V10__auth_users_roles_extensions.sql` and `User.java`, but the actual seeding code is missing. A new teammate following the README would expect an admin account to exist after `docker compose up`. | Medium | Documented in report (application code not modified per ground rules). |
+| 2 | **Missing `JWT_SECRET` in README "Executable JAR Build" and "Local Development" sections.** `application.yml` requires `JWT_SECRET` with no default (`app.jwt.secret: ${JWT_SECRET}`), while `docker-compose.yml` provides a default for containerized runs. Running `java -jar target/sakan-api-0.0.1-SNAPSHOT.jar` directly from the README failed until `JWT_SECRET` was set in the shell. | Medium | Fixed in `README.md` (`SCRUM-120`) for both Windows PowerShell and macOS/Linux. |
+| 3 | **Playwright README example credentials (`E2E_USERNAME=tenant@sakan.com E2E_PASSWORD=secret`) fail registration validation.** `login-then-browse.spec.ts` posts `${username}@sakan.test` as the email and requires a password matching `RegisterRequest` policy (≥ 8 chars, uppercase, lowercase, digit). Also lacked a Windows PowerShell snippet. | Low | Fixed in `README.md` (`SCRUM-120`) using `E2E_USERNAME=e2e_tenant` and `E2E_PASSWORD=Password123` with PowerShell & Bash examples. |
+| 4 | **Port 8080 conflict on Windows.** On some Windows machines (e.g., Huawei laptops with `MTAgentService`), port 8080 is occupied. The README troubleshooting section documents the `$env:API_PORT="18080"` override workaround, which worked seamlessly in the rehearsal. | Info (documented) | Verified working. |
+| 5 | **`docker compose up` works without `.env`.** The README states that `docker compose up` works out-of-the-box on a fresh clone using safe development defaults. Confirmed in the clean-machine rehearsal (`Test-Path .env` was `False`). | Info (positive) | Verified working. |
 
 ---
 
 ## SCRUM-121: Release Flow (PREPARED — NOT EXECUTED)
 
-### Branch Protection Assumptions (from README)
+### Branch Protection Assumptions (from README & Project Guidelines)
 
-> **Branch flow:** `main` (release) ← `stage` (testing) ← `dev` (integration) ← feature branches
+> **Branch flow:** `main` (release) ← `stage` (testing) ← `dev` (integration) ← `milestone_1/feat-SCRUM-<id>-<description>`
 > Pull requests only. Commit messages and PR titles start with the Jira key.
 
-Expected protection rules (to be verified on GitHub):
-- `dev`: 1 approval required, CI must pass
-- `stage`: CI must pass
-- `main`: 2 approvals required, CI must pass
+Expected branch protection rules on GitHub (to be verified manually in Repository Settings → Branches):
+- `dev`: Pull request required, **1 approval** required, CI checks (`Backend (build, test, coverage)`, `Frontend (lint, test, build)`, `PR title has Jira key`) must pass.
+- `stage`: Pull request required, CI checks must pass.
+- `main`: Pull request required, **2 approvals** required, CI checks must pass, no force-pushes.
 
-### Proposed Release Flow
+### Proposed Release Flow & Tag
 
 ```
-dev  ──PR──>  stage  ──PR──>  main  ──tag──>  m1-rc1
+dev  ──PR #1──>  stage  ──PR #2──>  main  ──annotated tag──>  m1-rc1 (or v1.0.0-m1)
 ```
 
-**Suggested tag name:** `m1-rc1`
+- **Suggested tag name:** `m1-rc1` (release candidate tag) or `v1.0.0-m1` (final Milestone 1 release tag).
 
-### Draft Commands (awaiting confirmation)
+### Draft Commands & PR Descriptions (Awaiting Confirmation)
 
-**Step 1: PR from `dev` → `stage`**
-```bash
-# Create PR via GitHub CLI or web UI
-# Title: "SCRUM-121 M1 release candidate: dev → stage"
-# Body: "Promotes all M1 features from dev to stage for final testing."
-```
+#### Step 1: Merge `SCRUM-118` PR into `dev`
+Wait for CI to pass and Member 6 review approval on the `SCRUM-118` PR into `dev`, then merge via GitHub UI.
 
-**Step 2: PR from `stage` → `main`**
-```bash
-# Title: "SCRUM-121 M1 release candidate: stage → main"
-# Body: "Promotes M1 release candidate from stage to main. All CI checks passed. Regression suite: 242 backend tests, 110 frontend tests, 1 Playwright e2e — all green."
-```
+#### Step 2: Open PR from `dev` → `stage`
+- **PR Title:** `SCRUM-121 promote dev to stage for Milestone 1 release candidate`
+- **Base:** `stage` ← **Compare:** `dev`
+- **PR Description:**
+  ```markdown
+  ## Jira
+  SCRUM-121 https://saakan.atlassian.net/browse/SCRUM-121
 
-**Step 3: Tag (after main merge)**
+  ## What changed
+  - Promotes integrated Milestone 1 (`dev`) to `stage` for release candidate verification.
+  - Includes all M1 stories, Docker Compose packaging (SCRUM-14), Playwright smoke test (SCRUM-21), expanded `@RegressionTest` suite (SCRUM-119), and M1 Release Candidate Report (`docs/milestone-1/RELEASE_CANDIDATE_REPORT.md`).
+
+  ## How it was tested
+  - [x] Tests written first and passing locally (242 backend tests, 97.16% JaCoCo line coverage; 110 frontend unit tests; 1 Playwright E2E test)
+  - [x] CI is green (backend build + tests, JaCoCo >= 60%, frontend lint + test + build)
+  - [ ] Flyway migration / Swagger updated (if API or DB changed) — N/A
+  - [ ] Jira time logged on the sub-task
+  ```
+
+#### Step 3: Open PR from `stage` → `main`
+- **PR Title:** `SCRUM-121 Milestone 1 release: merge stage into main`
+- **Base:** `main` ← **Compare:** `stage`
+- **Reviewers:** Request at least 2 approvals per `main` branch protection rules.
+- **PR Description:**
+  ```markdown
+  ## Jira
+  SCRUM-121 https://saakan.atlassian.net/browse/SCRUM-121
+
+  ## What changed
+  - Promotes verified Milestone 1 release candidate from `stage` into `main`.
+  - Full regression and packaging evidence recorded in `docs/milestone-1/RELEASE_CANDIDATE_REPORT.md`.
+
+  ## How it was tested
+  - [x] Tests written first and passing locally (242 backend tests, 232 `@RegressionTest`, 97.16% line coverage; 110 frontend tests; 1 Playwright E2E smoke test; clean-machine Docker rehearsal)
+  - [x] CI is green on `stage` (backend build + tests, JaCoCo >= 60%, frontend lint + test + build)
+  - [x] Flyway migrations V10, V20, V21, V30 verified on clean PostGIS container
+  - [ ] Jira time logged on the sub-task
+  ```
+
+#### Step 4: Create and Push Annotated Tag on `main` (after `stage → main` PR merges)
 ```bash
 git fetch origin main
-git tag m1-rc1 origin/main
+git checkout main
+git pull --ff-only origin main
+git tag -a m1-rc1 -m "SCRUM-121 Milestone 1 release candidate 1"
 git push origin m1-rc1
 ```
 
-> ⛔ **AWAITING USER CONFIRMATION.** These commands will NOT be executed until Member 5 replies "approved" in chat.
+> ⛔ **AWAITING USER CONFIRMATION.** None of the SCRUM-121 promotion merges or tag commands have been executed. Reply **"approved"** (and specify your preferred tag name: `m1-rc1` or `v1.0.0-m1`) when you want me to proceed step by step.
 
 ---
 

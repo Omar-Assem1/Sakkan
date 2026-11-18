@@ -118,8 +118,9 @@ docker compose down -v
 
 ## Executable JAR Build (Without Docker for API)
 
-To build and run the standalone Spring Boot executable JAR directly against the Docker database:
+To build and run the standalone Spring Boot executable JAR directly against the Docker database (`JWT_SECRET` is required because `application.yml` fails fast if it is unset):
 
+**Windows PowerShell:**
 ```powershell
 # 1. Start only the PostGIS database container (exposed on localhost:5433)
 docker compose up -d db
@@ -128,8 +129,16 @@ docker compose up -d db
 cd backend
 ./mvnw -B -DskipTests package
 
-# 3. Run the executable JAR
+# 3. Set JWT_SECRET (min 32 chars) and run the executable JAR
+$env:JWT_SECRET="dev-only-jwt-secret-change-in-production-min-32-chars"
 java -jar target/sakan-api-0.0.1-SNAPSHOT.jar
+```
+
+**macOS / Linux (Bash / Zsh):**
+```bash
+docker compose up -d db
+cd backend && ./mvnw -B -DskipTests package
+JWT_SECRET="dev-only-jwt-secret-change-in-production-min-32-chars" java -jar target/sakan-api-0.0.1-SNAPSHOT.jar
 ```
 
 ---
@@ -139,7 +148,7 @@ java -jar target/sakan-api-0.0.1-SNAPSHOT.jar
 ```bash
 cp .env.example .env
 docker compose up -d db
-cd backend && ./mvnw spring-boot:run
+cd backend && JWT_SECRET="dev-only-jwt-secret-change-in-production-min-32-chars" ./mvnw spring-boot:run
 cd frontend && npm ci && npm start
 ```
 
@@ -205,10 +214,18 @@ cd backend && ./mvnw -B test -DexcludedGroups=integration
 ```
 
 ### 4. Playwright Smoke Tests (`frontend/e2e/`)
-End-to-end smoke tests live in `frontend/e2e/` and are configured via `frontend/playwright.config.ts` (separate from `npm test` and `npm run lint`). Pass credentials and optional base URL via environment variables:
+End-to-end smoke tests live in `frontend/e2e/` and are configured via `frontend/playwright.config.ts` (separate from `npm test` and `npm run lint`). Pass a valid username (alphanumeric/underscore, not an email address) and password (min 8 chars with uppercase, lowercase, and digit) plus optional base URL via environment variables:
 
+**Windows PowerShell:**
+```powershell
+cd frontend
+npx playwright install chromium
+$env:BASE_URL="http://localhost:4200"; $env:E2E_USERNAME="e2e_tenant"; $env:E2E_PASSWORD="Password123"; npm run e2e
+```
+
+**macOS / Linux (Bash / Zsh):**
 ```bash
 cd frontend
 npx playwright install chromium
-BASE_URL=http://localhost:4200 E2E_USERNAME=tenant@sakan.com E2E_PASSWORD=secret npm run e2e
+BASE_URL=http://localhost:4200 E2E_USERNAME=e2e_tenant E2E_PASSWORD=Password123 npm run e2e
 ```
