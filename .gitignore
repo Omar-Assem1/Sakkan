@@ -13,6 +13,3 @@ dist/
 # Secrets and uploads
 .env
 uploads/
-
-.env
-uploads/

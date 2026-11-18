@@ -1,0 +1,21 @@
+# Build output and local caches
+target/
+*.log
+*.class
+
+# Version control and IDEs
+.git/
+.gitignore
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.settings/
+.classpath
+.project
+
+# Secrets and local uploads
+.env
+uploads/
+HELP.md
