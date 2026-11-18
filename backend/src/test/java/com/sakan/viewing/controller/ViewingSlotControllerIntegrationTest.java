@@ -37,7 +37,7 @@ import com.sakan.support.tags.IntegrationTest;
 
 @IntegrationTest
 @Transactional
-class ViewingSlotControllerIT extends AbstractIntegrationTest {
+class ViewingSlotControllerIntegrationTest extends AbstractIntegrationTest {
 
     private static final long OWNER_ID = 101L;
     private static final long ASSIGNED_AGENT_ID = 102L;
