@@ -116,6 +116,7 @@
     "FORBIDDEN_MESSAGE": "You do not have permission to view or perform this action.",
     "SERVER_ERROR_TITLE": "Internal Server Error",
     "SERVER_ERROR_MESSAGE": "The server encountered an error. Our team has been notified."
+  },
   "PROPERTY": {
     "FORM": {
       "ADD_TITLE": "Add New Property",
