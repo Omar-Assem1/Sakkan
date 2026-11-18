@@ -1,9 +1,9 @@
-import { existsSync } from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
 
+declare const process: { env: Record<string, string | undefined> };
+
 const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
-const winChromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const useSystemChrome = !process.env['CI'] && existsSync(winChromePath);
+const isWindowsLocal = !process.env['CI'] && process.env['OS'] === 'Windows_NT';
 
 export default defineConfig({
   testDir: './e2e',
@@ -20,7 +20,7 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        ...(useSystemChrome ? { channel: 'chrome' } : {}),
+        ...(isWindowsLocal ? { channel: 'chrome' } : {}),
       },
     },
   ],

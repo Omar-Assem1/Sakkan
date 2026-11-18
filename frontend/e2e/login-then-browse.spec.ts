@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+declare const process: { env: Record<string, string | undefined> };
+
 /**
  * SCRUM-21 (SKN-7): Playwright smoke test — log in, then browse properties.
  *
