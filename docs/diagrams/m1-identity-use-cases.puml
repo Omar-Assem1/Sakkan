@@ -1,0 +1,57 @@
+@startuml
+title Sakan: Identity Use Cases (Milestone 1, Member 1)
+left to right direction
+skinparam shadowing false
+
+actor Visitor
+actor "Registered User" as RU
+actor "Buyer/Tenant" as BT
+actor Owner
+actor Agent
+actor Admin
+actor "Startup Runner" as SR <<system>>
+actor Google <<external>>
+
+BT --|> RU
+Owner --|> RU
+Agent --|> RU
+Admin --|> RU
+
+rectangle "Sakan: Auth, RBAC, Admin" {
+  usecase "Register\n(SCRUM-51, form 1)" as UC1
+  usecase "Login with\nusername + password\n(SCRUM-51, form 1)" as UC2
+  usecase "Google Sign-In\n(SCRUM-56)" as UC3
+  usecase "Admin Sign-In\n(SCRUM-61, form 2)" as UC4
+  usecase "Seed Hardcoded Admin\n(SCRUM-61)" as UC5
+  usecase "Enforce RBAC\n(SCRUM-65)" as UC6
+  usecase "Manage Users\n(SCRUM-69, listing 22)" as UC7
+  usecase "Change User Role" as UC8
+  usecase "Promote / Demote Admin" as UC9
+}
+
+Visitor --> UC1
+Visitor --> UC2
+Visitor --> UC3
+UC3 -|> UC2 : specialises
+UC3 ..> Google : <<uses>>
+
+Admin --> UC4
+Admin --> UC7
+UC8 .> UC7 : <<extend>>
+UC9 .> UC7 : <<extend>>
+UC7 .> UC4 : <<include>>
+
+SR --> UC5
+
+RU --> UC6
+note right of UC6
+  Applies to every protected
+  endpoint and Angular route:
+  no token = 401, wrong role = 403
+end note
+
+note bottom of UC9
+  The seeded admin can never
+  be demoted or deleted
+end note
+@enduml
