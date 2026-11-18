@@ -30,19 +30,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-/**
- * REST API for listings.
- *
- * <pre>
- * GET  /api/properties               public search & browse  (public)
- * POST /api/properties               create a draft          (owner, agent)   201
- * GET  /api/properties/{id}          one listing             (public if published)
- * GET  /api/properties/mine          my listings, paginated  (owner, agent)
- * PUT  /api/properties/{id}          edit                    (owner/agent of the listing)
- * POST /api/properties/{id}/publish  DRAFT -> PUBLISHED      (owner/agent of the listing)
- * POST /api/properties/{id}/archive  -> ARCHIVED             (owner/agent of the listing)
- * </pre>
- */
 @RestController
 @RequestMapping("/api/properties")
 public class PropertyController {

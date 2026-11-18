@@ -6,11 +6,6 @@ import java.util.Set;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-/**
- * Validates sort parameters against a strict whitelist to prevent SQL injection
- * and invalid column queries. Maps client aliases (e.g. areaM2 -> areaSqm) and enforces
- * a deterministic 'id ASC' tie-breaker to prevent pagination overlap (NFR-01, NFR-04).
- */
 @Component
 public class PropertySortValidator {
 
@@ -19,7 +14,7 @@ public class PropertySortValidator {
             "createdAt", "createdAt",
             "bedrooms", "bedrooms",
             "areaSqm", "areaSqm",
-            "areaM2", "areaSqm", // Client alias mapped to entity property
+            "areaM2", "areaSqm",
             "relevance", "relevance"
     );
 
@@ -53,7 +48,6 @@ public class PropertySortValidator {
         String entityField = FIELD_MAPPING.get(rawField);
         Sort.Direction direction = "DESC".equals(directionStr) ? Sort.Direction.DESC : Sort.Direction.ASC;
 
-        // Stable tie-breaker with 'id ASC' ensures deterministic pagination across pages
         return Sort.by(new Sort.Order(direction, entityField))
                 .and(Sort.by(Sort.Order.asc("id")));
     }

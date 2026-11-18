@@ -32,20 +32,11 @@ import com.sakan.support.tags.RegressionTest;
 
 import jakarta.persistence.EntityManager;
 
-/**
- * Full-stack integration tests for property full-text search (SKN-23 / SCRUM-85 / SCRUM-88).
- * Tests Arabic and English matching, description search, trigram typo tolerance,
- * diacritic normalization, SQL-injection safety, and criteria combination against real PostgreSQL.
- */
 @RegressionTest
 @IntegrationTest
 @Transactional
 class PropertySearchIntegrationTest extends AbstractIntegrationTest {
 
-    /**
-     * Threshold for pg_trgm similarity matching (SCRUM-88 acceptance criteria).
-     * Defines minimal similarity coefficient for typo tolerance (default 0.3).
-     */
     public static final double TRIGRAM_SIMILARITY_THRESHOLD = 0.3;
 
     @Autowired
@@ -160,7 +151,6 @@ class PropertySearchIntegrationTest extends AbstractIntegrationTest {
     @Test
     @DisplayName("SCRUM-88: Typo tolerance via pg_trgm similarity matches title with typos (threshold >= 0.3)")
     void testSearchTypoToleranceTrigramSimilarity() throws Exception {
-        // English typo: "Aleksandria" should match "Alexandria Royal Compound Chalet"
         mockMvc.perform(get("/api/properties")
                         .param("q", "Aleksandria")
                         .accept(MediaType.APPLICATION_JSON))
@@ -169,7 +159,6 @@ class PropertySearchIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.content[0].id", is(typoChalet.getId().intValue())))
                 .andExpect(jsonPath("$.content[0].title", containsString("Alexandria")));
 
-        // Arabic typo: Taa Marbouta vs Haa ("سموحه" query vs "سموحة" in title)
         mockMvc.perform(get("/api/properties")
                         .param("q", "سموحه")
                         .accept(MediaType.APPLICATION_JSON))
@@ -182,7 +171,6 @@ class PropertySearchIntegrationTest extends AbstractIntegrationTest {
     @Test
     @DisplayName("SCRUM-88: Blank or empty query string behaves as no search filter")
     void testSearchBlankOrEmptyQueryBehavesLikeNoSearch() throws Exception {
-        // All 6 published listings should be returned when q is blank
         mockMvc.perform(get("/api/properties")
                         .param("q", "   ")
                         .accept(MediaType.APPLICATION_JSON))
@@ -201,16 +189,9 @@ class PropertySearchIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.content[0].id", is(enSmouha.getId().intValue())));
     }
 
-    /**
-     * Arabic Normalisation documentation:
-     * 1. Diacritics/Tashkeel: (َ ً ُ ٌ ِ ٍ ّ ْ) are stripped or ignored.
-     * 2. Alef variants: (أ, إ, آ) normalize to bare (ا).
-     * 3. Taa Marbouta / Haa: (ة) and (ه) are unified or matched via trigram.
-     */
     @Test
     @DisplayName("SCRUM-88: Arabic search normalizes diacritics (tashkeel) and Alef hamza variants")
     void testSearchArabicDiacriticsAndAlefNormalization() throws Exception {
-        // Querying without diacritics and without hamza ("الاسكندرية") matches title containing "الْإِسْكَنْدَرِيَّةِ"
         mockMvc.perform(get("/api/properties")
                         .param("q", "الاسكندرية")
                         .accept(MediaType.APPLICATION_JSON))
@@ -218,7 +199,6 @@ class PropertySearchIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.content", hasSize(1)))
                 .andExpect(jsonPath("$.content[0].id", is(arDiacritics.getId().intValue())));
 
-        // Querying with tashkeel ("شَقَّةٌ") matches title stored with standard "شقة"
         mockMvc.perform(get("/api/properties")
                         .param("q", "شَقَّةٌ")
                         .accept(MediaType.APPLICATION_JSON))
@@ -230,7 +210,6 @@ class PropertySearchIntegrationTest extends AbstractIntegrationTest {
     @Test
     @DisplayName("SCRUM-88: Search returns only PUBLISHED listings; never DRAFT or ARCHIVED")
     void testSearchOnlyPublishedReturned() throws Exception {
-        // Search specifically targeting draft title keyword "مسودة"
         mockMvc.perform(get("/api/properties")
                         .param("q", "مسودة")
                         .accept(MediaType.APPLICATION_JSON))
@@ -238,7 +217,6 @@ class PropertySearchIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.totalElements", is(0)))
                 .andExpect(jsonPath("$.content", hasSize(0)));
 
-        // Verify draft and archived listings never appear in general search results
         mockMvc.perform(get("/api/properties")
                         .param("q", "Smouha")
                         .accept(MediaType.APPLICATION_JSON))

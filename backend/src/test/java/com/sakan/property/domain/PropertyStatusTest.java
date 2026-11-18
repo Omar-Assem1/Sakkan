@@ -10,7 +10,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/** Every ordered pair of statuses is checked: the allowed ones below, and all the rest must be illegal. */
 class PropertyStatusTest {
 
     private static final Set<String> ALLOWED = Set.of(

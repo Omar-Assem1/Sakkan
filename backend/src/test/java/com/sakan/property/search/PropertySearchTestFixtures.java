@@ -8,16 +8,13 @@ import com.sakan.property.domain.Property;
 import com.sakan.property.domain.PropertyPurpose;
 import com.sakan.property.domain.PropertyStatus;
 
-/**
- * Seeded Arabic and English test fixtures for full-text search and filtering integration tests.
- */
 public final class PropertySearchTestFixtures {
 
     private PropertySearchTestFixtures() {}
 
     public static Property publishedEnglishSmouha() {
         Property p = new Property();
-        p.setTitle("Luxury Apartment in Smouha Alexandria");
+        p.setTitle("Luxury Apartment in Smouha");
         p.setDescription("Spacious residential flat close to sporting club and shopping centers");
         p.setOwnerId(100L);
         p.setLocationId(10L);
@@ -53,7 +50,7 @@ public final class PropertySearchTestFixtures {
 
     public static Property publishedArabicDiacriticsAndVariants() {
         Property p = new Property();
-        p.setTitle("إطلالة رائعة على البحر - شَقَّةٌ فِي الْإِسْكَنْدَرِيَّةِ");
+        p.setTitle("إطلالة رائعة على البحر - روف فِي الْإِسْكَنْدَرِيَّةِ");
         p.setDescription("عقار استثماري مميز بإطلالة بانورامية ساحرة على البحر الأبيض المتوسط");
         p.setOwnerId(102L);
         p.setLocationId(11L);

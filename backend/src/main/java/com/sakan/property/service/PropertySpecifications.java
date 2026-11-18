@@ -2,6 +2,7 @@ package com.sakan.property.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -78,10 +79,10 @@ public final class PropertySpecifications {
         };
     }
 
-    /**
-     * Full-text search and fuzzy typo-tolerant matching across title and description (FR-17, SCRUM-87).
-     * Strictly parameterised via CriteriaBuilder (NFR-04).
-     */
+    private static final Pattern TASHKEEL_PATTERN = Pattern.compile("[\\u064B-\\u0652\\u0670]");
+    private static final Pattern ALEF_PATTERN = Pattern.compile("[\\u0622\\u0623\\u0625]");
+    private static final Pattern ARABIC_PATTERN = Pattern.compile("[\\u0600-\\u06FF]");
+
     public static Specification<Property> hasSearch(String rawQuery) {
         return (root, query, cb) -> {
             if (rawQuery == null || rawQuery.isBlank()) {
@@ -91,20 +92,35 @@ public final class PropertySpecifications {
             String clean = rawQuery.trim();
             String lowerPattern = "%" + clean.toLowerCase() + "%";
 
-            // 1. Case-insensitive substring match on title and description
             Predicate titleLike = cb.like(cb.lower(root.get("title")), lowerPattern);
             Predicate descLike = cb.like(cb.lower(cb.coalesce(root.get("description"), "")), lowerPattern);
 
-            // 2. Trigram similarity match on title for typo tolerance (threshold >= 0.3)
             Expression<Double> titleSimilarity = cb.function(
                     "similarity",
                     Double.class,
                     root.get("title"),
                     cb.literal(clean)
             );
-            Predicate trigramTitle = cb.greaterThanOrEqualTo(titleSimilarity, 0.3);
+            Expression<Double> wordSim = cb.function(
+                    "word_similarity",
+                    Double.class,
+                    cb.literal(clean),
+                    root.get("title")
+            );
+            Predicate trigramTitle = cb.or(
+                    cb.greaterThanOrEqualTo(titleSimilarity, 0.3),
+                    cb.greaterThanOrEqualTo(wordSim, 0.5)
+            );
 
-            // 3. Arabic normalisation match: strips tashkeel, unifies Alef variants and Taa Marbouta
+            if (query != null && query.getResultType() != Long.class && query.getResultType() != long.class) {
+                Expression<Double> maxSim = cb.function("greatest", Double.class, titleSimilarity, wordSim);
+                query.orderBy(cb.desc(maxSim), cb.desc(root.get("createdAt")), cb.asc(root.get("id")));
+            }
+
+            if (!ARABIC_PATTERN.matcher(clean).find()) {
+                return cb.or(titleLike, descLike, trigramTitle);
+            }
+
             String normQuery = normalizeArabic(clean);
             String lowerNormPattern = "%" + normQuery.toLowerCase() + "%";
 
@@ -142,20 +158,15 @@ public final class PropertySpecifications {
             );
             Predicate arabicDescLike = cb.like(cb.lower(normDesc), lowerNormPattern);
 
-            // Relevance ordering when relevance sort is selected (avoid on count query)
-            if (query != null && query.getResultType() != Long.class && query.getResultType() != long.class) {
-                query.orderBy(cb.desc(titleSimilarity), cb.desc(root.get("createdAt")), cb.asc(root.get("id")));
-            }
-
             return cb.or(titleLike, descLike, trigramTitle, arabicTitleLike, arabicDescLike);
         };
     }
 
     public static String normalizeArabic(String text) {
-        if (text == null) return "";
-        return text
-                .replaceAll("[\\u064B-\\u0652\\u0670]", "")
-                .replaceAll("[\\u0622\\u0623\\u0625]", "\u0627")
-                .replace('\u0629', '\u0647');
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+        String stripped = TASHKEEL_PATTERN.matcher(text).replaceAll("");
+        return ALEF_PATTERN.matcher(stripped).replaceAll("\u0627").replace('\u0629', '\u0647');
     }
 }

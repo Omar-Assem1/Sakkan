@@ -88,7 +88,6 @@ public record PropertySearchCriteria(
             throw new IllegalArgumentException("Page size must be between 1 and 50");
         }
 
-        // Enforce strict sort whitelist at boundary to prevent injection (NFR-04)
         SORT_VALIDATOR.validateAndBuildSort(sort);
     }
 }

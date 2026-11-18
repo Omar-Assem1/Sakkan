@@ -8,9 +8,6 @@ import com.sakan.common.domain.Currency;
 import com.sakan.property.domain.PropertyPurpose;
 import com.sakan.property.domain.PropertyStatus;
 
-/**
- * Public DTO for property browsing. Excludes ownerId and agentId to avoid leaking user internals (NFR-04).
- */
 public record PropertySummaryResponse(
         Long id,
         String title,
