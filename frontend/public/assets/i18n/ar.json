@@ -6,6 +6,7 @@
     "MAIN": "التنقل الرئيسي",
     "LISTINGS": "العقارات",
     "VIEWINGS": "معايناتي",
+    "MY_PROPERTIES": "عقاراتي",
     "ADMIN": "الإدارة",
     "LOGIN": "تسجيل الدخول",
     "LOGOUT": "تسجيل الخروج",
@@ -115,5 +116,95 @@
     "FORBIDDEN_MESSAGE": "ليس لديك الصلاحية لعرض هذه الصفحة أو تنفيذ هذا الإجراء.",
     "SERVER_ERROR_TITLE": "خطأ في الخادم",
     "SERVER_ERROR_MESSAGE": "واجه الخادم خطأ غير متوقع. تم إشعار فريق الدعم الفني."
+  "PROPERTY": {
+    "FORM": {
+      "ADD_TITLE": "إضافة عقار جديد",
+      "ADD_SUBTITLE": "أضف عقاراً جديداً للبيع أو الإيجار.",
+      "EDIT_TITLE": "تعديل العقار",
+      "EDIT_SUBTITLE": "تحديث بيانات العقار.",
+      "CANCEL": "إلغاء",
+      "SECTION_BASIC": "البيانات الأساسية",
+      "TITLE_LABEL": "عنوان الإعلان",
+      "DESCRIPTION_LABEL": "الوصف",
+      "PURPOSE_LABEL": "الغرض",
+      "TYPE_LABEL": "نوع العقار",
+      "SELECT_TYPE": "اختر نوع العقار",
+      "SECTION_LOCATION": "بيانات الموقع",
+      "SECTION_SPECS": "السعر والمواصفات",
+      "PRICE_LABEL": "السعر",
+      "CURRENCY_LABEL": "العملة",
+      "AREA_LABEL": "المساحة",
+      "BEDROOMS_LABEL": "غرف النوم",
+      "BATHROOMS_LABEL": "الحمامات",
+      "SECTION_AMENITIES": "المميزات والمرافق",
+      "CREATE_SUBMIT": "نشر العقار",
+      "UPDATE_SUBMIT": "حفظ التعديلات"
+    },
+    "LOCATION": {
+      "GOVERNORATE": "المحافظة",
+      "SELECT_GOVERNORATE": "اختر المحافظة",
+      "CITY": "المدينة",
+      "SELECT_CITY": "اختر المدينة",
+      "DISTRICT": "المنطقة / الحي",
+      "SELECT_DISTRICT": "اختر المنطقة"
+    },
+    "PURPOSE": {
+      "SALE": "للبيع",
+      "RENT": "للإيجار"
+    },
+    "STATUS": {
+      "DRAFT": "مسودة",
+      "PUBLISHED": "منشور",
+      "RENTED": "مؤجر",
+      "SOLD": "مباع",
+      "ARCHIVED": "مؤرشف"
+    },
+    "VALIDATION": {
+      "TITLE_REQUIRED": "عنوان الإعلان مطلوب.",
+      "TITLE_MAXLENGTH": "يجب ألا يتجاوز العنوان 150 حرفاً.",
+      "TYPE_REQUIRED": "نوع العقار مطلوب.",
+      "GOVERNORATE_REQUIRED": "المحافظة مطلوبة.",
+      "CITY_REQUIRED": "المدينة مطلوبة.",
+      "LOCATION_REQUIRED": "المنطقة مطلوبة.",
+      "PRICE_REQUIRED": "السعر مطلوب.",
+      "PRICE_POSITIVE": "يجب أن يكون السعر أكبر من صفر.",
+      "AREA_REQUIRED": "المساحة مطلوبة.",
+      "AREA_POSITIVE": "يجب أن تكون المساحة أكبر من صفر.",
+      "BEDROOMS_MIN": "عدد الغرف لا يمكن أن يكون سالباً.",
+      "BEDROOMS_MAX": "عدد الغرف لا يمكن أن يتجاوز 50.",
+      "BATHROOMS_MIN": "عدد الحمامات لا يمكن أن يكون سالباً.",
+      "BATHROOMS_MAX": "عدد الحمامات لا يمكن أن يتجاوز 50."
+    },
+    "ERRORS": {
+      "SAVE_FAILED": "تعذر حفظ العقار. يرجى المحاولة مرة أخرى.",
+      "LOAD_FAILED": "تعذر تحميل بيانات العقار."
+    }
+  },
+  "MY_PROPERTIES": {
+    "TITLE": "عقاراتي",
+    "SUBTITLE": "إدارة إعلاناتك وحالتها.",
+    "ADD_BUTTON": "إضافة عقار جديد",
+    "BEDS": "غرف",
+    "BATHS": "حمامات",
+    "TABLE": {
+      "TITLE": "العقار",
+      "PURPOSE": "الغرض",
+      "PRICE": "السعر",
+      "STATUS": "الحالة",
+      "ACTIONS": "الإجراءات"
+    },
+    "ACTIONS": {
+      "EDIT": "تعديل",
+      "PUBLISH": "نشر",
+      "ARCHIVE": "أرشفة"
+    },
+    "EMPTY": {
+      "TITLE": "لا توجد عقارات",
+      "DESCRIPTION": "لم تقم بإضافة أي عقارات حتى الآن."
+    },
+    "ERRORS": {
+      "LOAD_FAILED": "تعذر تحميل عقاراتك. يرجى المحاولة مرة أخرى.",
+      "ACTION_FAILED": "تعذر تنفيذ هذا الإجراء."
+    }
   }
 }

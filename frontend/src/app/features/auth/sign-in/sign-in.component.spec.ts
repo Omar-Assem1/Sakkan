@@ -3,7 +3,7 @@ import { provideRouter, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { SignInComponent } from './sign-in.component';
-
+import { vi } from 'vitest';
 describe('SignInComponent', () => {
   let fixture: ComponentFixture<SignInComponent>;
   let component: SignInComponent;
@@ -25,9 +25,14 @@ describe('SignInComponent', () => {
     }).compileComponents();
 
     const router = TestBed.inject(Router);
-    vi.spyOn(router, 'navigate').mockImplementation(async (commands) => { navigatedTo = commands.join('/'); return true; });
-    vi.spyOn(router, 'navigateByUrl').mockImplementation(async (url) => { navigatedTo = String(url); return true; });
-
+    vi.spyOn(router, 'navigate').mockImplementation(async (c) => {
+      navigatedTo = c.join('/');
+      return true;
+    });
+    vi.spyOn(router, 'navigateByUrl').mockImplementation(async (u) => {
+      navigatedTo = String(u);
+      return true;
+    });
     fixture = TestBed.createComponent(SignInComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

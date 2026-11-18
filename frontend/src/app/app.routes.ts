@@ -19,6 +19,12 @@ export const routes: Routes = [
       import('./features/viewings/viewings.routes').then((m) => m.VIEWINGS_ROUTES),
   },
   {
+    path: 'properties',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/properties/properties.routes').then((m) => m.PROPERTIES_ROUTES),
+  },
+  {
     path: 'admin',
     canActivate: [authGuard],
     data: { roles: ['ADMIN'] },

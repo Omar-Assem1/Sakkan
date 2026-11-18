@@ -23,6 +23,7 @@ describe('NavbarComponent', () => {
               NAV: {
                 LISTINGS: 'Listings',
                 VIEWINGS: 'Viewings',
+                MY_PROPERTIES: 'My Properties',
                 ADMIN: 'Admin',
                 LOGIN: 'Sign In',
                 LOGOUT: 'Sign Out',
@@ -34,6 +35,7 @@ describe('NavbarComponent', () => {
               NAV: {
                 LISTINGS: 'العقارات',
                 VIEWINGS: 'المعاينات',
+                MY_PROPERTIES: 'عقاراتي',
                 ADMIN: 'الإدارة',
                 LOGIN: 'تسجيل الدخول',
                 LOGOUT: 'تسجيل الخروج',
@@ -69,6 +71,17 @@ describe('NavbarComponent', () => {
     const navHtml = fixture.nativeElement.innerHTML;
     expect(navHtml).toContain('/listings');
     expect(navHtml).toContain('/viewings');
+  });
+
+  it('should render my properties link when authenticated and hide it when logged out', () => {
+    expect(fixture.nativeElement.querySelector('[data-testid="nav-my-properties"]')).toBeNull();
+
+    tokenStorage.saveToken('user-jwt');
+    fixture.detectChanges();
+
+    const navProperties = fixture.nativeElement.querySelector('[data-testid="nav-my-properties"]');
+    expect(navProperties).toBeTruthy();
+    expect(navProperties.getAttribute('href')).toBe('/properties/mine');
   });
 
   it('should hide admin link for non-admin users and display it when role is ADMIN', () => {

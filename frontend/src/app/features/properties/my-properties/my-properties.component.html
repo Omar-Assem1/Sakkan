@@ -1,0 +1,142 @@
+<div class="mx-auto max-w-7xl px-4 py-8" *transloco="let t">
+  <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900" data-testid="page-title">
+        {{ t('MY_PROPERTIES.TITLE') }}
+      </h1>
+      <p class="mt-1 text-sm text-gray-500">
+        {{ t('MY_PROPERTIES.SUBTITLE') }}
+      </p>
+    </div>
+    <a
+      routerLink="/properties/new"
+      class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-xs hover:bg-indigo-700"
+      data-testid="add-property-button"
+    >
+      {{ t('MY_PROPERTIES.ADD_BUTTON') }}
+    </a>
+  </div>
+
+  @if (errorMessage()) {
+    <div
+      class="mb-6 rounded-lg bg-red-50 p-4 text-sm text-red-700"
+      role="alert"
+      data-testid="api-error"
+    >
+      {{ t(errorMessage()!) }}
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-12" data-testid="loading-spinner">
+      <div class="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
+    </div>
+  } @else if (properties().length === 0) {
+    <!-- Empty State -->
+    <div
+      class="rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center"
+      data-testid="empty-state"
+    >
+      <h3 class="text-lg font-medium text-gray-900">{{ t('MY_PROPERTIES.EMPTY.TITLE') }}</h3>
+      <p class="mt-2 text-sm text-gray-500">{{ t('MY_PROPERTIES.EMPTY.DESCRIPTION') }}</p>
+      <div class="mt-6">
+        <a
+          routerLink="/properties/new"
+          class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-indigo-700"
+        >
+          {{ t('MY_PROPERTIES.ADD_BUTTON') }}
+        </a>
+      </div>
+    </div>
+  } @else {
+    <!-- Properties Table / List -->
+    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 text-start">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">
+                {{ t('MY_PROPERTIES.TABLE.TITLE') }}
+              </th>
+              <th scope="col" class="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">
+                {{ t('MY_PROPERTIES.TABLE.PURPOSE') }}
+              </th>
+              <th scope="col" class="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">
+                {{ t('MY_PROPERTIES.TABLE.PRICE') }}
+              </th>
+              <th scope="col" class="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">
+                {{ t('MY_PROPERTIES.TABLE.STATUS') }}
+              </th>
+              <th scope="col" class="px-6 py-3 text-end text-xs font-medium uppercase tracking-wider text-gray-500">
+                {{ t('MY_PROPERTIES.TABLE.ACTIONS') }}
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-white">
+            @for (property of properties(); track property.id) {
+              <tr class="hover:bg-gray-50" data-testid="property-row">
+                <td class="whitespace-nowrap px-6 py-4">
+                  <div class="text-sm font-medium text-gray-900" data-testid="property-title">
+                    {{ property.title }}
+                  </div>
+                  <div class="text-xs text-gray-500">
+                    {{ property.bedrooms }} {{ t('MY_PROPERTIES.BEDS') }} • {{ property.bathrooms }} {{ t('MY_PROPERTIES.BATHS') }} • {{ property.areaSqm }} m²
+                  </div>
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                  {{ t('PROPERTY.PURPOSE.' + property.purpose) }}
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-sm font-semibold text-gray-900">
+                  {{ property.price | number }} {{ property.currency }}
+                </td>
+                <td class="whitespace-nowrap px-6 py-4">
+                  <span
+                    class="inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold"
+                    [ngClass]="getStatusClass(property.status)"
+                    data-testid="status-badge"
+                  >
+                    {{ t('PROPERTY.STATUS.' + property.status) }}
+                  </span>
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-end text-sm font-medium">
+                  <div class="flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      (click)="onEdit(property.id)"
+                      class="text-indigo-600 hover:text-indigo-900"
+                      data-testid="action-edit"
+                    >
+                      {{ t('MY_PROPERTIES.ACTIONS.EDIT') }}
+                    </button>
+
+                    @if (property.status === 'DRAFT' || property.status === 'ARCHIVED') {
+                      <button
+                        type="button"
+                        (click)="onPublish(property.id)"
+                        class="text-emerald-600 hover:text-emerald-900"
+                        data-testid="action-publish"
+                      >
+                        {{ t('MY_PROPERTIES.ACTIONS.PUBLISH') }}
+                      </button>
+                    }
+
+                    @if (property.status === 'PUBLISHED') {
+                      <button
+                        type="button"
+                        (click)="onArchive(property.id)"
+                        class="text-amber-600 hover:text-amber-900"
+                        data-testid="action-archive"
+                      >
+                        {{ t('MY_PROPERTIES.ACTIONS.ARCHIVE') }}
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

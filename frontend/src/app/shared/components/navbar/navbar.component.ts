@@ -38,6 +38,17 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
               >{{ 'NAV.VIEWINGS' | transloco }}</a
             >
           </li>
+          @if (isAuthenticated()) {
+            <li>
+              <a
+                routerLink="/properties/mine"
+                routerLinkActive="bg-emerald-50 text-emerald-700"
+                class="rounded-md ps-3 pe-3 py-2 text-slate-700 hover:bg-slate-100"
+                data-testid="nav-my-properties"
+                >{{ 'NAV.MY_PROPERTIES' | transloco }}</a
+              >
+            </li>
+          }
           @if (isAdmin()) {
             <li>
               <a
