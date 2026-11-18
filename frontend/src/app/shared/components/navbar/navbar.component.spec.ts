@@ -61,6 +61,10 @@ describe('NavbarComponent', () => {
     localStorage.clear();
   });
 
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
   it('should render navigation links for listings and viewings', () => {
     const navHtml = fixture.nativeElement.innerHTML;
     expect(navHtml).toContain('/listings');
