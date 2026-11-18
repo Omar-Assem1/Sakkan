@@ -2,7 +2,12 @@ package com.sakan.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import java.time.Instant;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import com.sakan.common.config.JwtProperties;
 import com.sakan.user.domain.AuthProvider;
 import com.sakan.user.domain.Role;
@@ -88,10 +93,19 @@ class JwtServiceTest {
     }
 
     // T14 (unit level)
+    // T14 (unit level): an expired token cannot be made through JwtService, so build one by hand
     @Test
     void expiredToken_isRejectedByDecoder() {
-        JwtService expiring = new JwtService(new JwtProperties(SECRET, Duration.ofMinutes(-5)));
-        String token = expiring.generateToken(user());
+        Instant now = Instant.now();
+        NimbusJwtEncoder encoder = new NimbusJwtEncoder(
+                new ImmutableSecret<>(new SecretKeySpec(SECRET.getBytes(StandardCharsets.UTF_8), "HmacSHA256")));
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .subject("42")
+                .issuedAt(now.minusSeconds(7200))
+                .expiresAt(now.minusSeconds(3600))
+                .build();
+        String token = encoder.encode(
+                JwtEncoderParameters.from(JwsHeader.with(MacAlgorithm.HS256).build(), claims)).getTokenValue();
 
         assertThatThrownBy(() -> decoder.decode(token))
                 .isInstanceOf(JwtException.class)

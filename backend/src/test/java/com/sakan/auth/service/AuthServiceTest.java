@@ -43,7 +43,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 class AuthServiceTest {
 
     private static final String RAW_PASSWORD = "Passw0rd1";
-
+    private static final PasswordEncoder TEST_ENCODER = new BCryptPasswordEncoder(4);
     @Mock private UserService userService;
     @Mock private JwtService jwtService;
     @Spy private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(4);
@@ -72,7 +72,7 @@ class AuthServiceTest {
                 .id(1L)
                 .username("omar")
                 .email("omar@sakan.com")
-                .passwordHash(passwordEncoder.encode(RAW_PASSWORD))
+                .passwordHash(TEST_ENCODER.encode(RAW_PASSWORD))
                 .authProvider(AuthProvider.LOCAL)
                 .enabled(enabled)
                 .roles(Set.of(Role.builder().id(1L).name(RoleName.BUYER_TENANT).build()))
