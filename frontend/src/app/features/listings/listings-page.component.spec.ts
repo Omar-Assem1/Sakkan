@@ -47,7 +47,8 @@ describe('ListingsPageComponent', () => {
               LISTINGS: {
                 TITLE: 'Property Listings',
                 FOUND_COUNT: 'properties found',
-                SORT: { LABEL: 'Sort by', NEWEST: 'Newest' },
+                SEARCH: { LABEL: 'Search', PLACEHOLDER: 'Search...', CLEAR: 'Clear' },
+                SORT: { LABEL: 'Sort by', NEWEST: 'Newest', RELEVANCE: 'Relevance' },
                 FILTERS: { TITLE: 'Filters', CLEAR: 'Clear All', APPLY: 'Apply Filters' },
                 CARD: { FOR_SALE: 'For Sale', FOR_RENT: 'For Rent', NO_IMAGE: 'No Image', BEDS: 'Beds', BATHS: 'Baths', SQM: 'm²' },
                 EMPTY: { TITLE: 'No properties found', DESCRIPTION: 'Adjust filters', CLEAR: 'Reset Filters' },
@@ -125,9 +126,24 @@ describe('ListingsPageComponent', () => {
 
     component.resetAllFilters();
 
+    expect(component.searchQuery()).toBe('');
     expect(navSpy).toHaveBeenCalledWith([], {
       relativeTo: expect.anything(),
       queryParams: { page: 0, size: 12, sort: 'createdAt,desc' },
+    });
+  });
+
+  it('should sync search query and reset page to 0 on onSearchChanged', () => {
+    const router = TestBed.inject(Router);
+    const navSpy = vi.spyOn(router, 'navigate');
+
+    component.onSearchChanged('Smouha');
+
+    expect(component.searchQuery()).toBe('Smouha');
+    expect(navSpy).toHaveBeenCalledWith([], {
+      relativeTo: expect.anything(),
+      queryParams: expect.objectContaining({ q: 'Smouha', page: 0 }),
+      queryParamsHandling: 'merge',
     });
   });
 

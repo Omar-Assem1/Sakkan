@@ -15,6 +15,7 @@
           | transloco }}:</label>
         <select id="sort-select" [ngModel]="currentSort()" (ngModelChange)="onSortChanged($event)"
           class="px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg shadow-2xs focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+          <option value="relevance,desc">{{ 'LISTINGS.SORT.RELEVANCE' | transloco }}</option>
           <option value="createdAt,desc">{{ 'LISTINGS.SORT.NEWEST' | transloco }}</option>
           <option value="price,asc">{{ 'LISTINGS.SORT.PRICE_ASC' | transloco }}</option>
           <option value="price,desc">{{ 'LISTINGS.SORT.PRICE_DESC' | transloco }}</option>
@@ -23,6 +24,14 @@
         </select>
       </div>
     </header>
+
+    <!-- Search Bar (FR-17, SKN-23) -->
+    <div class="mt-6">
+      <app-property-search-bar
+        [initialQuery]="searchQuery()"
+        (searchChange)="onSearchChanged($event)"
+      ></app-property-search-bar>
+    </div>
 
     <!-- Main Content Layout -->
     <div class="mt-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
