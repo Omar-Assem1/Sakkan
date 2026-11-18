@@ -39,6 +39,9 @@ import com.sakan.viewing.dto.ViewingSlotResponse;
 import com.sakan.viewing.entity.ViewingSlot;
 import com.sakan.viewing.repository.ViewingSlotRepository;
 
+import com.sakan.support.tags.RegressionTest;
+
+@RegressionTest
 @UnitTest
 @ExtendWith(MockitoExtension.class)
 class ViewingSlotServiceTest {

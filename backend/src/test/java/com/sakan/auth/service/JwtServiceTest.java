@@ -25,6 +25,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
+import com.sakan.support.tags.RegressionTest;
+
+@RegressionTest
 class JwtServiceTest {
 
     private static final String SECRET = "unit-test-secret-unit-test-secret-0123456789";

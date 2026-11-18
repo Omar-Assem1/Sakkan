@@ -43,6 +43,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sakan.support.tags.RegressionTest;
+
+@RegressionTest
 @AutoConfigureMockMvc
 @Transactional
 @ExtendWith(OutputCaptureExtension.class)

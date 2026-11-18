@@ -25,6 +25,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import com.sakan.support.tags.RegressionTest;
+
+@RegressionTest
 class GlobalExceptionHandlerTest {
 
     private GlobalExceptionHandler handler;

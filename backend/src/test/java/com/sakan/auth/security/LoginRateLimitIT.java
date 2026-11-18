@@ -26,6 +26,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sakan.support.tags.RegressionTest;
+
+@RegressionTest
 @AutoConfigureMockMvc
 @Transactional
 @TestPropertySource(properties = {

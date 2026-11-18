@@ -35,6 +35,9 @@ import com.sakan.support.security.EndpointSecurityAssertions;
 import com.sakan.support.security.Role;
 import com.sakan.support.tags.IntegrationTest;
 
+import com.sakan.support.tags.RegressionTest;
+
+@RegressionTest
 @IntegrationTest
 @Transactional
 class ViewingSlotControllerIntegrationTest extends AbstractIntegrationTest {
