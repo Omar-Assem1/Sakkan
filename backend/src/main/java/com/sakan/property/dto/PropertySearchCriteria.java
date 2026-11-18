@@ -9,6 +9,7 @@ import com.sakan.property.service.PropertySortValidator;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 
 public record PropertySearchCriteria(
         Long locationId,
@@ -37,14 +38,45 @@ public record PropertySearchCriteria(
         @Max(value = 50, message = "Page size must not exceed 50")
         Integer size,
 
-        String sort
+        String sort,
+
+        @Size(max = 100, message = "Search query must not exceed 100 characters")
+        String q
 ) {
     private static final PropertySortValidator SORT_VALIDATOR = new PropertySortValidator();
+
+    public PropertySearchCriteria(
+            Long locationId,
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            Currency currency,
+            Long propertyTypeId,
+            PropertyPurpose purpose,
+            Integer minBedrooms,
+            List<Long> amenityIds,
+            Integer page,
+            Integer size,
+            String sort
+    ) {
+        this(locationId, minPrice, maxPrice, currency, propertyTypeId, purpose, minBedrooms, amenityIds, page, size, sort, null);
+    }
 
     public PropertySearchCriteria {
         if (page == null) page = 0;
         if (size == null) size = 12;
-        if (sort == null || sort.isBlank()) sort = "createdAt,desc";
+
+        if (q != null) {
+            q = q.trim();
+            if (q.isEmpty()) {
+                q = null;
+            } else if (q.length() > 100) {
+                throw new IllegalArgumentException("Search query must not exceed 100 characters");
+            }
+        }
+
+        if (sort == null || sort.isBlank()) {
+            sort = (q != null) ? "relevance,desc" : "createdAt,desc";
+        }
 
         if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) {
             throw new IllegalArgumentException("minPrice cannot be greater than maxPrice");

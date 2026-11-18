@@ -19,7 +19,8 @@ public class PropertySortValidator {
             "createdAt", "createdAt",
             "bedrooms", "bedrooms",
             "areaSqm", "areaSqm",
-            "areaM2", "areaSqm" // Client alias mapped to entity property
+            "areaM2", "areaSqm", // Client alias mapped to entity property
+            "relevance", "relevance"
     );
 
     private static final Set<String> WHITELISTED_SORT_FIELDS = FIELD_MAPPING.keySet();
