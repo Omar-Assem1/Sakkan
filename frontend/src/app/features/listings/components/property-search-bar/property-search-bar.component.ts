@@ -26,9 +26,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class PropertySearchBarComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly searchSubject = new Subject<string>();
+  private lastEmittedValue = '';
 
   @Input() set initialQuery(val: string | null | undefined) {
-    this.query.set(val || '');
+    const q = val || '';
+    this.query.set(q);
+    this.lastEmittedValue = q;
   }
 
   @Output() searchChange = new EventEmitter<string>();
@@ -43,7 +46,11 @@ export class PropertySearchBarComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((term) => {
-        this.searchChange.emit(term.trim());
+        const trimmed = term.trim();
+        if (trimmed !== this.lastEmittedValue) {
+          this.lastEmittedValue = trimmed;
+          this.searchChange.emit(trimmed);
+        }
       });
   }
 
@@ -55,6 +62,7 @@ export class PropertySearchBarComponent implements OnInit {
 
   clear(): void {
     this.query.set('');
+    this.lastEmittedValue = '';
     this.searchSubject.next('');
     this.searchChange.emit('');
   }
