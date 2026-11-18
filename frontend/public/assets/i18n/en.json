@@ -22,18 +22,17 @@
     "FOUND_COUNT": "properties found",
     "SEARCH": {
       "LABEL": "Search properties",
-      "PLACEHOLDER": "Search by title or description...",
-      "CLEAR": "Clear search",
-      "RELEVANCE": "Relevance"
+      "PLACEHOLDER": "Search by title, description, or area...",
+      "CLEAR": "Clear search"
     },
     "SORT": {
       "LABEL": "Sort by",
       "RELEVANCE": "Relevance",
-      "NEWEST": "Newest",
+      "NEWEST": "Newest First",
       "PRICE_ASC": "Price: Low to High",
       "PRICE_DESC": "Price: High to Low",
-      "BEDROOMS": "Bedrooms",
-      "AREA": "Area"
+      "BEDROOMS": "Most Bedrooms",
+      "AREA": "Largest Area"
     },
     "FILTERS": {
       "TITLE": "Filters",
@@ -49,26 +48,26 @@
       "MAX_PRICE": "Max Price",
       "TYPE": "Property Type",
       "ALL_TYPES": "All Types",
-      "BEDROOMS": "Bedrooms",
+      "BEDROOMS": "Min Bedrooms",
       "AMENITIES": "Amenities",
       "APPLY": "Apply Filters"
     },
     "CARD": {
+      "NO_IMAGE": "No Image",
       "FOR_SALE": "For Sale",
       "FOR_RENT": "For Rent",
-      "NO_IMAGE": "No Image Available",
       "BEDS": "Beds",
       "BATHS": "Baths",
       "SQM": "m²"
     },
     "EMPTY": {
       "TITLE": "No properties found",
-      "DESCRIPTION": "Try adjusting your filters or price bounds to find what you are looking for.",
+      "DESCRIPTION": "Try adjusting your search or filter criteria.",
       "CLEAR": "Reset Filters"
     },
     "ERROR": {
       "TITLE": "Error loading properties",
-      "DESCRIPTION": "An unexpected error occurred while communicating with the server.",
+      "DESCRIPTION": "Could not load property listings. Please try again.",
       "RETRY": "Try Again"
     },
     "PAGINATION": {
@@ -78,7 +77,26 @@
   },
   "VIEWINGS": {
     "TITLE": "My Viewings",
-    "PLACEHOLDER": "Your viewing appointments will appear here."
+    "PLACEHOLDER": "Your viewing appointments will appear here.",
+    "AVAILABILITY": {
+      "TITLE": "Manage Viewing Availability",
+      "SUBTITLE": "Add or remove available time slots for property viewings.",
+      "PROPERTY_ID_LABEL": "Property ID",
+      "START_TIME_LABEL": "Start Time",
+      "END_TIME_LABEL": "End Time",
+      "ADD_SLOT": "Add Viewing Slot",
+      "SLOTS_HEADING": "Available Time Slots",
+      "EMPTY_SLOTS": "No viewing slots configured for this property yet.",
+      "REMOVE_SLOT": "Remove",
+      "ERRORS": {
+        "REQUIRED": "Both start time and end time are required.",
+        "INVALID_RANGE": "End time must be after start time.",
+        "PAST_TIME": "Start time must be in the future.",
+        "CONFLICT_409": "This time slot overlaps with an existing slot or the property is not published.",
+        "FORBIDDEN_403": "Only the property owner or assigned agent can manage viewing slots.",
+        "GENERIC": "Could not save the viewing slot. Please try again."
+      }
+    }
   },
   "ADMIN": {
     "TITLE": "Admin Dashboard",

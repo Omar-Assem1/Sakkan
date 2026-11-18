@@ -24,7 +24,8 @@ const TEST_TRANSLATIONS = {
           REQUIRED: 'Both start time and end time are required.',
           INVALID_RANGE: 'End time must be after start time.',
           PAST_TIME: 'Start time must be in the future.',
-          CONFLICT_409: 'This time slot overlaps with an existing slot or the property is not published.',
+          CONFLICT_409:
+            'This time slot overlaps with an existing slot or the property is not published.',
           FORBIDDEN_403: 'Only the property owner or assigned agent can manage viewing slots.',
           GENERIC: 'Could not save the viewing slot. Please try again.',
         },
@@ -94,10 +95,7 @@ describe('AvailabilityFormComponent — Form 7 (SCRUM-96 / SKN-25)', () => {
           },
         }),
       ],
-      providers: [
-        provideRouter([]),
-        { provide: ViewingSlotService, useValue: slotServiceSpy },
-      ],
+      providers: [provideRouter([]), { provide: ViewingSlotService, useValue: slotServiceSpy }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AvailabilityFormComponent);
