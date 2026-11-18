@@ -1,0 +1,342 @@
+<div class="mx-auto max-w-4xl px-4 py-8" *transloco="let t">
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900" data-testid="form-title">
+        {{ isEditMode() ? t('PROPERTY.FORM.EDIT_TITLE') : t('PROPERTY.FORM.ADD_TITLE') }}
+      </h1>
+      <p class="mt-1 text-sm text-gray-500">
+        {{ isEditMode() ? t('PROPERTY.FORM.EDIT_SUBTITLE') : t('PROPERTY.FORM.ADD_SUBTITLE') }}
+      </p>
+    </div>
+    <a
+      routerLink="/properties/mine"
+      class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-xs hover:bg-gray-50"
+      data-testid="cancel-button"
+    >
+      {{ t('PROPERTY.FORM.CANCEL') }}
+    </a>
+  </div>
+
+  @if (errorMessage()) {
+    <div
+      class="mb-6 rounded-lg bg-red-50 p-4 text-sm text-red-700"
+      role="alert"
+      data-testid="api-error"
+    >
+      {{ t(errorMessage()!) }}
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6" data-testid="property-form">
+    <!-- Basic Info -->
+    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('PROPERTY.FORM.SECTION_BASIC') }}</h2>
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div class="sm:col-span-2">
+          <label for="title" class="block text-sm font-medium text-gray-700">
+            {{ t('PROPERTY.FORM.TITLE_LABEL') }} *
+          </label>
+          <input
+            id="title"
+            type="text"
+            formControlName="title"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-xs focus:border-indigo-500 focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+            data-testid="input-title"
+          />
+          @if (form.get('title')?.touched && form.get('title')?.errors?.['required']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-title-required">
+              {{ t('PROPERTY.VALIDATION.TITLE_REQUIRED') }}
+            </p>
+          }
+          @if (form.get('title')?.touched && form.get('title')?.errors?.['maxlength']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-title-maxlength">
+              {{ t('PROPERTY.VALIDATION.TITLE_MAXLENGTH') }}
+            </p>
+          }
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="description" class="block text-sm font-medium text-gray-700">
+            {{ t('PROPERTY.FORM.DESCRIPTION_LABEL') }}
+          </label>
+          <textarea
+            id="description"
+            rows="4"
+            formControlName="description"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-xs focus:border-indigo-500 focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+            data-testid="input-description"
+          ></textarea>
+        </div>
+
+        <div>
+          <label for="purpose" class="block text-sm font-medium text-gray-700">
+            {{ t('PROPERTY.FORM.PURPOSE_LABEL') }} *
+          </label>
+          <select
+            id="purpose"
+            formControlName="purpose"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-xs focus:border-indigo-500 focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+            data-testid="select-purpose"
+          >
+            <option value="SALE">{{ t('PROPERTY.PURPOSE.SALE') }}</option>
+            <option value="RENT">{{ t('PROPERTY.PURPOSE.RENT') }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="propertyTypeId" class="block text-sm font-medium text-gray-700">
+            {{ t('PROPERTY.FORM.TYPE_LABEL') }} *
+          </label>
+          <select
+            id="propertyTypeId"
+            formControlName="propertyTypeId"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-xs focus:border-indigo-500 focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+            data-testid="select-type"
+          >
+            <option [ngValue]="null">{{ t('PROPERTY.FORM.SELECT_TYPE') }}</option>
+            @for (type of propertyTypes(); track type.id) {
+              <option [value]="type.id">{{ type.nameEn }}</option>
+            }
+          </select>
+          @if (form.get('propertyTypeId')?.touched && form.get('propertyTypeId')?.errors?.['required']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-type-required">
+              {{ t('PROPERTY.VALIDATION.TYPE_REQUIRED') }}
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Location Hierarchy Section -->
+    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('PROPERTY.FORM.SECTION_LOCATION') }}</h2>
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+        <!-- Governorate Dropdown -->
+        <div>
+          <label for="governorate" class="block text-sm font-medium text-gray-700">
+            {{ t('PROPERTY.LOCATION.GOVERNORATE') }} *
+          </label>
+          <select
+            id="governorate"
+            formControlName="governorateId"
+            (change)="onGovernorateChange($any($event.target).value)"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-xs focus:border-indigo-500 focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+            data-testid="select-governorate"
+          >
+            <option [ngValue]="null">{{ t('PROPERTY.LOCATION.SELECT_GOVERNORATE') }}</option>
+            @for (gov of governorates(); track gov.id) {
+              <option [value]="gov.id">{{ gov.nameEn }}</option>
+            }
+          </select>
+          @if (form.get('governorateId')?.touched && form.get('governorateId')?.errors?.['required']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-governorate-required">
+              {{ t('PROPERTY.VALIDATION.GOVERNORATE_REQUIRED') }}
+            </p>
+          }
+        </div>
+
+        <!-- City Dropdown -->
+        <div>
+          <label for="city" class="block text-sm font-medium text-gray-700">
+            {{ t('PROPERTY.LOCATION.CITY') }} *
+          </label>
+          <select
+            id="city"
+            formControlName="cityId"
+            (change)="onCityChange($any($event.target).value)"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-xs focus:border-indigo-500 focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+            data-testid="select-city"
+          >
+            <option [ngValue]="null">{{ t('PROPERTY.LOCATION.SELECT_CITY') }}</option>
+            @for (city of cities(); track city.id) {
+              <option [value]="city.id">{{ city.nameEn }}</option>
+            }
+          </select>
+          @if (form.get('cityId')?.touched && form.get('cityId')?.errors?.['required']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-city-required">
+              {{ t('PROPERTY.VALIDATION.CITY_REQUIRED') }}
+            </p>
+          }
+        </div>
+
+        <!-- District Dropdown -->
+        <div>
+          <label for="district" class="block text-sm font-medium text-gray-700">
+            {{ t('PROPERTY.LOCATION.DISTRICT') }} *
+          </label>
+          <select
+            id="district"
+            formControlName="locationId"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-xs focus:border-indigo-500 focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+            data-testid="select-district"
+          >
+            <option [ngValue]="null">{{ t('PROPERTY.LOCATION.SELECT_DISTRICT') }}</option>
+            @for (dist of districts(); track dist.id) {
+              <option [value]="dist.id">{{ dist.nameEn }}</option>
+            }
+          </select>
+          @if (form.get('locationId')?.touched && form.get('locationId')?.errors?.['required']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-location-required">
+              {{ t('PROPERTY.VALIDATION.LOCATION_REQUIRED') }}
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing and Specs -->
+    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('PROPERTY.FORM.SECTION_SPECS') }}</h2>
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+        <!-- Price -->
+        <div>
+          <label for="price" class="block text-sm font-medium text-gray-700">
+            {{ t('PROPERTY.FORM.PRICE_LABEL') }} *
+          </label>
+          <input
+            id="price"
+            type="number"
+            formControlName="price"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-xs focus:border-indigo-500 focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+            data-testid="input-price"
+          />
+          @if (form.get('price')?.touched && form.get('price')?.errors?.['required']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-price-required">
+              {{ t('PROPERTY.VALIDATION.PRICE_REQUIRED') }}
+            </p>
+          }
+          @if (form.get('price')?.touched && form.get('price')?.errors?.['min']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-price-min">
+              {{ t('PROPERTY.VALIDATION.PRICE_POSITIVE') }}
+            </p>
+          }
+        </div>
+
+        <!-- Currency -->
+        <div>
+          <label for="currency" class="block text-sm font-medium text-gray-700">
+            {{ t('PROPERTY.FORM.CURRENCY_LABEL') }} *
+          </label>
+          <select
+            id="currency"
+            formControlName="currency"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-xs focus:border-indigo-500 focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+            data-testid="select-currency"
+          >
+            <option value="EGP">EGP</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+
+        <!-- Area SQM -->
+        <div>
+          <label for="areaSqm" class="block text-sm font-medium text-gray-700">
+            {{ t('PROPERTY.FORM.AREA_LABEL') }} (m²) *
+          </label>
+          <input
+            id="areaSqm"
+            type="number"
+            formControlName="areaSqm"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-xs focus:border-indigo-500 focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+            data-testid="input-area"
+          />
+          @if (form.get('areaSqm')?.touched && form.get('areaSqm')?.errors?.['required']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-area-required">
+              {{ t('PROPERTY.VALIDATION.AREA_REQUIRED') }}
+            </p>
+          }
+          @if (form.get('areaSqm')?.touched && form.get('areaSqm')?.errors?.['min']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-area-min">
+              {{ t('PROPERTY.VALIDATION.AREA_POSITIVE') }}
+            </p>
+          }
+        </div>
+
+        <!-- Bedrooms -->
+        <div>
+          <label for="bedrooms" class="block text-sm font-medium text-gray-700">
+            {{ t('PROPERTY.FORM.BEDROOMS_LABEL') }} *
+          </label>
+          <input
+            id="bedrooms"
+            type="number"
+            formControlName="bedrooms"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-xs focus:border-indigo-500 focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+            data-testid="input-bedrooms"
+          />
+          @if (form.get('bedrooms')?.touched && form.get('bedrooms')?.errors?.['min']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-bedrooms-min">
+              {{ t('PROPERTY.VALIDATION.BEDROOMS_MIN') }}
+            </p>
+          }
+          @if (form.get('bedrooms')?.touched && form.get('bedrooms')?.errors?.['max']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-bedrooms-max">
+              {{ t('PROPERTY.VALIDATION.BEDROOMS_MAX') }}
+            </p>
+          }
+        </div>
+
+        <!-- Bathrooms -->
+        <div>
+          <label for="bathrooms" class="block text-sm font-medium text-gray-700">
+            {{ t('PROPERTY.FORM.BATHROOMS_LABEL') }} *
+          </label>
+          <input
+            id="bathrooms"
+            type="number"
+            formControlName="bathrooms"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-xs focus:border-indigo-500 focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+            data-testid="input-bathrooms"
+          />
+          @if (form.get('bathrooms')?.touched && form.get('bathrooms')?.errors?.['min']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-bathrooms-min">
+              {{ t('PROPERTY.VALIDATION.BATHROOMS_MIN') }}
+            </p>
+          }
+          @if (form.get('bathrooms')?.touched && form.get('bathrooms')?.errors?.['max']) {
+            <p class="mt-1 text-xs text-red-600" data-testid="error-bathrooms-max">
+              {{ t('PROPERTY.VALIDATION.BATHROOMS_MAX') }}
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Amenities -->
+    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('PROPERTY.FORM.SECTION_AMENITIES') }}</h2>
+      <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        @for (amenity of amenities(); track amenity.id) {
+          <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <input
+              type="checkbox"
+              [checked]="form.get('amenityIds')?.value?.includes(amenity.id)"
+              (change)="toggleAmenity(amenity.id)"
+              class="rounded-sm border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              data-testid="checkbox-amenity"
+            />
+            <span>{{ amenity.nameEn }}</span>
+          </label>
+        }
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex justify-end gap-4">
+      <a
+        routerLink="/properties/mine"
+        class="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-xs hover:bg-gray-50"
+      >
+        {{ t('PROPERTY.FORM.CANCEL') }}
+      </a>
+      <button
+        type="submit"
+        [disabled]="isLoading()"
+        class="inline-flex items-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-xs hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+        data-testid="submit-button"
+      >
+        {{ isEditMode() ? t('PROPERTY.FORM.UPDATE_SUBMIT') : t('PROPERTY.FORM.CREATE_SUBMIT') }}
+      </button>
+    </div>
+  </form>
+</div>

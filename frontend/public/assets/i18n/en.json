@@ -6,6 +6,7 @@
     "MAIN": "Main navigation",
     "LISTINGS": "Listings",
     "VIEWINGS": "My Viewings",
+    "MY_PROPERTIES": "My Properties",
     "ADMIN": "Admin",
     "LOGIN": "Sign In",
     "LOGOUT": "Sign Out",
@@ -101,5 +102,96 @@
   "ADMIN": {
     "TITLE": "Admin Dashboard",
     "PLACEHOLDER": "Moderation and platform management tools will appear here."
+  },
+  "PROPERTY": {
+    "FORM": {
+      "ADD_TITLE": "Add New Property",
+      "ADD_SUBTITLE": "List a new property for sale or rent.",
+      "EDIT_TITLE": "Edit Property",
+      "EDIT_SUBTITLE": "Update your property listing details.",
+      "CANCEL": "Cancel",
+      "SECTION_BASIC": "Basic Information",
+      "TITLE_LABEL": "Property Title",
+      "DESCRIPTION_LABEL": "Description",
+      "PURPOSE_LABEL": "Purpose",
+      "TYPE_LABEL": "Property Type",
+      "SELECT_TYPE": "Select property type",
+      "SECTION_LOCATION": "Location Details",
+      "SECTION_SPECS": "Pricing & Specifications",
+      "PRICE_LABEL": "Price",
+      "CURRENCY_LABEL": "Currency",
+      "AREA_LABEL": "Area",
+      "BEDROOMS_LABEL": "Bedrooms",
+      "BATHROOMS_LABEL": "Bathrooms",
+      "SECTION_AMENITIES": "Amenities",
+      "CREATE_SUBMIT": "Create Property",
+      "UPDATE_SUBMIT": "Save Changes"
+    },
+    "LOCATION": {
+      "GOVERNORATE": "Governorate",
+      "SELECT_GOVERNORATE": "Select Governorate",
+      "CITY": "City",
+      "SELECT_CITY": "Select City",
+      "DISTRICT": "District",
+      "SELECT_DISTRICT": "Select District"
+    },
+    "PURPOSE": {
+      "SALE": "For Sale",
+      "RENT": "For Rent"
+    },
+    "STATUS": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published",
+      "RENTED": "Rented",
+      "SOLD": "Sold",
+      "ARCHIVED": "Archived"
+    },
+    "VALIDATION": {
+      "TITLE_REQUIRED": "Title is required.",
+      "TITLE_MAXLENGTH": "Title cannot exceed 150 characters.",
+      "TYPE_REQUIRED": "Property type is required.",
+      "GOVERNORATE_REQUIRED": "Governorate is required.",
+      "CITY_REQUIRED": "City is required.",
+      "LOCATION_REQUIRED": "District is required.",
+      "PRICE_REQUIRED": "Price is required.",
+      "PRICE_POSITIVE": "Price must be greater than 0.",
+      "AREA_REQUIRED": "Area is required.",
+      "AREA_POSITIVE": "Area must be greater than 0.",
+      "BEDROOMS_MIN": "Bedrooms cannot be negative.",
+      "BEDROOMS_MAX": "Bedrooms cannot exceed 50.",
+      "BATHROOMS_MIN": "Bathrooms cannot be negative.",
+      "BATHROOMS_MAX": "Bathrooms cannot exceed 50."
+    },
+    "ERRORS": {
+      "SAVE_FAILED": "Could not save property. Please try again.",
+      "LOAD_FAILED": "Could not load property details."
+    }
+  },
+  "MY_PROPERTIES": {
+    "TITLE": "My Properties",
+    "SUBTITLE": "Manage your property listings and status.",
+    "ADD_BUTTON": "Add New Property",
+    "BEDS": "Beds",
+    "BATHS": "Baths",
+    "TABLE": {
+      "TITLE": "Property",
+      "PURPOSE": "Purpose",
+      "PRICE": "Price",
+      "STATUS": "Status",
+      "ACTIONS": "Actions"
+    },
+    "ACTIONS": {
+      "EDIT": "Edit",
+      "PUBLISH": "Publish",
+      "ARCHIVE": "Archive"
+    },
+    "EMPTY": {
+      "TITLE": "No properties found",
+      "DESCRIPTION": "You have not added any property listings yet."
+    },
+    "ERRORS": {
+      "LOAD_FAILED": "Could not load your properties. Please try again.",
+      "ACTION_FAILED": "Could not perform this action. Please try again."
+    }
   }
 }
