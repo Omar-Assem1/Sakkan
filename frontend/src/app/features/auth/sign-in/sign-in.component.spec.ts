@@ -25,8 +25,8 @@ describe('SignInComponent', () => {
     }).compileComponents();
 
     const router = TestBed.inject(Router);
-    (router as any).navigate = async (c: unknown[]) => { navigatedTo = c.join('/'); return true; };
-    (router as any).navigateByUrl = async (u: unknown) => { navigatedTo = String(u); return true; };
+    vi.spyOn(router, 'navigate').mockImplementation(async (commands) => { navigatedTo = commands.join('/'); return true; });
+    vi.spyOn(router, 'navigateByUrl').mockImplementation(async (url) => { navigatedTo = String(url); return true; });
 
     fixture = TestBed.createComponent(SignInComponent);
     component = fixture.componentInstance;
