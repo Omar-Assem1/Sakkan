@@ -1,6 +1,9 @@
+import { existsSync } from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
 
 const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
+const winChromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+const useSystemChrome = !process.env['CI'] && existsSync(winChromePath);
 
 export default defineConfig({
   testDir: './e2e',
@@ -15,7 +18,10 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        ...(useSystemChrome ? { channel: 'chrome' } : {}),
+      },
     },
   ],
 });

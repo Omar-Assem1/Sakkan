@@ -9,25 +9,36 @@ import { expect, test } from '@playwright/test';
  *   - BASE_URL (optional, defaults to http://localhost:4200 in playwright.config.ts)
  */
 test.describe('Smoke: login then browse properties', () => {
-  // Blocked by SCRUM-51 (M1): AuthPageComponent (/auth) is currently a static placeholder
-  // ("Placeholder – real login/register forms come in the auth story.") with no login form inputs.
-  test.fixme(
-    'signs in and displays the Browse Properties listing page (blocked by SCRUM-51 / SKN-15 login form)',
-    async ({ page }) => {
-      const username = process.env['E2E_USERNAME'];
-      const password = process.env['E2E_PASSWORD'];
-      if (!username || !password) {
-        throw new Error('E2E_USERNAME and E2E_PASSWORD environment variables must be set');
-      }
+  test('signs in and displays the Browse Properties listing page', async ({ page, request }) => {
+    const username = process.env['E2E_USERNAME'];
+    const password = process.env['E2E_PASSWORD'];
+    if (!username || !password) {
+      throw new Error('E2E_USERNAME and E2E_PASSWORD environment variables must be set');
+    }
 
-      await page.goto('/auth');
-      await page.getByLabel(/email|username/i).fill(username);
-      await page.getByLabel(/password/i).fill(password);
-      await page.getByRole('button', { name: /sign in|login/i }).click();
+    // Ensure the user account exists in the database (idempotent: 201 if new, 409 if already seeded)
+    const registerResp = await request.post('/api/auth/register', {
+      data: {
+        username,
+        email: `${username}@sakan.test`,
+        password,
+        phone: '+201012345678',
+        role: 'BUYER_TENANT',
+      },
+    });
+    expect([201, 409]).toContain(registerResp.status());
 
-      await page.goto('/listings');
-      await expect(page.locator('app-property-filter-panel')).toBeVisible();
-      await expect(page.locator('app-property-card').first()).toBeVisible();
-    },
-  );
+    // 1. Open the login page (/auth -> /auth/sign-in) and sign in
+    await page.goto('/auth/sign-in');
+    await expect(page.getByRole('heading', { name: /sign in/i })).toBeVisible();
+
+    await page.getByLabel(/username/i).fill(username);
+    await page.getByLabel(/password/i).fill(password);
+    await page.getByRole('button', { name: /sign in/i }).click();
+
+    // 2. Verify redirection to Browse Properties (/listings) and visible listing UI
+    await expect(page).toHaveURL(/\/listings/);
+    await expect(page.locator('app-property-filter-panel')).toBeVisible();
+    await expect(page.locator('app-property-search-bar')).toBeVisible();
+  });
 });
