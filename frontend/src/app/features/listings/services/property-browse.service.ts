@@ -55,6 +55,9 @@ export class PropertyBrowseService {
     if (filters.sort) {
       params = params.set('sort', filters.sort);
     }
+    if (filters.q && filters.q.trim().length > 0) {
+      params = params.set('q', filters.q.trim());
+    }
 
     return this.http.get<PageResponse<PropertySummaryDto>>(this.baseUrl, { params });
   }

@@ -38,6 +38,7 @@ export interface PropertyFilterCriteria {
   page?: number;
   size?: number;
   sort?: string;
+  q?: string | null;
 }
 
 export interface LocationNode {

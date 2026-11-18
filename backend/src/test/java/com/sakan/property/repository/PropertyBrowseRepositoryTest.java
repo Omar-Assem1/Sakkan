@@ -47,7 +47,6 @@ class PropertyBrowseRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // 1. Published, Location 10, Type 1, 2,000,000 EGP, 3 beds, SALE, amenities {1, 2}
         Property p1 = new Property();
         p1.setTitle("P1 Published Smouha");
         p1.setDescription("Close to green spaces");
@@ -65,7 +64,6 @@ class PropertyBrowseRepositoryTest {
         entityManager.persist(p1);
         prop1Id = p1.getId();
 
-        // 2. Published, Location 11, Type 2, 3,500,000 EGP, 4 beds, SALE, amenities {1, 2, 3}
         Property p2 = new Property();
         p2.setTitle("P2 Published Kafr Abdo");
         p2.setDescription("Spacious duplex");
@@ -83,7 +81,6 @@ class PropertyBrowseRepositoryTest {
         entityManager.persist(p2);
         prop2Id = p2.getId();
 
-        // 3. Draft, Location 10, 1,500,000 EGP (must NEVER appear in public browse)
         Property p3 = new Property();
         p3.setTitle("P3 Draft Property");
         p3.setDescription("Work in progress");
@@ -100,7 +97,6 @@ class PropertyBrowseRepositoryTest {
         p3.setAmenityIds(Set.of(1L));
         entityManager.persist(p3);
 
-        // 4. Published, Location 5, 8,000 EGP, RENT
         Property p4 = new Property();
         p4.setTitle("P4 Rent Flat");
         p4.setDescription("Available for immediate rent");

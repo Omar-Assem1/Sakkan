@@ -20,8 +20,15 @@
     "TITLE": "Property Listings",
     "PLACEHOLDER": "Browse homes for sale and rent. Listings will appear here.",
     "FOUND_COUNT": "properties found",
+    "SEARCH": {
+      "LABEL": "Search properties",
+      "PLACEHOLDER": "Search by title or description...",
+      "CLEAR": "Clear search",
+      "RELEVANCE": "Relevance"
+    },
     "SORT": {
       "LABEL": "Sort by",
+      "RELEVANCE": "Relevance",
       "NEWEST": "Newest",
       "PRICE_ASC": "Price: Low to High",
       "PRICE_DESC": "Price: High to Low",

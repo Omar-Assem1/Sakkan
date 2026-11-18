@@ -90,7 +90,8 @@ describe('AppComponent, Lazy Routes & RTL/i18n Audit (SCRUM-38)', () => {
       fixture.detectChanges();
       const elements = fixture.nativeElement.querySelectorAll('*');
       elements.forEach((el: Element) => {
-        expect(el.className).not.toMatch(
+        const cls = typeof el.className === 'string' ? el.className : el.getAttribute('class') || '';
+        expect(cls).not.toMatch(
           /\b(ml-|mr-|pl-|pr-|text-left|text-right|left-|right-|border-l|border-r)/,
         );
       });

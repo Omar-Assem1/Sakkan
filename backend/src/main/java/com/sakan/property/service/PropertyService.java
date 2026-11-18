@@ -60,9 +60,15 @@ public class PropertyService {
     @Transactional(readOnly = true)
     public PageResponse<PropertySummaryResponse> browse(PropertySearchCriteria criteria) {
         Sort sort = sortValidator.validateAndBuildSort(criteria.sort());
-        Pageable pageable = PageRequest.of(criteria.page(), criteria.size(), sort);
+        Pageable pageable = (sort.getOrderFor("relevance") != null)
+                ? PageRequest.of(criteria.page(), criteria.size(), Sort.unsorted())
+                : PageRequest.of(criteria.page(), criteria.size(), sort);
 
         Specification<Property> spec = PropertySpecifications.isPublished();
+
+        if (criteria.q() != null && !criteria.q().isBlank()) {
+            spec = spec.and(PropertySpecifications.hasSearch(criteria.q()));
+        }
 
         if (criteria.locationId() != null) {
             List<Long> locationIds = locationHierarchyService.findDescendantLocationIds(criteria.locationId());

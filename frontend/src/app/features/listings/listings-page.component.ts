@@ -14,6 +14,7 @@ import { LanguageService } from '../../core/services/language.service';
 import { PropertyBrowseService } from './services/property-browse.service';
 import { PropertyFilterPanelComponent } from './components/property-filter-panel/property-filter-panel.component';
 import { PropertyCardComponent } from './components/property-card/property-card.component';
+import { PropertySearchBarComponent } from './components/property-search-bar/property-search-bar.component';
 import {
   AmenityDto,
   LocationNode,
@@ -31,7 +32,8 @@ import {
     FormsModule,
     TranslocoPipe,
     PropertyFilterPanelComponent,
-    PropertyCardComponent
+    PropertyCardComponent,
+    PropertySearchBarComponent
   ],
   templateUrl: './listings-page.component.html'
 })
@@ -54,6 +56,7 @@ export class ListingsPageComponent implements OnInit {
   totalPages = signal<number>(0);
   totalElements = signal<number>(0);
   currentSort = signal<string>('createdAt,desc');
+  searchQuery = signal<string>('');
 
   activeFilters = signal<PropertyFilterCriteria>({});
   isEmpty = computed(() => !this.isLoading() && this.properties().length === 0);
@@ -83,12 +86,14 @@ export class ListingsPageComponent implements OnInit {
           : null,
         page: params['page'] ? Number(params['page']) : 0,
         size: params['size'] ? Number(params['size']) : 12,
-        sort: params['sort'] || 'createdAt,desc'
+        sort: params['sort'] || 'createdAt,desc',
+        q: params['q'] || null
       };
 
       this.page.set(parsedFilters.page || 0);
       this.size.set(parsedFilters.size || 12);
       this.currentSort.set(parsedFilters.sort || 'createdAt,desc');
+      this.searchQuery.set(parsedFilters.q || '');
       this.activeFilters.set(parsedFilters);
 
       this.fetchProperties();
@@ -141,6 +146,12 @@ export class ListingsPageComponent implements OnInit {
     this.syncParamsToUrl({ ...filters, page: 0 });
   }
 
+  onSearchChanged(newQuery: string): void {
+    const trimmed = newQuery.trim();
+    this.searchQuery.set(trimmed);
+    this.syncParamsToUrl({ ...this.activeFilters(), q: trimmed || null, page: 0 });
+  }
+
   onSortChanged(sortValue: string): void {
     this.currentSort.set(sortValue);
     this.syncParamsToUrl({ ...this.activeFilters(), sort: sortValue, page: 0 });
@@ -154,6 +165,7 @@ export class ListingsPageComponent implements OnInit {
   }
 
   resetAllFilters(): void {
+    this.searchQuery.set('');
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { page: 0, size: 12, sort: 'createdAt,desc' }
@@ -170,6 +182,7 @@ export class ListingsPageComponent implements OnInit {
       purpose: filters.purpose || null,
       minBedrooms: filters.minBedrooms || null,
       amenityIds: filters.amenityIds || null,
+      q: filters.q ? filters.q.trim() : null,
       page: filters.page ?? 0,
       size: filters.size ?? 12,
       sort: filters.sort || this.currentSort()
