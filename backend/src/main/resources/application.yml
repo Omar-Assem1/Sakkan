@@ -1,1 +1,14 @@
-spring.application.name=sakan
+spring:
+  application:
+    name: sakan
+
+# ── springdoc / Swagger UI ────────────────────────────────────────────────────
+springdoc:
+  api-docs:
+    path: /v3/api-docs          # JSON spec  → GET /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html      # Swagger UI → GET /swagger-ui.html
+    operationsSorter: alpha
+    tagsSorter: alpha
+  show-actuator: false

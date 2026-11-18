@@ -1,0 +1,104 @@
+openapi: "3.1.0"
+info:
+  title: Sakan API
+  description: |
+    REST API for the Sakan property rental platform.
+    Errors follow RFC 9457 ProblemDetail – every error response carries
+    `status`, `title`, `detail`, `type`, and `timestamp`.
+  version: "1.0.0"
+  contact:
+    name: Sakan Team
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+
+tags:
+  - name: errors
+    description: Error shape reference (not a real endpoint)
+
+components:
+  schemas:
+
+    ProblemDetail:
+      type: object
+      description: RFC 9457 error response returned for all API errors.
+      required:
+        - status
+        - title
+      properties:
+        status:
+          type: integer
+          example: 404
+          description: HTTP status code
+        title:
+          type: string
+          example: Resource Not Found
+          description: Short human-readable summary
+        detail:
+          type: string
+          example: "Property not found with id: 42"
+          description: Longer explanation of what went wrong
+        type:
+          type: string
+          format: uri
+          example: https://sakan.app/errors/resource-not-found
+        instance:
+          type: string
+          format: uri
+          example: /api/properties/42
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequest:
+      description: Validation failed (400)
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+
+    Unauthorized:
+      description: Authentication required (401)
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+
+    Forbidden:
+      description: Access denied (403)
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+
+    NotFound:
+      description: Resource not found (404)
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+
+    Conflict:
+      description: Conflict – e.g. duplicate booking (409)
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+
+    UnprocessableEntity:
+      description: Illegal status transition (422)
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+
+    InternalServerError:
+      description: Unexpected server error (500)
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+
+paths: {}

@@ -68,6 +68,13 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
+		<!-- OpenAPI / Swagger UI -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.8.9</version>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -131,6 +138,11 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+			<!-- openapi-generator lives in the 'generate-client' profile; run with:
+			     mvn compile -P generate-client
+			     The spec file is at src/main/resources/openapi/sakan-api.yaml -->
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -169,5 +181,48 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<!--
+		Run `mvn generate-sources -P generate-client` after the app is running
+		(so springdoc has served the spec) to regenerate the Angular TypeScript client
+		from src/main/resources/openapi/sakan-api.yaml into ../frontend/src/app/core/api.
+	-->
+	<profiles>
+		<profile>
+			<id>generate-client</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.openapitools</groupId>
+						<artifactId>openapi-generator-maven-plugin</artifactId>
+						<version>7.14.0</version>
+						<executions>
+							<execution>
+								<id>generate-angular-client</id>
+								<goals>
+									<goal>generate</goal>
+								</goals>
+								<configuration>
+									<inputSpec>${project.basedir}/src/main/resources/openapi/sakan-api.yaml</inputSpec>
+									<generatorName>typescript-angular</generatorName>
+									<output>${project.basedir}/../frontend/src/app/core/api</output>
+									<configOptions>
+										<ngVersion>22</ngVersion>
+										<providedInRoot>true</providedInRoot>
+										<supportsES6>true</supportsES6>
+										<enumPropertyNaming>UPPERCASE</enumPropertyNaming>
+										<modelPropertyNaming>camelCase</modelPropertyNaming>
+										<withInterfaces>true</withInterfaces>
+									</configOptions>
+									<generateApiTests>false</generateApiTests>
+									<generateModelTests>false</generateModelTests>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>
