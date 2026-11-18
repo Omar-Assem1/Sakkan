@@ -24,9 +24,13 @@ import com.sakan.property.domain.Property;
 import com.sakan.property.domain.PropertyPurpose;
 import com.sakan.property.domain.PropertyStatus;
 import com.sakan.property.service.PropertySpecifications;
+import com.sakan.support.tags.IntegrationTest;
+import com.sakan.support.tags.RegressionTest;
 
 import jakarta.persistence.EntityManager;
 
+@RegressionTest
+@IntegrationTest
 @SpringBootTest
 @Import(TestcontainersConfiguration.class)
 @Transactional

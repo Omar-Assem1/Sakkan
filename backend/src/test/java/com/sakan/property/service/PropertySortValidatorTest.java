@@ -10,6 +10,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.data.domain.Sort;
 
+import com.sakan.support.tags.RegressionTest;
+
+@RegressionTest
 class PropertySortValidatorTest {
 
     private PropertySortValidator validator;
