@@ -42,10 +42,6 @@ import com.sakan.property.dto.PropertyRequest;
 import com.sakan.property.dto.PropertyResponse;
 import com.sakan.property.service.PropertyService;
 
-/**
- * Tests the HTTP layer only: routes, status codes, validation and error mapping. The service and the current-user
- * provider are mocked, so no Spring context, security chain or database is needed.
- */
 @ExtendWith(MockitoExtension.class)
 class PropertyControllerTest {
 
@@ -83,8 +79,6 @@ class PropertyControllerTest {
                 .setValidator(validator)
                 .build();
     }
-
-    // ---------- create ----------
 
     @Test
     void create_validBody_returns201WithLocationHeader() throws Exception {
@@ -131,8 +125,6 @@ class PropertyControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    // ---------- get ----------
-
     @Test
     void get_asAnonymous_passesNullViewer() throws Exception {
         when(currentUser.find()).thenReturn(Optional.empty());
@@ -159,8 +151,6 @@ class PropertyControllerTest {
         mvc.perform(get("/api/properties/99")).andExpect(status().isNotFound());
     }
 
-    // ---------- mine ----------
-
     @Test
     void mine_passesPagingParametersAndReturnsPage() throws Exception {
         when(currentUser.require()).thenReturn(OWNER);
@@ -183,8 +173,6 @@ class PropertyControllerTest {
         mvc.perform(get("/api/properties/mine")).andExpect(status().isOk());
     }
 
-    // ---------- update ----------
-
     @Test
     void update_validBody_returns200() throws Exception {
         when(currentUser.require()).thenReturn(OWNER);
@@ -203,8 +191,6 @@ class PropertyControllerTest {
         mvc.perform(put("/api/properties/10").contentType(MediaType.APPLICATION_JSON).content(VALID_BODY))
                 .andExpect(status().isForbidden());
     }
-
-    // ---------- publish / archive ----------
 
     @Test
     void publish_returns200() throws Exception {
@@ -241,8 +227,6 @@ class PropertyControllerTest {
 
         mvc.perform(post("/api/properties/10/archive")).andExpect(status().isConflict());
     }
-
-    // ---------- helpers ----------
 
     private static PropertyResponse response(Long id) {
         return response(id, PropertyStatus.DRAFT);

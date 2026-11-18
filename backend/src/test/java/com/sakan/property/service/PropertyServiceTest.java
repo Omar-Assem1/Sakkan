@@ -62,8 +62,6 @@ class PropertyServiceTest {
         service = new PropertyService(repository, Mappers.getMapper(PropertyMapper.class));
     }
 
-    // ---------- create ----------
-
     @Test
     void create_asOwner_savesDraftOwnedByCaller() {
         when(repository.save(any(Property.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -96,8 +94,6 @@ class PropertyServiceTest {
 
         verify(repository, never()).save(any());
     }
-
-    // ---------- update: ownership ----------
 
     @Test
     void update_byNonOwner_isRejectedAndNothingIsSaved() {
@@ -160,8 +156,6 @@ class PropertyServiceTest {
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
-    // ---------- publish / archive: lifecycle ----------
-
     @Test
     void publish_draft_becomesPublished() {
         when(repository.findById(PROPERTY_ID)).thenReturn(Optional.of(property(PropertyStatus.DRAFT)));
@@ -216,8 +210,6 @@ class PropertyServiceTest {
                 .isInstanceOf(InvalidStatusTransitionException.class);
     }
 
-    // ---------- getById: visibility ----------
-
     @Test
     void getById_published_isVisibleToAnonymous() {
         when(repository.findById(PROPERTY_ID)).thenReturn(Optional.of(property(PropertyStatus.PUBLISHED)));
@@ -242,8 +234,6 @@ class PropertyServiceTest {
         assertThat(service.getById(PROPERTY_ID, OWNER).status()).isEqualTo(PropertyStatus.DRAFT);
         assertThat(service.getById(PROPERTY_ID, ADMIN).status()).isEqualTo(PropertyStatus.DRAFT);
     }
-
-    // ---------- listMine ----------
 
     @Test
     void listMine_returnsCallersListingsAsPage() {
@@ -288,8 +278,6 @@ class PropertyServiceTest {
         assertThatThrownBy(() -> service.listMine(BUYER, 0, 20))
                 .isInstanceOf(ForbiddenOperationException.class);
     }
-
-    // ---------- helpers ----------
 
     private static PropertyRequest request(String title) {
         return new PropertyRequest(

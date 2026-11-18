@@ -1,0 +1,160 @@
+<aside class="w-full bg-white p-6 rounded-xl shadow-xs border border-slate-200">
+  <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+    <h2 class="text-lg font-bold text-slate-800">{{ 'LISTINGS.FILTERS.TITLE' | transloco }}</h2>
+    <button (click)="onReset()" type="button" class="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition">
+      {{ 'LISTINGS.FILTERS.CLEAR' | transloco }}
+    </button>
+  </div>
+
+  <div class="mt-6 space-y-5">
+    <!-- Purpose Selection -->
+    <div>
+      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.PURPOSE' | transloco }}</label>
+      <div class="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          (click)="purpose.set(purpose() === 'SALE' ? null : 'SALE')"
+          [class]="purpose() === 'SALE' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+          class="py-2 px-3 text-sm font-medium rounded-lg transition"
+        >
+          {{ 'LISTINGS.FILTERS.FOR_SALE' | transloco }}
+        </button>
+        <button
+          type="button"
+          (click)="purpose.set(purpose() === 'RENT' ? null : 'RENT')"
+          [class]="purpose() === 'RENT' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+          class="py-2 px-3 text-sm font-medium rounded-lg transition"
+        >
+          {{ 'LISTINGS.FILTERS.FOR_RENT' | transloco }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Cascading Location Filters -->
+    <div>
+      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.LOCATION' | transloco }}</label>
+      <div class="space-y-2">
+        <select
+          [ngModel]="selectedGovernorateId()"
+          (ngModelChange)="onGovernorateChange($event)"
+          class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+        >
+          <option [ngValue]="null">{{ 'LISTINGS.FILTERS.SELECT_GOV' | transloco }}</option>
+          <option *ngFor="let gov of governorates()" [value]="gov.id">
+            {{ isRtl() ? gov.nameAr : gov.nameEn }}
+          </option>
+        </select>
+
+        <select
+          [ngModel]="selectedDistrictId()"
+          (ngModelChange)="selectedDistrictId.set($event ? +$event : null)"
+          [disabled]="districts().length === 0"
+          class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden disabled:opacity-40"
+        >
+          <option [ngValue]="null">{{ 'LISTINGS.FILTERS.SELECT_DISTRICT' | transloco }}</option>
+          <option *ngFor="let dist of districts()" [value]="dist.id">
+            {{ isRtl() ? dist.nameAr : dist.nameEn }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Price Range with Currency -->
+    <div>
+      <div class="flex justify-between items-center mb-2">
+        <label class="text-sm font-semibold text-slate-700">{{ 'LISTINGS.FILTERS.PRICE_RANGE' | transloco }}</label>
+        <div class="inline-flex rounded-md shadow-2xs">
+          <button
+            type="button"
+            (click)="currency.set('EGP')"
+            [class]="currency() === 'EGP' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600'"
+            class="px-2 py-1 text-xs font-semibold rounded-s-md"
+          >
+            EGP
+          </button>
+          <button
+            type="button"
+            (click)="currency.set('USD')"
+            [class]="currency() === 'USD' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600'"
+            class="px-2 py-1 text-xs font-semibold rounded-e-md"
+          >
+            USD
+          </button>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <input
+          type="number"
+          min="0"
+          [placeholder]="'LISTINGS.FILTERS.MIN_PRICE' | transloco"
+          [ngModel]="minPrice()"
+          (ngModelChange)="minPrice.set($event ? +$event : null)"
+          class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+        />
+        <input
+          type="number"
+          min="0"
+          [placeholder]="'LISTINGS.FILTERS.MAX_PRICE' | transloco"
+          [ngModel]="maxPrice()"
+          (ngModelChange)="maxPrice.set($event ? +$event : null)"
+          class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+        />
+      </div>
+    </div>
+
+    <!-- Property Type -->
+    <div>
+      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.TYPE' | transloco }}</label>
+      <select
+        [ngModel]="selectedPropertyTypeId()"
+        (ngModelChange)="selectedPropertyTypeId.set($event ? +$event : null)"
+        class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+      >
+        <option [ngValue]="null">{{ 'LISTINGS.FILTERS.ALL_TYPES' | transloco }}</option>
+        <option *ngFor="let t of propertyTypes" [value]="t.id">
+          {{ isRtl() ? t.nameAr : t.nameEn }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Minimum Bedrooms -->
+    <div>
+      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.BEDROOMS' | transloco }}</label>
+      <div class="flex gap-2">
+        <button
+          *ngFor="let bed of [1, 2, 3, 4, 5]"
+          type="button"
+          (click)="minBedrooms.set(minBedrooms() === bed ? null : bed)"
+          [class]="minBedrooms() === bed ? 'bg-emerald-600 text-white' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'"
+          class="flex-1 py-1.5 text-sm font-medium rounded-lg border border-slate-200 transition"
+        >
+          {{ bed }}+
+        </button>
+      </div>
+    </div>
+
+    <!-- Amenities Checkboxes -->
+    <div>
+      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.AMENITIES' | transloco }}</label>
+      <div class="space-y-2 max-h-40 overflow-y-auto ps-1">
+        <label *ngFor="let amenity of amenities" class="flex items-center gap-2 cursor-pointer text-sm text-slate-600">
+          <input
+            type="checkbox"
+            [checked]="selectedAmenityIds().includes(amenity.id)"
+            (change)="toggleAmenity(amenity.id)"
+            class="rounded-sm border-slate-300 text-emerald-600 focus:ring-emerald-500"
+          />
+          <span>{{ isRtl() ? amenity.nameAr : amenity.nameEn }}</span>
+        </label>
+      </div>
+    </div>
+
+    <button
+      (click)="applyFilters()"
+      type="button"
+      class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg shadow-xs transition"
+    >
+      {{ 'LISTINGS.FILTERS.APPLY' | transloco }}
+    </button>
+  </div>
+</aside>

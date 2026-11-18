@@ -1,0 +1,107 @@
+<div class="min-h-screen bg-slate-50 py-8 ps-4 pe-4 sm:ps-6 sm:pe-6 lg:ps-8 lg:pe-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header with result count & sort dropdown -->
+    <header
+      class="flex flex-col md:flex-row md:items-center md:justify-between pb-6 border-b border-slate-200 gap-4 text-start">
+      <div>
+        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">{{ 'LISTINGS.TITLE' | transloco }}</h1>
+        <p class="text-sm text-slate-500 mt-1">
+          {{ totalElements() }} {{ 'LISTINGS.FOUND_COUNT' | transloco }}
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label for="sort-select" class="text-sm font-semibold text-slate-700 whitespace-nowrap">{{ 'LISTINGS.SORT.LABEL'
+          | transloco }}:</label>
+        <select id="sort-select" [ngModel]="currentSort()" (ngModelChange)="onSortChanged($event)"
+          class="px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg shadow-2xs focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+          <option value="relevance,desc">{{ 'LISTINGS.SORT.RELEVANCE' | transloco }}</option>
+          <option value="createdAt,desc">{{ 'LISTINGS.SORT.NEWEST' | transloco }}</option>
+          <option value="price,asc">{{ 'LISTINGS.SORT.PRICE_ASC' | transloco }}</option>
+          <option value="price,desc">{{ 'LISTINGS.SORT.PRICE_DESC' | transloco }}</option>
+          <option value="bedrooms,desc">{{ 'LISTINGS.SORT.BEDROOMS' | transloco }}</option>
+          <option value="areaSqm,desc">{{ 'LISTINGS.SORT.AREA' | transloco }}</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="mt-6">
+      <app-property-search-bar
+        [initialQuery]="searchQuery()"
+        (searchChange)="onSearchChanged($event)"
+      ></app-property-search-bar>
+    </div>
+
+    <!-- Main Content Layout -->
+    <div class="mt-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <!-- Filter Sidebar -->
+      <div class="lg:col-span-1">
+        <app-property-filter-panel [initialFilters]="activeFilters()" [locations]="locations()"
+          [propertyTypes]="propertyTypes()" [amenities]="amenities()" (filterChange)="onFilterChanged($event)"
+          (resetFilters)="resetAllFilters()"></app-property-filter-panel>
+      </div>
+
+      <!-- Properties Grid & Status States -->
+      <main class="lg:col-span-3 flex flex-col justify-between">
+        <!-- Loading State Skeleton -->
+        <div *ngIf="isLoading()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div *ngFor="let s of [1,2,3,4,5,6]"
+            class="bg-white rounded-xl h-80 border border-slate-200 animate-pulse p-4">
+            <div class="h-44 bg-slate-200 rounded-lg mb-4"></div>
+            <div class="h-4 bg-slate-200 rounded w-1/3 mb-2"></div>
+            <div class="h-5 bg-slate-200 rounded w-2/3 mb-4"></div>
+            <div class="h-3 bg-slate-200 rounded w-1/2"></div>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="hasError() && !isLoading()"
+          class="bg-red-50 border border-red-200 text-red-700 p-6 rounded-xl text-center">
+          <h3 class="text-base font-bold">{{ 'LISTINGS.ERROR.TITLE' | transloco }}</h3>
+          <p class="text-sm mt-1">{{ 'LISTINGS.ERROR.DESCRIPTION' | transloco }}</p>
+          <button (click)="fetchProperties()"
+            class="mt-4 px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700">
+            {{ 'LISTINGS.ERROR.RETRY' | transloco }}
+          </button>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="isEmpty()" class="bg-white rounded-xl border border-slate-200 p-12 text-center my-auto">
+          <svg class="mx-auto h-16 w-16 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+          <h3 class="mt-4 text-lg font-bold text-slate-800">{{ 'LISTINGS.EMPTY.TITLE' | transloco }}</h3>
+          <p class="mt-1 text-sm text-slate-500">{{ 'LISTINGS.EMPTY.DESCRIPTION' | transloco }}</p>
+          <button (click)="resetAllFilters()"
+            class="mt-6 px-5 py-2.5 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 shadow-2xs">
+            {{ 'LISTINGS.EMPTY.CLEAR' | transloco }}
+          </button>
+        </div>
+
+        <!-- Listing Cards Grid -->
+        <div *ngIf="!isLoading() && !hasError() && !isEmpty()"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <app-property-card *ngFor="let property of properties()" [property]="property"
+            [locationName]="getLocationName(property.locationId)"></app-property-card>
+        </div>
+
+        <!-- Pagination Controls -->
+        <nav *ngIf="totalPages() > 1 && !isLoading()"
+          class="mt-10 flex items-center justify-between border-t border-slate-200 pt-6">
+          <button [disabled]="page() === 0" (click)="goToPage(page() - 1)"
+            class="px-4 py-2 border border-slate-200 text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">
+            {{ 'LISTINGS.PAGINATION.PREVIOUS' | transloco }}
+          </button>
+          <span class="text-sm text-slate-600">
+            {{ page() + 1 }} / {{ totalPages() }}
+          </span>
+          <button [disabled]="page() >= totalPages() - 1" (click)="goToPage(page() + 1)"
+            class="px-4 py-2 border border-slate-200 text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">
+            {{ 'LISTINGS.PAGINATION.NEXT' | transloco }}
+          </button>
+        </nav>
+      </main>
+    </div>
+  </div>
+</div>

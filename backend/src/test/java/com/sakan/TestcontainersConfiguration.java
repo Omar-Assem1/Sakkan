@@ -7,12 +7,16 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @TestConfiguration(proxyBeanMethods = false)
-class TestcontainersConfiguration {
+public class TestcontainersConfiguration {
+
+	/** Keep in sync with the `db` service image in docker-compose.yml. */
+	static final String POSTGIS_IMAGE = "postgis/postgis:16-3.4";
 
 	@Bean
 	@ServiceConnection
-	PostgreSQLContainer postgresContainer() {
-		return new PostgreSQLContainer(DockerImageName.parse("postgres:latest"));
+	public PostgreSQLContainer postgresContainer() {
+		DockerImageName image = DockerImageName.parse(POSTGIS_IMAGE).asCompatibleSubstituteFor("postgres");
+		return new PostgreSQLContainer(image);
 	}
 
 }
