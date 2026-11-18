@@ -8,6 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
+    "api:generate": "node scripts/generate-api.js",
     "e2e": "playwright test"
   },
   "private": true,

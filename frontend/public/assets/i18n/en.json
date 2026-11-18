@@ -101,5 +101,19 @@
   "ADMIN": {
     "TITLE": "Admin Dashboard",
     "PLACEHOLDER": "Moderation and platform management tools will appear here."
+  },
+  "ERROR_PAGE": {
+    "DEFAULT_TITLE": "Something went wrong",
+    "DEFAULT_MESSAGE": "An unexpected error occurred while processing your request.",
+    "CODE_LABEL": "Error Code",
+    "DETAILS_LABEL": "Error Details",
+    "BACK_HOME": "Back to Listings",
+    "TRY_AGAIN": "Try Again",
+    "NOT_FOUND_TITLE": "Page Not Found",
+    "NOT_FOUND_MESSAGE": "The page or resource you are looking for does not exist or has been moved.",
+    "FORBIDDEN_TITLE": "Access Denied",
+    "FORBIDDEN_MESSAGE": "You do not have permission to view or perform this action.",
+    "SERVER_ERROR_TITLE": "Internal Server Error",
+    "SERVER_ERROR_MESSAGE": "The server encountered an error. Our team has been notified."
   }
 }
