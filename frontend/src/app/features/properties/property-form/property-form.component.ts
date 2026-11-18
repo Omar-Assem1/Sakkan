@@ -118,7 +118,7 @@ export class PropertyFormComponent implements OnInit {
     }
   }
 
-  onGovernorateChange(val: any): void {
+  onGovernorateChange(val: string | number | null): void {
     const govId = val ? Number(val) : null;
     this.selectedGovernorateId.set(govId);
     this.selectedCityId.set(null);
@@ -129,7 +129,7 @@ export class PropertyFormComponent implements OnInit {
     });
   }
 
-  onCityChange(val: any): void {
+  onCityChange(val: string | number | null): void {
     const cityId = val ? Number(val) : null;
     this.selectedCityId.set(cityId);
     this.form.patchValue({

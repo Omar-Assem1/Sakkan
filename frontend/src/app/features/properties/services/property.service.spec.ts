@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { PropertyService } from './property.service';
-import { PageResponse, PropertyRequest, PropertyResponse } from '../models/property.model';
+import { LocationNode, PageResponse, PropertyRequest, PropertyResponse } from '../models/property.model';
 
 describe('PropertyService (SKN-21)', () => {
   let service: PropertyService;
@@ -153,7 +153,7 @@ describe('PropertyService (SKN-21)', () => {
   });
 
   it('should return seeded location hierarchy', () => {
-    let locations: any[] = [];
+    let locations: LocationNode[] = [];
     service.getLocations().subscribe((locs) => {
       locations = locs;
     });
