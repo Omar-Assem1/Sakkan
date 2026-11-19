@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +33,7 @@ import com.sakan.common.exception.ResourceNotFoundException;
 import com.sakan.common.response.PageResponse;
 import com.sakan.common.security.AuthenticatedUser;
 import com.sakan.common.statemachine.StatusTransitionService;
+import com.sakan.location.repository.LocationRepository;
 import com.sakan.property.domain.Property;
 import com.sakan.property.domain.PropertyPurpose;
 import com.sakan.property.domain.PropertyStatus;
@@ -64,7 +66,8 @@ class PropertyServiceTest {
     @BeforeEach
     void setUp() {
         service = new PropertyService(repository, Mappers.getMapper(PropertyMapper.class),
-                new DefaultLocationHierarchyService(), new PropertySortValidator(), new StatusTransitionService(event -> { }));
+                new DefaultLocationHierarchyService(mock(LocationRepository.class)), new PropertySortValidator(),
+                new StatusTransitionService(event -> { }));
     }
 
     @Test

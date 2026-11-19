@@ -43,7 +43,11 @@ class NoAccidentalPermitAllIT extends AbstractIntegrationTest {
             "GET /api/properties/{}",
             "GET /api/properties/{}/slots",
             "GET /api/properties/{}/images",
-            "GET /api/property-images/{}");
+            "GET /api/property-images/{}",
+            "GET /api/locations/governorates",
+            "GET /api/locations/cities",
+            "GET /api/locations/districts",
+            "GET /api/locations/compounds");
 
     private static final List<String> SKIPPED_PREFIXES = List.of("/error", "/v3/api-docs", "/swagger-ui");
 

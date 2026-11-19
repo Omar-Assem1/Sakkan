@@ -62,7 +62,7 @@ public class PropertyService {
 
     /** Convenience constructor retained for isolated unit tests that do not assert domain events. */
     public PropertyService(PropertyRepository repository, PropertyMapper mapper) {
-        this(repository, mapper, new DefaultLocationHierarchyService(), new PropertySortValidator(),
+        this(repository, mapper, rootId -> rootId == null ? List.of() : List.of(rootId), new PropertySortValidator(),
                 new StatusTransitionService(event -> { }));
     }
 

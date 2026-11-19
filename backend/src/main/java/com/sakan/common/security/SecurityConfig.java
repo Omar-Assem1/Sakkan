@@ -42,6 +42,8 @@ public class SecurityConfig {
                 // --- public ---
                 .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/admin/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/property-images/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/locations/governorates", "/api/locations/cities",
+                        "/api/locations/districts", "/api/locations/compounds").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers(HttpMethod.GET, "/actuator/health/**", "/actuator/info").permitAll()
 
