@@ -15,3 +15,11 @@ export interface RequestViewingPayload {
   slotId: number;
   notes?: string;
 }
+
+export interface ViewingPage {
+  content: Viewing[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
