@@ -164,6 +164,16 @@
     "TITLE": "لوحة الإدارة",
     "PLACEHOLDER": "ستظهر أدوات الإشراف وإدارة المنصة هنا."
   },
+  "ADMIN_USERS": {
+    "TITLE": "إدارة المستخدمين",
+    "SUBTITLE": "ابحث عن المستخدمين وغيّر أدوارهم.",
+    "FILTERS": { "SEARCH": "بحث", "ROLE": "الدور", "STATUS": "الحالة", "ALL": "الكل", "ENABLED": "مفعّل", "DISABLED": "معطّل", "APPLY": "تطبيق" },
+    "TABLE": { "USERNAME": "اسم المستخدم", "EMAIL": "البريد الإلكتروني", "ROLES": "الأدوار", "STATUS": "الحالة", "SEEDED": "مسؤول محمي" },
+    "ROLES": { "BUYER_TENANT": "مشتري/مستأجر", "OWNER": "مالك", "AGENT": "وسيط", "MAINTENANCE_STAFF": "صيانة", "ADMIN": "مسؤول" },
+    "PAGINATION": { "PREVIOUS": "السابق", "NEXT": "التالي" },
+    "EMPTY": { "TITLE": "لم يتم العثور على مستخدمين", "DESCRIPTION": "جرّب عوامل تصفية مختلفة." },
+    "ERRORS": { "LOAD_FAILED": "تعذر تحميل المستخدمين.", "ACTION_FORBIDDEN": "هذا التغيير غير مسموح.", "ACTION_CONFLICT": "يتعارض هذا التغيير مع الأدوار الحالية.", "ACTION_FAILED": "تعذر تغيير الدور." }
+  },
   "ERROR_PAGE": {
     "DEFAULT_TITLE": "حدث خطأ ما",
     "DEFAULT_MESSAGE": "حدث خطأ غير متوقع أثناء معالجة طلبك.",

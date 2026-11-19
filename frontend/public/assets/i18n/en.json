@@ -164,6 +164,16 @@
     "TITLE": "Admin Dashboard",
     "PLACEHOLDER": "Moderation and platform management tools will appear here."
   },
+  "ADMIN_USERS": {
+    "TITLE": "Manage users",
+    "SUBTITLE": "Search users and change their roles.",
+    "FILTERS": { "SEARCH": "Search", "ROLE": "Role", "STATUS": "Status", "ALL": "All", "ENABLED": "Enabled", "DISABLED": "Disabled", "APPLY": "Apply" },
+    "TABLE": { "USERNAME": "Username", "EMAIL": "Email", "ROLES": "Roles", "STATUS": "Status", "SEEDED": "Protected admin" },
+    "ROLES": { "BUYER_TENANT": "Buyer/Tenant", "OWNER": "Owner", "AGENT": "Agent", "MAINTENANCE_STAFF": "Maintenance", "ADMIN": "Admin" },
+    "PAGINATION": { "PREVIOUS": "Previous", "NEXT": "Next" },
+    "EMPTY": { "TITLE": "No users found", "DESCRIPTION": "Try different filters." },
+    "ERRORS": { "LOAD_FAILED": "Could not load users.", "ACTION_FORBIDDEN": "This change is not allowed.", "ACTION_CONFLICT": "This change conflicts with the current roles.", "ACTION_FAILED": "Could not change the role." }
+  },
   "ERROR_PAGE": {
     "DEFAULT_TITLE": "Something went wrong",
     "DEFAULT_MESSAGE": "An unexpected error occurred while processing your request.",

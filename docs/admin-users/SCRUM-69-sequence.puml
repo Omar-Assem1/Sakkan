@@ -1,0 +1,60 @@
+@startuml SCRUM-69-sequence
+title SCRUM-69 Admin user listing and role changes
+autonumber
+
+actor Admin
+participant "Angular AdminUsersComponent" as UI
+participant "AdminUserController" as Controller
+participant "AdminUserService" as AdminService
+participant "UserService" as UserService
+participant "UserRepository" as UserRepository
+database PostgreSQL as DB
+
+Admin -> UI: Open /admin/users
+UI -> Controller: GET /api/admin/users?q&role&enabled&page&size
+Controller -> AdminService: assertAdmin(actorId)
+AdminService -> UserService: findById(actorId)
+UserService -> UserRepository: findById(actorId)
+UserRepository -> DB: Load enabled account and roles
+DB --> UserRepository: Account
+UserRepository --> UserService: Account
+UserService --> AdminService: Account
+AdminService --> Controller: Admin verified
+Controller -> AdminService: search(criteria, pageable)
+AdminService -> UserService: search(criteria, pageable)
+UserService -> UserRepository: Parameterized filtered page query
+UserRepository -> DB: Select users, roles, count
+DB --> UserRepository: Page<User>
+UserRepository --> UserService: Page<User>
+UserService --> AdminService: Page<User>
+AdminService --> Controller: PageResponse<AdminUserResponse>
+Controller --> UI: 200 page JSON
+UI --> Admin: Render listing and filters
+
+Admin -> UI: Toggle role for user
+UI -> Controller: POST /roles or DELETE /roles/{role}
+Controller -> AdminService: assertAdmin(actorId)
+AdminService --> Controller: Admin verified from current DB role
+Controller -> AdminService: grantRole/revokeRole(actorId,targetId,role)
+AdminService -> UserService: find target, validate business rules
+UserService -> UserRepository: Search target and current role state
+UserRepository -> DB: Read target account/roles
+DB --> UserRepository: Target state
+UserRepository --> UserService: Target state
+UserService --> AdminService: Target state
+alt grant a missing role
+  AdminService -> UserService: grantRole(targetId,role,actorId)
+  UserService -> UserRepository: Insert user_roles with granted_by and granted_at
+  UserRepository -> DB: INSERT ... ON CONFLICT DO NOTHING
+  DB --> UserRepository: Updated role grant
+else revoke a role
+  AdminService -> AdminService: Protect seeded, self, last admin, last role
+  AdminService -> UserService: revokeRole(targetId,role)
+  UserService -> UserRepository: Delete only selected user_roles row
+  UserRepository -> DB: DELETE selected role row
+  DB --> UserRepository: Updated role set
+end
+AdminService --> Controller: Updated AdminUserResponse
+Controller --> UI: 200 user JSON or ProblemDetail
+UI --> Admin: Update row or show error
+@enduml
