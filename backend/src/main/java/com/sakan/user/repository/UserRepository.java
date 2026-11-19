@@ -1,21 +1,27 @@
 package com.sakan.user.repository;
 
+import com.sakan.user.domain.RoleName;
 import com.sakan.user.domain.User;
 import java.util.Optional;
-import com.sakan.user.domain.RoleName;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
+    Optional<User> findByGoogleSub(String googleSub);
+
+    Optional<User> findByEmailIgnoreCase(String email);
+
     boolean existsByUsername(String username);
+
     boolean existsBySeededAdminTrue();
+
     boolean existsByEmail(String email);
 
     @Query("select distinct u from User u left join u.roles r where "

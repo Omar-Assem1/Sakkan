@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 // TODO i18n: replace the English labels with Transloco keys (EN/AR) once the test provider is confirmed.
@@ -27,10 +27,19 @@ import { AuthService } from '../../../core/services/auth.service';
         @if (error()) {
           <p class="text-sm text-red-600" data-testid="auth-error" role="alert">Invalid username or password.</p>
         }
+      @if (googleError()) {
+        <p class="mt-4 text-sm text-red-600" role="alert">Google sign-in could not be completed. Please try again.</p>
+      }
 
         <button class="w-full rounded bg-slate-900 py-2 text-white disabled:opacity-50"
                 type="submit" [disabled]="submitting()">Sign in</button>
       </form>
+
+      <div class="my-5 flex items-center gap-3 text-sm text-slate-500" aria-hidden="true">
+        <span class="h-px flex-1 bg-slate-200"></span><span>or</span><span class="h-px flex-1 bg-slate-200"></span>
+      </div>
+      <a class="flex w-full items-center justify-center rounded border border-slate-300 py-2 text-slate-800 hover:bg-slate-50"
+         data-testid="google-sign-in" href="/oauth2/authorization/google">Continue with Google</a>
 
       <p class="mt-4 text-sm text-slate-600">
         No account? <a class="underline" routerLink="/auth/sign-up">Sign up</a>
@@ -38,12 +47,18 @@ import { AuthService } from '../../../core/services/auth.service';
     </section>
   `,
 })
-export class SignInComponent {
+export class SignInComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   readonly error = signal(false);
   readonly submitting = signal(false);
+  readonly googleError = signal(false);
+
+  ngOnInit(): void {
+    this.googleError.set(this.route.snapshot.queryParamMap.has('googleError'));
+  }
 
   readonly form = new FormGroup({
     username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),

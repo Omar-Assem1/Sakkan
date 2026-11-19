@@ -16,6 +16,13 @@ export interface LoginResponse {
   tokenType: string;
 }
 
+export interface GoogleExchangeResponse {
+  registrationRequired: boolean;
+  email?: string;
+  token?: string;
+  tokenType?: string;
+}
+
 export interface UserSummary {
   id: number;
   username: string;
@@ -40,6 +47,20 @@ export class AuthService {
   adminLogin(username: string, password: string): Observable<LoginResponse> {
     return this.http
       .post<LoginResponse>('/api/auth/admin/login', { username, password })
+      .pipe(tap((res) => this.storeSession(res)));
+  }
+
+  exchangeGoogleCode(code: string): Observable<GoogleExchangeResponse> {
+    return this.http.post<GoogleExchangeResponse>('/api/auth/google/exchange', { code }).pipe(
+      tap((res) => {
+        if (res.token && res.tokenType) this.storeSession({ token: res.token, tokenType: res.tokenType });
+      }),
+    );
+  }
+
+  completeGoogleRegistration(code: string, username: string): Observable<LoginResponse> {
+    return this.http
+      .post<LoginResponse>('/api/auth/google/complete', { code, username })
       .pipe(tap((res) => this.storeSession(res)));
   }
 
