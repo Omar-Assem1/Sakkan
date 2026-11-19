@@ -199,6 +199,18 @@
     "ERRORS": {
       "SAVE_FAILED": "Could not save property. Please try again.",
       "LOAD_FAILED": "Could not load property details."
+    },
+    "IMAGES": {
+      "TITLE": "Property photos",
+      "HELP": "Upload up to 10 JPEG, PNG, or WebP images. Each file must be 10 MB or smaller.",
+      "CHOOSE": "Choose photos",
+      "REMOVE": "Remove",
+      "UPLOADING": "Uploading",
+      "MAX_COUNT": "A property can have at most 10 photos.",
+      "INVALID_TYPE": "Choose a JPEG, PNG, or WebP image.",
+      "TOO_LARGE": "Each image must be 10 MB or smaller.",
+      "COMPRESSION_FAILED": "This image could not be processed.",
+      "UPLOAD_FAILED": "Photos could not be uploaded. You can retry by editing this property."
     }
   },
   "MY_PROPERTIES": {

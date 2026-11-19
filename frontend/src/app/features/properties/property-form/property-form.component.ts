@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { PropertyService } from '../services/property.service';
+import { PropertyImage, PropertyImageService } from '../services/property-image.service';
 import { AmenityDto, LocationNode, PropertyRequest, PropertyTypeDto } from '../models/property.model';
 
 @Component({
@@ -18,6 +19,7 @@ export class PropertyFormComponent implements OnInit {
   private readonly propertyService = inject(PropertyService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly imageService = inject(PropertyImageService);
 
   isEditMode = signal<boolean>(false);
   propertyId = signal<number | null>(null);
@@ -27,6 +29,10 @@ export class PropertyFormComponent implements OnInit {
   locations = signal<LocationNode[]>([]);
   propertyTypes = signal<PropertyTypeDto[]>([]);
   amenities = signal<AmenityDto[]>([]);
+  selectedImages = signal<File[]>([]);
+  imagePreviews = signal<string[]>([]);
+  propertyImages = signal<PropertyImage[]>([]);
+  uploadProgress = signal<number | null>(null);
 
   selectedGovernorateId = signal<number | null>(null);
   selectedCityId = signal<number | null>(null);
@@ -92,6 +98,7 @@ export class PropertyFormComponent implements OnInit {
           areaSqm: prop.areaSqm,
           amenityIds: prop.amenityIds || []
         });
+        this.imageService.list(id).subscribe(images => this.propertyImages.set(images));
       },
       error: () => {
         this.isLoading.set(false);
@@ -146,6 +153,32 @@ export class PropertyFormComponent implements OnInit {
     this.form.patchValue({ amenityIds: updated });
   }
 
+  async onImagesSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    input.value = '';
+    if (this.selectedImages().length + files.length + this.propertyImages().length > 10) {
+      this.errorMessage.set('PROPERTY.IMAGES.MAX_COUNT'); return;
+    }
+    try {
+      const compressed = await Promise.all(files.map(file => this.imageService.compress(file)));
+      this.selectedImages.update(current => [...current, ...compressed]);
+      this.imagePreviews.update(current => [...current, ...compressed.map(file => URL.createObjectURL(file))]);
+      this.errorMessage.set(null);
+    } catch (error) { this.errorMessage.set(error instanceof Error ? error.message : 'PROPERTY.IMAGES.COMPRESSION_FAILED'); }
+  }
+
+  removeSelectedImage(index: number): void {
+    URL.revokeObjectURL(this.imagePreviews()[index]);
+    this.selectedImages.update(files => files.filter((_, i) => i !== index));
+    this.imagePreviews.update(urls => urls.filter((_, i) => i !== index));
+  }
+
+  deletePropertyImage(image: PropertyImage): void {
+    const id = this.propertyId(); if (!id) return;
+    this.imageService.remove(id, image.id).subscribe(() => this.propertyImages.update(items => items.filter(item => item.id !== image.id)));
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -170,10 +203,7 @@ export class PropertyFormComponent implements OnInit {
     this.isLoading.set(true);
     if (this.isEditMode() && this.propertyId()) {
       this.propertyService.updateProperty(this.propertyId()!, request).subscribe({
-        next: () => {
-          this.isLoading.set(false);
-          this.router.navigate(['/properties/mine']);
-        },
+        next: () => this.uploadPendingImages(this.propertyId()!),
         error: () => {
           this.isLoading.set(false);
           this.errorMessage.set('PROPERTY.ERRORS.SAVE_FAILED');
@@ -181,15 +211,22 @@ export class PropertyFormComponent implements OnInit {
       });
     } else {
       this.propertyService.createProperty(request).subscribe({
-        next: () => {
-          this.isLoading.set(false);
-          this.router.navigate(['/properties/mine']);
-        },
+        next: property => this.uploadPendingImages(property.id),
         error: () => {
           this.isLoading.set(false);
           this.errorMessage.set('PROPERTY.ERRORS.SAVE_FAILED');
         }
       });
     }
+  }
+
+  private uploadPendingImages(propertyId: number): void {
+    const files = this.selectedImages();
+    if (!files.length) { this.isLoading.set(false); this.router.navigate(['/properties/mine']); return; }
+    this.imageService.upload(propertyId, files).subscribe({
+      next: event => { if (event.type === 1 && event.total) this.uploadProgress.set(Math.round(100 * event.loaded / event.total)); },
+      error: () => { this.isLoading.set(false); this.uploadProgress.set(null); this.errorMessage.set('PROPERTY.IMAGES.UPLOAD_FAILED'); },
+      complete: () => { this.isLoading.set(false); this.uploadProgress.set(null); this.router.navigate(['/properties/mine']); }
+    });
   }
 }
