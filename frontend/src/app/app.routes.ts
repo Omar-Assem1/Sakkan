@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'listings' },
@@ -13,21 +14,21 @@ export const routes: Routes = [
       import('./features/listings/listings.routes').then((m) => m.LISTINGS_ROUTES),
   },
   {
+    // Children are guarded per role (see viewings.routes.ts).
     path: 'viewings',
-    canActivate: [authGuard],
+    canMatch: [authGuard],
     loadChildren: () =>
       import('./features/viewings/viewings.routes').then((m) => m.VIEWINGS_ROUTES),
   },
   {
     path: 'properties',
-    canActivate: [authGuard],
+    canMatch: [roleGuard('OWNER', 'AGENT')],
     loadChildren: () =>
       import('./features/properties/properties.routes').then((m) => m.PROPERTIES_ROUTES),
   },
   {
     path: 'admin',
-    canActivate: [authGuard],
-    data: { roles: ['ADMIN'] },
+    canMatch: [roleGuard('ADMIN')],
     loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
   },
   {

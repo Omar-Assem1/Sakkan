@@ -1,0 +1,56 @@
+@startuml rbac-flow
+title RBAC request flow (main flow and failures)
+actor User
+participant "Angular\ncanMatch guard" as Guard
+participant "Auth\ninterceptor" as Interceptor
+participant "SecurityFilterChain\n+ JwtDecoder" as Filter
+participant "Account\nstatus check" as Status
+participant "Controller\n@PreAuthorize" as Controller
+participant "Service\n(ownership)" as Service
+database "PostgreSQL" as DB
+
+User -> Guard : open route
+alt no token
+  Guard --> User : redirect /auth/sign-in?returnUrl
+else token but role not allowed
+  Guard --> User : redirect /error?code=403
+else allowed
+  Guard -> Interceptor : call API
+  Interceptor -> Filter : request + Bearer JWT
+  alt public URL
+    Filter -> Controller : no authentication needed
+  else protected URL
+    Filter -> Filter : verify HS256 signature, expiry, claims
+    alt missing, expired, tampered or alg=none
+      Filter --> Interceptor : 401 ProblemDetail
+      Interceptor --> User : clear session, redirect sign-in
+    else valid
+      Filter -> Status : user id from sub claim
+      Status -> DB : user exists and enabled?
+      alt missing or disabled
+        Status --> Interceptor : 401 ProblemDetail
+      else active
+        Filter -> Controller : authorities ROLE_<name> from roles claim
+      end
+    end
+  end
+  Controller -> Controller : URL rule and @PreAuthorize (any held role)
+  alt role not allowed
+    Controller --> Interceptor : 403 ProblemDetail
+    Interceptor --> User : redirect /error?code=403
+  else role allowed
+    Controller -> Service : call with current user
+    Service -> DB : load resource
+    alt not owner or assigned agent
+      Service --> Controller : ForbiddenOperationException
+      Controller --> Interceptor : 403 ProblemDetail
+    else hidden resource
+      Service --> Controller : ResourceNotFoundException
+      Controller --> Interceptor : 404 ProblemDetail
+    else owner
+      Service --> Controller : result DTO
+      Controller --> User : 200 / 201 / 204
+    end
+  end
+end
+@enduml

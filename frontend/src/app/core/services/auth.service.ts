@@ -24,8 +24,7 @@ export interface UserSummary {
   roles: string[];
 }
 
-const ROLE_PRIORITY = ['ADMIN', 'OWNER', 'AGENT', 'BUYER_TENANT'];
-
+const ROLE_PRIORITY = ['ADMIN', 'OWNER', 'AGENT', 'MAINTENANCE_STAFF', 'BUYER_TENANT'];
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -46,9 +45,9 @@ export class AuthService {
 
   private storeSession(res: LoginResponse): void {
     this.storage.saveToken(res.token);
-    const role = pickRole(rolesFromToken(res.token));
-    if (role) {
-      this.storage.saveRole(role);
+    const roles = sortByPriority(rolesFromToken(res.token));
+    if (roles.length > 0) {
+      this.storage.saveRoles(roles);
     }
   }
 
@@ -73,7 +72,11 @@ function rolesFromToken(token: string): string[] {
     return [];
   }
 }
-
-function pickRole(roles: string[]): string | null {
-  return ROLE_PRIORITY.find((r) => roles.includes(r)) ?? roles[0] ?? null;
+/** Highest-priority role first, so the navbar (which shows the first role) behaves as before. */
+function sortByPriority(roles: string[]): string[] {
+  const rank = (r: string) => {
+    const i = ROLE_PRIORITY.indexOf(r);
+    return i === -1 ? ROLE_PRIORITY.length : i;
+  };
+  return [...roles].sort((a, b) => rank(a) - rank(b));
 }

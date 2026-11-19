@@ -1,0 +1,44 @@
+@startuml rbac-use-case
+title UC-08 RBAC (SCRUM-65, FR-08, NFR-03)
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Visitor\n(no token)" as Visitor
+actor "Authenticated User" as User
+actor "Buyer/Tenant" as Buyer
+actor "Owner" as Owner
+actor "Agent" as Agent
+actor "Maintenance Staff" as Maint
+actor "Admin" as Admin
+
+User <|-- Buyer
+User <|-- Owner
+User <|-- Agent
+User <|-- Maint
+User <|-- Admin
+
+rectangle "Sakan Platform" {
+  usecase "UC-08.1\nAccess public resource" as UC1
+  usecase "UC-08.2\nAccess protected API endpoint" as UC2
+  usecase "UC-08.3\nOpen protected Angular route" as UC3
+  usecase "Validate JWT\nand account status" as UC4
+  usecase "Check role\n(URL rule + @PreAuthorize)" as UC5
+  usecase "Check ownership\n(service layer)" as UC6
+  usecase "Return 401 Unauthorized" as UC7
+  usecase "Return 403 Forbidden" as UC8
+  usecase "Redirect to sign-in\nor 403 page" as UC9
+}
+
+Visitor --> UC1
+Visitor --> UC3
+User --> UC1
+User --> UC2
+User --> UC3
+
+UC2 ..> UC4 : <<include>>
+UC2 ..> UC5 : <<include>>
+UC6 ..> UC2 : <<extend>>\n(resource has an owner)
+UC7 ..> UC2 : <<extend>>\n(token invalid or missing)
+UC8 ..> UC2 : <<extend>>\n(role or ownership denied)
+UC9 ..> UC3 : <<extend>>\n(no token or wrong role)
+@enduml

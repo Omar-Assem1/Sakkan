@@ -110,6 +110,22 @@ public class PropertyImageService {
                 .toList();
     }
 
+    /** Images follow the property's visibility: DRAFT/ARCHIVED only for owner, assigned agent and ADMIN (404 otherwise). */
+    @Transactional(readOnly = true)
+    public List<PropertyImageResponse> list(long propertyId, AuthenticatedUser actor) {
+        Property property = properties.findById(propertyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Property " + propertyId + " not found"));
+        if (property.getStatus() != PropertyStatus.PUBLISHED && !canSeeUnpublished(property, actor))
+            throw new ResourceNotFoundException("Property " + propertyId + " not found");
+        return images.findByPropertyIdAndArchivedFalseOrderByDisplayOrderAsc(propertyId).stream()
+                .map(this::response).toList();
+    }
+
+    private boolean canSeeUnpublished(Property p, AuthenticatedUser u) {
+        return u != null && (u.id().equals(p.getOwnerId()) || u.id().equals(p.getAgentId())
+                || u.roles().contains("ADMIN"));
+    }
+
     @Transactional
     public void delete(long propertyId, long imageId, AuthenticatedUser actor) {
         Property p = properties.findById(propertyId)
