@@ -25,4 +25,20 @@ export const VIEWINGS_ROUTES: Routes = [
       ),
     title: 'Sakan',
   },
+  {
+    path: 'request',
+    loadComponent: () =>
+      import('./request-viewing-form/request-viewing-form.component').then(
+        (m) => m.RequestViewingFormComponent,
+      ),
+    title: 'Sakan',
+  },
+  {
+    path: 'request/:propertyId',
+    loadComponent: () =>
+      import('./request-viewing-form/request-viewing-form.component').then(
+        (m) => m.RequestViewingFormComponent,
+      ),
+    title: 'Sakan',
+  },
 ];

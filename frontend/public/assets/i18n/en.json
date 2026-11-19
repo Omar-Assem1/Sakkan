@@ -97,6 +97,26 @@
         "FORBIDDEN_403": "Only the property owner or assigned agent can manage viewing slots.",
         "GENERIC": "Could not save the viewing slot. Please try again."
       }
+    },
+    "REQUEST": {
+      "TITLE": "Request a Viewing",
+      "SUBTITLE": "Select an available time slot to book a viewing for this property.",
+      "PROPERTY_ID_LABEL": "Property ID",
+      "SLOTS_LABEL": "Available Time Slots",
+      "LOADING_SLOTS": "Loading available slots...",
+      "EMPTY_SLOTS": "No viewing slots are currently available for this property.",
+      "NOTES_LABEL": "Notes (optional)",
+      "NOTES_PLACEHOLDER": "Add any preferences or questions for the owner or agent...",
+      "SUBMIT": "Request Viewing",
+      "SUCCESS": "Your viewing request has been submitted and is awaiting confirmation.",
+      "ERRORS": {
+        "SLOT_REQUIRED": "Please select a viewing time slot.",
+        "NOTES_MAXLENGTH": "Notes cannot exceed 1000 characters.",
+        "CONFLICT_409": "This time slot was just booked by another user. Please select a different slot.",
+        "FORBIDDEN_403": "You cannot book a viewing on your own property or with your current role.",
+        "UNAUTHORIZED_401": "Please sign in to request a viewing.",
+        "GENERIC": "Could not submit your viewing request. Please try again."
+      }
     }
   },
   "ADMIN": {
