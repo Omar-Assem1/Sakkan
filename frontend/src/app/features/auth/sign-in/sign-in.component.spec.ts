@@ -64,4 +64,12 @@ describe('SignInComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="auth-error"]')).toBeTruthy();
     expect(navigatedTo).toBe('');
   });
+
+  it('offers Google sign-in through the backend OAuth authorization route', () => {
+    const link = fixture.nativeElement.querySelector('[data-testid="google-sign-in"]') as HTMLAnchorElement | null;
+
+    expect(link).not.toBeNull();
+    expect(link?.getAttribute('href')).toBe('/oauth2/authorization/google');
+    expect(link?.textContent).toContain('Google');
+  });
 });
