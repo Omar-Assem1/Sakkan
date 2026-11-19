@@ -1,18 +1,25 @@
 package com.sakan.viewing.service;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sakan.common.exception.ForbiddenOperationException;
 import com.sakan.common.exception.ResourceNotFoundException;
 import com.sakan.common.exception.SlotConflictException;
+import com.sakan.common.response.PageResponse;
 import com.sakan.common.security.AuthenticatedUser;
 import com.sakan.common.statemachine.StatusTransitions;
 import com.sakan.property.dto.PropertyResponse;
@@ -29,6 +36,8 @@ import com.sakan.viewing.repository.ViewingRepository;
 public class ViewingServiceImpl implements ViewingService {
 
     private static final Logger log = LoggerFactory.getLogger(ViewingServiceImpl.class);
+    private static final int DEFAULT_PAGE_SIZE = 20;
+    private static final int MAX_PAGE_SIZE = 50;
 
     private static final StatusTransitions<ViewingStatus> VIEWING_TRANSITIONS = StatusTransitions.of(Map.of(
             ViewingStatus.REQUESTED, EnumSet.of(ViewingStatus.CONFIRMED, ViewingStatus.CANCELLED),
@@ -102,6 +111,50 @@ public class ViewingServiceImpl implements ViewingService {
         Viewing viewing = findViewingOrThrow(viewingId);
         requirePropertyManager(viewing.getPropertyId(), actor);
         return applyTransition(viewing, ViewingStatus.COMPLETED, actor);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<ViewingResponse> listMyViewings(
+            AuthenticatedUser actor, ViewingStatus status, int page, int size) {
+        Pageable pageable = PageRequest.of(
+                Math.max(page, 0), clampSize(size), Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<Viewing> result;
+        if (actor.canManageListings()) {
+            List<Long> managedPropertyIds = loadManagedPropertyIds(actor);
+            if (managedPropertyIds.isEmpty()) {
+                return PageResponse.from(Page.empty(pageable));
+            }
+            result = (status != null)
+                    ? viewingRepository.findByPropertyIdInAndStatus(managedPropertyIds, status, pageable)
+                    : viewingRepository.findByPropertyIdIn(managedPropertyIds, pageable);
+        } else {
+            result = (status != null)
+                    ? viewingRepository.findByBuyerIdAndStatus(actor.id(), status, pageable)
+                    : viewingRepository.findByBuyerId(actor.id(), pageable);
+        }
+
+        return PageResponse.from(result.map(mapper::toResponse));
+    }
+
+    private List<Long> loadManagedPropertyIds(AuthenticatedUser actor) {
+        List<Long> ids = new ArrayList<>();
+        int currentPage = 0;
+        PageResponse<PropertyResponse> batch;
+        do {
+            batch = propertyService.listMine(actor, currentPage, MAX_PAGE_SIZE);
+            batch.content().forEach(p -> ids.add(p.id()));
+            currentPage++;
+        } while (currentPage < batch.totalPages());
+        return ids;
+    }
+
+    private int clampSize(int size) {
+        if (size < 1) {
+            return DEFAULT_PAGE_SIZE;
+        }
+        return Math.min(size, MAX_PAGE_SIZE);
     }
 
     private Viewing findViewingOrThrow(Long viewingId) {

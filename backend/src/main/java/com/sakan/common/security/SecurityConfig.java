@@ -43,6 +43,7 @@ public class SecurityConfig {
                 // Checked before body validation, so disallowed roles get 403, not 400.
                 .requestMatchers(HttpMethod.POST, "/api/properties/*/slots").hasAnyRole("OWNER", "AGENT")
                 .requestMatchers(HttpMethod.DELETE, "/api/properties/*/slots/*").hasAnyRole("OWNER", "AGENT")
+                .requestMatchers(HttpMethod.GET, "/api/viewings/my").hasAnyRole("BUYER_TENANT", "OWNER", "AGENT")
                 .requestMatchers(HttpMethod.POST, "/api/viewings").hasAnyRole("BUYER_TENANT", "OWNER", "AGENT")
                 .requestMatchers(HttpMethod.PATCH, "/api/viewings/*/confirm", "/api/viewings/*/complete").hasAnyRole("OWNER", "AGENT")
                 .requestMatchers(HttpMethod.PATCH, "/api/viewings/*/cancel").hasAnyRole("BUYER_TENANT", "OWNER", "AGENT")

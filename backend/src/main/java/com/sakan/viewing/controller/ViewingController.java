@@ -4,14 +4,18 @@ import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sakan.common.response.PageResponse;
 import com.sakan.common.security.CurrentUserProvider;
+import com.sakan.viewing.domain.ViewingStatus;
 import com.sakan.viewing.dto.RequestViewingRequest;
 import com.sakan.viewing.dto.ViewingResponse;
 import com.sakan.viewing.service.ViewingService;
@@ -32,6 +36,21 @@ public class ViewingController {
     public ViewingController(ViewingService service, CurrentUserProvider currentUser) {
         this.service = service;
         this.currentUser = currentUser;
+    }
+
+    @Operation(
+            summary = "List my viewings",
+            description = "Returns paginated viewings filtered by caller role (buyer: requested viewings; owner/agent: viewings on managed properties) and optional status")
+    @ApiResponse(responseCode = "200", description = "Paginated viewings returned")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "403", description = "Role not allowed")
+    @PreAuthorize("hasAnyRole('BUYER_TENANT', 'OWNER', 'AGENT')")
+    @GetMapping("/my")
+    public PageResponse<ViewingResponse> listMyViewings(
+            @RequestParam(name = "status", required = false) ViewingStatus status,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size) {
+        return service.listMyViewings(currentUser.require(), status, page, size);
     }
 
     @Operation(
