@@ -117,6 +117,45 @@
         "UNAUTHORIZED_401": "Please sign in to request a viewing.",
         "GENERIC": "Could not submit your viewing request. Please try again."
       }
+    },
+    "MY": {
+      "TITLE": "My Viewings",
+      "SUBTITLE_BUYER": "Track your requested viewing appointments and cancel if your plans change.",
+      "SUBTITLE_MANAGER": "Review, confirm, complete, or cancel viewing requests on your properties.",
+      "MANAGE_AVAILABILITY": "Manage Availability",
+      "BROWSE_PROPERTIES": "Browse Properties",
+      "FILTER_ALL": "All",
+      "LOADING": "Loading viewings...",
+      "EMPTY": "No viewing appointments match the current filter.",
+      "COL_PROPERTY": "Property",
+      "COL_SLOT": "Slot",
+      "COL_STATUS": "Status",
+      "COL_NOTES": "Notes",
+      "COL_CREATED": "Requested At",
+      "COL_ACTIONS": "Actions",
+      "NO_NOTES": "—",
+      "STATUS": {
+        "REQUESTED": "Requested",
+        "CONFIRMED": "Confirmed",
+        "CANCELLED": "Cancelled",
+        "COMPLETED": "Completed"
+      },
+      "ACTIONS": {
+        "CONFIRM": "Confirm",
+        "CANCEL": "Cancel",
+        "COMPLETE": "Complete"
+      },
+      "PAGINATION": {
+        "PREVIOUS": "Previous",
+        "NEXT": "Next"
+      },
+      "ERRORS": {
+        "LOAD_FAILED": "Could not load your viewings. Please try again.",
+        "CONFLICT_409": "This viewing can no longer be moved to that status.",
+        "FORBIDDEN_403": "You do not have permission to perform this action on this viewing.",
+        "UNAUTHORIZED_401": "Please sign in to view or manage your viewings.",
+        "GENERIC": "Could not update the viewing status. Please try again."
+      }
     }
   },
   "ADMIN": {

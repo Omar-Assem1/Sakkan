@@ -4,8 +4,8 @@ export const VIEWINGS_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./availability-form/availability-form.component').then(
-        (m) => m.AvailabilityFormComponent,
+      import('./my-viewings/my-viewings.component').then(
+        (m) => m.MyViewingsComponent,
       ),
     title: 'Sakan',
   },
