@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -39,6 +40,7 @@ import com.sakan.property.domain.PropertyPurpose;
 import com.sakan.property.domain.PropertyStatus;
 import com.sakan.property.repository.PropertyRepository;
 import com.sakan.support.AbstractIntegrationTest;
+import com.sakan.support.TestUserFixtures;
 import com.sakan.support.security.EndpointSecurityAssertions;
 import com.sakan.support.security.Role;
 import com.sakan.support.tags.IntegrationTest;
@@ -78,12 +80,17 @@ class ViewingConcurrencyIT extends AbstractIntegrationTest {
     @Autowired
     private ViewingRepository viewingRepository;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private MockMvc mvc;
     private Property publishedProperty;
     private ViewingSlot slot;
 
     @BeforeEach
     void setUp() {
+        TestUserFixtures.ensureUsers(jdbcTemplate, OWNER_ID, ASSIGNED_AGENT_ID, BUYER_1_ID, BUYER_2_ID);
+
         mvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
@@ -125,6 +132,7 @@ class ViewingConcurrencyIT extends AbstractIntegrationTest {
         if (publishedProperty != null && publishedProperty.getId() != null) {
             propertyRepository.deleteById(publishedProperty.getId());
         }
+        TestUserFixtures.deleteUsers(jdbcTemplate, OWNER_ID, ASSIGNED_AGENT_ID, BUYER_1_ID, BUYER_2_ID);
     }
 
     @Test
