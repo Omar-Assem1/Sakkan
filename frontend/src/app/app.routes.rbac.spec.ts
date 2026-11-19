@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { routes } from './app.routes';
 import { VIEWINGS_ROUTES } from './features/viewings/viewings.routes';
+import { ADMIN_ROUTES } from './features/admin/admin.routes';
 
 const PUBLIC_PATHS = ['', 'auth', 'listings', 'error', '**'];
 
@@ -41,5 +42,24 @@ describe('route RBAC configuration (SCRUM-65)', () => {
       expect(route, path).toBeDefined();
       expect(route?.canMatch, path).toBeUndefined();
     }
+  });
+});
+
+describe('admin routes (SCRUM-69)', () => {
+  it('exposes the users listing under the guarded admin area', () => {
+    expect(ADMIN_ROUTES.some((r) => r.path === 'users')).toBe(true);
+  });
+
+  it('keeps the admin landing page and never uses canActivate or data.roles on admin children', () => {
+    expect(ADMIN_ROUTES.some((r) => r.path === '')).toBe(true);
+    for (const route of ADMIN_ROUTES) {
+      expect(route.canActivate, `admin route "${route.path}"`).toBeUndefined();
+      expect(route.data?.['roles'], `admin route "${route.path}"`).toBeUndefined();
+    }
+  });
+
+  it('keeps the top-level admin route behind canMatch', () => {
+    const admin = routes.find((r) => r.path === 'admin');
+    expect(admin?.canMatch?.length).toBeGreaterThan(0);
   });
 });

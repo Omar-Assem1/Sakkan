@@ -17,6 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ import com.sakan.property.domain.Property;
 import com.sakan.property.repository.PropertyRepository;
 import com.sakan.property.web.PropertyController;
 import com.sakan.support.AbstractIntegrationTest;
+import com.sakan.support.TestUserFixtures;
 import com.sakan.support.tags.IntegrationTest;
 import com.sakan.support.tags.RegressionTest;
 
@@ -50,6 +52,9 @@ class PropertySearchIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private Property enSmouha;
     private Property arSmouha;
     private Property arDiacritics;
@@ -61,6 +66,8 @@ class PropertySearchIntegrationTest extends AbstractIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        TestUserFixtures.ensureUsers(jdbcTemplate, 100L, 101L, 102L, 103L, 104L, 105L);
+
         LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
         mockMvc = MockMvcBuilders.standaloneSetup(propertyController)

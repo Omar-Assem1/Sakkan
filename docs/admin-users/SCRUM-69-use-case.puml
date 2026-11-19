@@ -1,0 +1,37 @@
+@startuml SCRUM-69-use-case
+title SCRUM-69 Admin: Manage Users (listing 22)
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Admin\n(seeded or promoted)" as Admin
+actor "Visitor / non-admin" as Other
+
+rectangle "Sakan Admin Module" {
+  usecase "UC-22.1\nList and filter users" as UC1
+  usecase "UC-22.2\nGrant role (promote)" as UC2
+  usecase "UC-22.3\nRevoke role (demote)" as UC3
+  usecase "Sign in as admin\n(SCRUM-61)" as SignIn
+  usecase "Verify caller is still\nan enabled admin in DB" as Verify
+  usecase "Check protection rules" as Rules
+  usecase "Reject: seeded admin,\nself-demote, last admin,\nno roles left" as Reject
+}
+
+Admin --> UC1
+Admin --> UC2
+Admin --> UC3
+
+UC1 ..> SignIn : <<include>>
+UC2 ..> SignIn : <<include>>
+UC3 ..> SignIn : <<include>>
+UC1 ..> Verify : <<include>>
+UC2 ..> Verify : <<include>>
+UC3 ..> Verify : <<include>>
+UC3 ..> Rules : <<include>>
+Reject ..> UC3 : <<extend>>
+
+Other --> UC1 : 401 / 403
+note right of Other
+  Non-admin or signed-out callers
+  are rejected on every admin endpoint
+end note
+@enduml

@@ -52,6 +52,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/actuator/health/**", "/actuator/info").permitAll()
 
                 // --- role rules, checked before body validation so wrong roles get 403, not 400 ---
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/properties/mine").hasAnyRole("OWNER", "AGENT")
                 .requestMatchers(HttpMethod.POST, "/api/properties").hasAnyRole("OWNER", "AGENT")
                 .requestMatchers(HttpMethod.PUT, "/api/properties/*").hasAnyRole("OWNER", "AGENT")

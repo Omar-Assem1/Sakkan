@@ -1,0 +1,60 @@
+<main class="mx-auto max-w-7xl px-4 py-8" *transloco="let t">
+  <header class="mb-6">
+    <h1 class="text-2xl font-bold" data-testid="page-title">{{ t('ADMIN_USERS.TITLE') }}</h1>
+    <p class="mt-1 text-sm text-slate-600">{{ t('ADMIN_USERS.SUBTITLE') }}</p>
+  </header>
+  @if (errorMessage()) {
+    <p class="mb-4 rounded-lg bg-red-50 p-4 text-red-700" role="alert" data-testid="api-error">{{ t(errorMessage()!) }}</p>
+  }
+  <section class="mb-5 flex flex-wrap items-end gap-3" aria-label="User filters">
+    <label class="grid gap-1">{{ t('ADMIN_USERS.FILTERS.SEARCH') }}
+      <input class="rounded border px-3 py-2" data-testid="filter-q" (input)="setQuery($any($event.target).value)" />
+    </label>
+    <label class="grid gap-1">{{ t('ADMIN_USERS.FILTERS.ROLE') }}
+      <select class="rounded border px-3 py-2" data-testid="filter-role" (change)="setRole($any($event.target).value)">
+        <option value="">{{ t('ADMIN_USERS.FILTERS.ALL') }}</option>
+        @for (role of roleOptions; track role) { <option [value]="role">{{ t('ADMIN_USERS.ROLES.' + role) }}</option> }
+      </select>
+    </label>
+    <label class="grid gap-1">{{ t('ADMIN_USERS.FILTERS.STATUS') }}
+      <select class="rounded border px-3 py-2" data-testid="filter-enabled" (change)="setEnabled($any($event.target).value)">
+        <option value="">{{ t('ADMIN_USERS.FILTERS.ALL') }}</option>
+        <option value="true">{{ t('ADMIN_USERS.FILTERS.ENABLED') }}</option>
+        <option value="false">{{ t('ADMIN_USERS.FILTERS.DISABLED') }}</option>
+      </select>
+    </label>
+    <button class="rounded bg-indigo-600 px-4 py-2 text-white" data-testid="apply-filters" (click)="applyFilters()">{{ t('ADMIN_USERS.FILTERS.APPLY') }}</button>
+  </section>
+  @if (isLoading()) { <div class="py-10 text-center" data-testid="loading-spinner" role="status"></div> }
+  @else if (users().length === 0) {
+    <section class="rounded-xl border border-dashed p-10 text-center" data-testid="empty-state">
+      <h2 class="font-semibold">{{ t('ADMIN_USERS.EMPTY.TITLE') }}</h2><p>{{ t('ADMIN_USERS.EMPTY.DESCRIPTION') }}</p>
+    </section>
+  } @else {
+    <div class="overflow-x-auto rounded-xl border bg-white">
+      <table class="min-w-full text-start"><thead class="bg-slate-50"><tr>
+        <th class="p-3">{{ t('ADMIN_USERS.TABLE.USERNAME') }}</th><th class="p-3">{{ t('ADMIN_USERS.TABLE.EMAIL') }}</th>
+        <th class="p-3">{{ t('ADMIN_USERS.TABLE.STATUS') }}</th><th class="p-3">{{ t('ADMIN_USERS.TABLE.SEEDED') }}</th>
+        @for (role of roles; track role) { <th class="p-3">{{ t('ADMIN_USERS.ROLES.' + role) }}</th> }
+      </tr></thead><tbody>
+        @for (user of users(); track user.id) {
+          <tr class="border-t" data-testid="user-row">
+            <td class="p-3">{{ user.username }}</td><td class="p-3">{{ user.email }}</td>
+            <td class="p-3">{{ user.enabled ? t('ADMIN_USERS.FILTERS.ENABLED') : t('ADMIN_USERS.FILTERS.DISABLED') }}</td>
+            <td class="p-3">{{ user.seededAdmin ? t('ADMIN_USERS.TABLE.SEEDED') : '' }}</td>
+            @for (role of roles; track role) {
+              <td class="p-3"><button type="button" class="rounded border px-2 py-1" [disabled]="user.seededAdmin"
+                [attr.aria-pressed]="hasRole(user, role)" [attr.data-testid]="'role-toggle-' + role"
+                (click)="toggle(user, role)">{{ hasRole(user, role) ? '✓' : '+' }}</button></td>
+            }
+          </tr>
+        }
+      </tbody></table>
+    </div>
+    <nav class="mt-4 flex items-center justify-end gap-3" aria-label="Pagination">
+      <button data-testid="prev-page" class="rounded border px-3 py-2" [disabled]="currentPage() === 0" (click)="previous()">{{ t('ADMIN_USERS.PAGINATION.PREVIOUS') }}</button>
+      <span>{{ currentPage() + 1 }} / {{ totalPages() }} · {{ totalElements() }}</span>
+      <button data-testid="next-page" class="rounded border px-3 py-2" [disabled]="currentPage() + 1 >= totalPages()" (click)="next()">{{ t('ADMIN_USERS.PAGINATION.NEXT') }}</button>
+    </nav>
+  }
+</main>

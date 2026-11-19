@@ -9,10 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 /** A time window during which a property's owner or assigned agent is available for viewings (FR-16). */
 @Entity
-@Table(name = "viewing_slot")
+@Table(name = "viewing_slot", uniqueConstraints = @UniqueConstraint(
+        name = "uq_viewing_slot_property_start", columnNames = {"property_id", "start_time"}))
 public class ViewingSlot {
 
     @Id

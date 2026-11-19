@@ -1,15 +1,15 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoPipe } from '@jsverse/transloco';
+import { RouterLink } from '@angular/router';
 
-/** Placeholder – admin moderation screens come in a later story. */
 @Component({
   selector: 'app-admin-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslocoPipe],
+  imports: [TranslocoPipe, TranslocoDirective, RouterLink],
   template: `
     <section class="rounded-xl border border-slate-200 bg-white ps-6 pe-6 py-8 text-start">
       <h1 class="text-2xl font-bold text-slate-900">{{ 'ADMIN.TITLE' | transloco }}</h1>
-      <p class="mt-2 text-slate-600">{{ 'ADMIN.PLACEHOLDER' | transloco }}</p>
+      <a routerLink="/admin/users" class="mt-4 inline-flex rounded bg-indigo-600 px-4 py-2 text-white" *transloco="let t">{{ t('ADMIN_USERS.TITLE') }}</a>
     </section>
   `,
 })
