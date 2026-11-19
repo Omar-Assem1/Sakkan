@@ -4,6 +4,7 @@ import { TranslocoTestingModule } from '@jsverse/transloco';
 import { of } from 'rxjs';
 import { PropertyFormComponent } from './property-form.component';
 import { PropertyService } from '../services/property.service';
+import { PropertyImageService } from '../services/property-image.service';
 import { LocationNode, PropertyResponse, PropertyTypeDto, AmenityDto } from '../models/property.model';
 
 const TEST_TRANSLATIONS = {
@@ -209,6 +210,15 @@ describe('PropertyFormComponent — Form 4 (SKN-21)', () => {
       providers: [
         provideRouter([]),
         { provide: PropertyService, useValue: propertyServiceSpy },
+        {
+          provide: PropertyImageService,
+          useValue: {
+            list: vi.fn().mockReturnValue(of([])),
+            upload: vi.fn().mockReturnValue(of()),
+            remove: vi.fn().mockReturnValue(of(void 0)),
+            compress: vi.fn()
+          }
+        },
         {
           provide: ActivatedRoute,
           useValue: {

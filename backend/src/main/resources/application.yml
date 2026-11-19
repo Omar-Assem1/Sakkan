@@ -12,7 +12,13 @@ spring:
       ddl-auto: update
   flyway:
     enabled: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
 app:
+  images:
+    root: ${IMAGE_STORAGE_ROOT:./uploads}
   admin:
     username: ${ADMIN_USERNAME:}
     password: ${ADMIN_PASSWORD:}
