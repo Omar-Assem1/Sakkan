@@ -60,6 +60,12 @@ public class PropertyService {
         this.statusTransitionService = statusTransitionService;
     }
 
+    /** Convenience constructor retained for isolated unit tests that do not assert domain events. */
+    public PropertyService(PropertyRepository repository, PropertyMapper mapper) {
+        this(repository, mapper, new DefaultLocationHierarchyService(), new PropertySortValidator(),
+                new StatusTransitionService(event -> { }));
+    }
+
     @Transactional(readOnly = true)
     public PageResponse<PropertySummaryResponse> browse(PropertySearchCriteria criteria) {
         Sort sort = sortValidator.validateAndBuildSort(criteria.sort());

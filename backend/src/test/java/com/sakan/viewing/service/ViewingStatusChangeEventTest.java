@@ -1,6 +1,7 @@
 package com.sakan.viewing.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,6 +24,7 @@ import org.springframework.context.PayloadApplicationEvent;
 
 import com.sakan.common.domain.Currency;
 import com.sakan.common.event.StatusChangedEvent;
+import com.sakan.common.exception.InvalidStatusTransitionException;
 import com.sakan.common.security.AuthenticatedUser;
 import com.sakan.common.statemachine.StatusTransitionService;
 import com.sakan.property.domain.PropertyPurpose;
@@ -81,6 +83,8 @@ class ViewingStatusChangeEventTest {
 
         var requestedForCancellation = service.requestViewing(new RequestViewingRequest(50L, null), buyer);
         service.cancelViewing(requestedForCancellation.id(), buyer);
+        assertThatThrownBy(() -> service.completeViewing(requestedForCancellation.id(), owner))
+                .isInstanceOf(InvalidStatusTransitionException.class);
 
         assertThat(received).extracting(StatusChangedEvent::newStatus)
                 .containsExactly("REQUESTED", "CONFIRMED", "COMPLETED", "REQUESTED", "CANCELLED");
