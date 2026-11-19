@@ -25,6 +25,7 @@ import com.sakan.common.exception.SlotConflictException;
 import com.sakan.common.response.PageResponse;
 import com.sakan.common.security.AuthenticatedUser;
 import com.sakan.common.statemachine.StatusTransitions;
+import com.sakan.common.statemachine.StatusTransitionService;
 import com.sakan.property.dto.PropertyResponse;
 import com.sakan.property.service.PropertyService;
 import com.sakan.viewing.domain.Viewing;
@@ -52,6 +53,7 @@ public class ViewingServiceImpl implements ViewingService {
     private final ViewingSlotRepository slotRepository;
     private final ViewingMapper mapper;
     private final PropertyService propertyService;
+    private final StatusTransitionService statusTransitionService;
 
     @Autowired
     public ViewingServiceImpl(
@@ -59,12 +61,14 @@ public class ViewingServiceImpl implements ViewingService {
             ViewingRepository viewingRepository,
             ViewingSlotRepository slotRepository,
             ViewingMapper mapper,
-            PropertyService propertyService) {
+            PropertyService propertyService,
+            StatusTransitionService statusTransitionService) {
         this.conflictChecker = conflictChecker;
         this.viewingRepository = viewingRepository;
         this.slotRepository = slotRepository;
         this.mapper = mapper;
         this.propertyService = propertyService;
+        this.statusTransitionService = statusTransitionService;
     }
 
     @Override
@@ -87,6 +91,8 @@ public class ViewingServiceImpl implements ViewingService {
 
         log.info("Viewing {} requested on slot {} (property {}) by user {}",
                 saved.getId(), slot.getId(), slot.getPropertyId(), requester.id());
+        statusTransitionService.publishInitialStatus("Viewing", saved.getId(), ViewingStatus.REQUESTED,
+                "user:" + requester.id());
         String propertyTitle = resolvePropertyTitle(slot.getPropertyId(), requester);
         return mapper.toResponse(saved, slot, propertyTitle);
     }
@@ -222,8 +228,8 @@ public class ViewingServiceImpl implements ViewingService {
     private ViewingResponse applyTransition(
             Viewing viewing, ViewingStatus target, AuthenticatedUser actor, String propertyTitle) {
         ViewingStatus previous = viewing.getStatus();
-        VIEWING_TRANSITIONS.assertAllowed(previous, target);
-        viewing.setStatus(target);
+        statusTransitionService.transition("Viewing", viewing.getId(), previous, target,
+                "user:" + actor.id(), VIEWING_TRANSITIONS, viewing::setStatus);
         Viewing saved = viewingRepository.save(viewing);
         log.info("Viewing {} transitioned {} -> {} by user {}", saved.getId(), previous, target, actor.id());
         ViewingSlot slot = slotRepository.findById(saved.getSlotId()).orElse(null);

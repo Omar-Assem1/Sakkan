@@ -3,6 +3,8 @@ package com.sakan.common.statemachine;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.EnumMap;
+import java.util.function.Function;
 
 import com.sakan.common.exception.InvalidStatusTransitionException;
 
@@ -24,6 +26,18 @@ public final class StatusTransitions<S extends Enum<S>> {
     public static <S extends Enum<S>> StatusTransitions<S> of(Map<S, Set<S>> allowedTransitions) {
         Objects.requireNonNull(allowedTransitions, "allowedTransitions must not be null");
         return new StatusTransitions<>(allowedTransitions);
+    }
+
+    /** Build transitions from an enum-owned policy without duplicating its allowed-target rules. */
+    public static <S extends Enum<S>> StatusTransitions<S> from(
+            Class<S> statusType, Function<S, Set<S>> allowedTargets) {
+        Objects.requireNonNull(statusType, "statusType must not be null");
+        Objects.requireNonNull(allowedTargets, "allowedTargets must not be null");
+        Map<S, Set<S>> rules = new EnumMap<>(statusType);
+        for (S status : statusType.getEnumConstants()) {
+            rules.put(status, Set.copyOf(Objects.requireNonNull(allowedTargets.apply(status))));
+        }
+        return new StatusTransitions<>(rules);
     }
 
     public boolean isAllowed(S current, S target) {

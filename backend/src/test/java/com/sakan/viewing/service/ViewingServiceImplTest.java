@@ -28,6 +28,7 @@ import com.sakan.common.domain.Currency;
 import com.sakan.common.exception.SlotConflictException;
 import com.sakan.common.response.PageResponse;
 import com.sakan.common.security.AuthenticatedUser;
+import com.sakan.common.statemachine.StatusTransitionService;
 import com.sakan.property.domain.PropertyPurpose;
 import com.sakan.property.domain.PropertyStatus;
 import com.sakan.property.dto.PropertyResponse;
@@ -75,7 +76,8 @@ class ViewingServiceImplTest {
     @BeforeEach
     void setUp() {
         ViewingMapper mapper = Mappers.getMapper(ViewingMapper.class);
-        service = new ViewingServiceImpl(conflictChecker, viewingRepository, slotRepository, mapper, propertyService);
+        service = new ViewingServiceImpl(conflictChecker, viewingRepository, slotRepository, mapper, propertyService,
+                new StatusTransitionService(event -> { }));
     }
 
     @Test

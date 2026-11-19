@@ -25,6 +25,7 @@ import com.sakan.common.exception.ForbiddenOperationException;
 import com.sakan.common.exception.InvalidStatusTransitionException;
 import com.sakan.common.exception.ResourceNotFoundException;
 import com.sakan.common.security.AuthenticatedUser;
+import com.sakan.common.statemachine.StatusTransitionService;
 import com.sakan.property.domain.PropertyPurpose;
 import com.sakan.property.domain.PropertyStatus;
 import com.sakan.property.dto.PropertyResponse;
@@ -76,7 +77,8 @@ class ViewingStatusTransitionTest {
     @BeforeEach
     void setUp() {
         ViewingMapper mapper = Mappers.getMapper(ViewingMapper.class);
-        service = new ViewingServiceImpl(conflictChecker, viewingRepository, slotRepository, mapper, propertyService);
+        service = new ViewingServiceImpl(conflictChecker, viewingRepository, slotRepository, mapper, propertyService,
+                new StatusTransitionService(event -> { }));
     }
 
     // --- Valid transitions ---
