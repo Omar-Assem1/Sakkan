@@ -38,15 +38,12 @@ class PropertyImageServiceTest {
         property = new Property();
         property.setOwnerId(7L);
         when(properties.findByIdForUpdate(12L)).thenReturn(Optional.of(property));
-        when(images.countByPropertyIdAndArchivedFalse(12L)).thenReturn(0L);
-        when(images.save(any())).thenAnswer(inv -> {
-            PropertyImage image = inv.getArgument(0);
-            return image;
-        });
     }
 
     @Test
     void uploadsMultipleDecodedImagesAndPersistsThumbnailPaths() throws Exception {
+        when(images.countByPropertyIdAndArchivedFalse(12L)).thenReturn(0L);
+        when(images.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(storage.save(any(), anyString(), any()))
                 .thenAnswer(inv -> inv.getArgument(0).toString() + "-" + inv.getArgument(1) + ".jpg");
         var result = service.upload(12L, List.of(png("one.png"), png("two.png")),
@@ -74,6 +71,7 @@ class PropertyImageServiceTest {
 
     @Test
     void rejectsCorruptImage() {
+        when(images.countByPropertyIdAndArchivedFalse(12L)).thenReturn(0L);
         assertThrows(IllegalArgumentException.class,
                 () -> service.upload(12L,
                         List.of(new MockMultipartFile("files", "bad.png", "image/png", new byte[] { 1, 2, 3 })),
@@ -83,6 +81,7 @@ class PropertyImageServiceTest {
 
     @Test
     void rejectsOversizedImage() {
+        when(images.countByPropertyIdAndArchivedFalse(12L)).thenReturn(0L);
         var oversized = new MockMultipartFile("files", "large.jpg", "image/jpeg",
                 new byte[(int) PropertyImageService.MAX_BYTES + 1]);
         assertThrows(IllegalArgumentException.class,
