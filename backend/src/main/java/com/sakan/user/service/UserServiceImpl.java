@@ -57,4 +57,25 @@ public class UserServiceImpl implements UserService {
                 .build();
         return userRepository.save(user);
     }
+    @Override
+    public boolean existsSeededAdmin() {
+        return userRepository.existsBySeededAdminTrue();
+    }
+
+    @Override
+    @Transactional
+    public User createSeededAdmin(String username, String email, String passwordHash) {
+        Role admin = roleRepository.findByName(RoleName.ADMIN)
+                .orElseThrow(() -> new IllegalStateException("Role not seeded: " + RoleName.ADMIN));
+        User user = User.builder()
+                .username(username)
+                .email(email)
+                .passwordHash(passwordHash)
+                .authProvider(AuthProvider.LOCAL)
+                .seededAdmin(true)
+                .enabled(true)
+                .roles(new HashSet<>(Set.of(admin)))
+                .build();
+        return userRepository.save(user);
+    }
 }

@@ -66,6 +66,10 @@ class LoginRateLimitIT extends AbstractIntegrationTest {
         return mockMvc.perform(post("/api/auth/login").with(ip(addr)).contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\":\"omar\",\"password\":\"%s\"}".formatted(password)));
     }
+    private org.springframework.test.web.servlet.ResultActions adminLogin(String password, String addr) throws Exception {
+        return mockMvc.perform(post("/api/auth/admin/login").with(ip(addr)).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"username\":\"omar\",\"password\":\"%s\"}".formatted(password)));
+    }
 
     private void fail(int times, String addr) throws Exception {
         for (int i = 0; i < times; i++) {
@@ -100,5 +104,27 @@ class LoginRateLimitIT extends AbstractIntegrationTest {
         login(PASSWORD, "10.0.0.5").andExpect(status().isOk());
         fail(4, "10.0.0.5");
         login(PASSWORD, "10.0.0.5").andExpect(status().isOk());
+    }
+    @Test @DisplayName("R05 admin login: 6th attempt after 5 failures returns 429 problem+json with Retry-After")
+    void adminLoginBlocksAfterMaxFailures() throws Exception {
+        for (int i = 0; i < 5; i++) {
+            adminLogin("WrongPass1", "10.0.0.6").andExpect(status().isUnauthorized());
+        }
+        adminLogin("WrongPass1", "10.0.0.6")
+                .andExpect(status().isTooManyRequests())
+                .andExpect(header().exists("Retry-After"))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON));
+    }
+
+    @Test @DisplayName("R06 failures on /login and /admin/login share one budget per client address")
+    void loginAndAdminLoginShareBudget() throws Exception {
+        for (int i = 0; i < 3; i++) {
+            login("WrongPass1", "10.0.0.7").andExpect(status().isUnauthorized());
+        }
+        for (int i = 0; i < 2; i++) {
+            adminLogin("WrongPass1", "10.0.0.7").andExpect(status().isUnauthorized());
+        }
+        login(PASSWORD, "10.0.0.7").andExpect(status().isTooManyRequests());
+        adminLogin(PASSWORD, "10.0.0.7").andExpect(status().isTooManyRequests());
     }
 }

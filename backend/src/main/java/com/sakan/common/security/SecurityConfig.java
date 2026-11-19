@@ -1,5 +1,5 @@
 package com.sakan.common.security;
-
+import com.sakan.common.config.AdminSeedProperties;
 import com.sakan.common.config.JwtProperties;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.spec.SecretKeySpec;
@@ -22,7 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties(JwtProperties.class)
+@EnableConfigurationProperties({JwtProperties.class, AdminSeedProperties.class})
 // TODO(SKN-18): added by M3 for SCRUM-94 so @PreAuthorize on ViewingSlotController is enforced.
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(entryPoint)
                 .accessDeniedHandler(accessDeniedHandler))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/admin/login").permitAll()
                 // Checked before body validation, so disallowed roles get 403, not 400.
                 .requestMatchers(HttpMethod.POST, "/api/properties/*/slots").hasAnyRole("OWNER", "AGENT")
                 .requestMatchers(HttpMethod.DELETE, "/api/properties/*/slots/*").hasAnyRole("OWNER", "AGENT")
