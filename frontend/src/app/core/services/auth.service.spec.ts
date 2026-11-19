@@ -73,4 +73,57 @@ describe('AuthService', () => {
     expect(storage.getToken()).toBeNull();
     expect(storage.getRole()).toBeNull();
   });
+  it('T23a adminLogin posts to the admin endpoint, stores the token and the ADMIN role', () => {
+    const token = fakeJwt(['ADMIN']);
+    service.adminLogin('admin', 'Adm1nPassw0rd').subscribe();
+
+    const req = http.expectOne('/api/auth/admin/login');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ username: 'admin', password: 'Adm1nPassw0rd' });
+    req.flush({ token, tokenType: 'Bearer' });
+
+    expect(storage.getToken()).toBe(token);
+    expect(storage.getRole()).toBe('ADMIN');
+    expect(storage.isAuthenticated()).toBe(true);
+  });
+
+  it('T23b adminLogin failure (401) stores nothing', () => {
+    service.adminLogin('admin', 'bad').subscribe({ error: () => undefined });
+
+    http
+      .expectOne('/api/auth/admin/login')
+      .flush({ status: 401 }, { status: 401, statusText: 'Unauthorized' });
+
+    expect(storage.isAuthenticated()).toBe(false);
+    expect(storage.getRole()).toBeNull();
+  });
+
+  it('T23c adminLogin rate limit (429) stores nothing', () => {
+    service.adminLogin('admin', 'bad').subscribe({ error: () => undefined });
+
+    http
+      .expectOne('/api/auth/admin/login')
+      .flush({ status: 429 }, { status: 429, statusText: 'Too Many Requests' });
+
+    expect(storage.isAuthenticated()).toBe(false);
+  });
+
+  it('T23d an admin who also holds OWNER is stored as ADMIN (role priority)', () => {
+    service.adminLogin('admin', 'Adm1nPassw0rd').subscribe();
+
+    http
+      .expectOne('/api/auth/admin/login')
+      .flush({ token: fakeJwt(['OWNER', 'ADMIN']), tokenType: 'Bearer' });
+
+    expect(storage.getRole()).toBe('ADMIN');
+  });
+
+  it('T23e adminLogin never calls the normal login endpoint', () => {
+    service.adminLogin('admin', 'Adm1nPassw0rd').subscribe();
+
+    http.expectNone('/api/auth/login');
+    http
+      .expectOne('/api/auth/admin/login')
+      .flush({ token: fakeJwt(['ADMIN']), tokenType: 'Bearer' });
+  });
 });

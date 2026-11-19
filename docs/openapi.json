@@ -25,6 +25,37 @@
     }
   ],
   "paths": {
+    "/api/auth/admin/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Admin sign-in (form 2): username and password of an ADMIN, returns a JWT (HS256, 24 h)",
+        "operationId": "adminLogin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/auth/register": {
       "post": {
         "tags": ["Authentication"],
@@ -321,6 +352,17 @@
       }
     },
     "schemas": {
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "tokenType": {
+            "type": "string"
+          }
+        }
+      },
       "ProblemDetail": {
         "type": "object",
         "properties": {
