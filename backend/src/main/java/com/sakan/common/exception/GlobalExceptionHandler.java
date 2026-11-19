@@ -131,6 +131,11 @@ public class GlobalExceptionHandler {
         return createProblem(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), "slot-conflict", request);
     }
 
+    @ExceptionHandler(RoleConflictException.class)
+    public ProblemDetail handleRoleConflict(RoleConflictException ex, HttpServletRequest request) {
+        return createProblem(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), "role-conflict", request);
+    }
+
     @ExceptionHandler(DuplicateUsernameException.class)
     public ProblemDetail handleDuplicateUsername(DuplicateUsernameException ex, HttpServletRequest request) {
         return createProblem(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), "duplicate-username", request);

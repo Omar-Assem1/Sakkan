@@ -12,6 +12,8 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
@@ -77,5 +79,31 @@ public class UserServiceImpl implements UserService {
                 .roles(new HashSet<>(Set.of(admin)))
                 .build();
         return userRepository.save(user);
+    }
+
+    @Override
+    public Page<User> search(String q, RoleName role, Boolean enabled, Pageable pageable) {
+        String normalized = q == null || q.isBlank() ? null : q.trim()
+                .replace("!", "!!").replace("%", "!%").replace("_", "!_");
+        return userRepository.search(normalized, role, enabled, pageable);
+    }
+
+    @Override
+    @Transactional
+    public User grantRole(long userId, RoleName role, long actorId) {
+        userRepository.grantRole(userId, role.name(), actorId);
+        return userRepository.findById(userId).orElseThrow();
+    }
+
+    @Override
+    @Transactional
+    public User revokeRole(long userId, RoleName role) {
+        userRepository.revokeRole(userId, role.name());
+        return userRepository.findById(userId).orElseThrow();
+    }
+
+    @Override
+    public long countByRole(RoleName role) {
+        return userRepository.countByRole(role);
     }
 }
