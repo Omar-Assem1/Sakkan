@@ -18,6 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ import com.sakan.property.domain.PropertyPurpose;
 import com.sakan.property.domain.PropertyStatus;
 import com.sakan.property.repository.PropertyRepository;
 import com.sakan.support.AbstractIntegrationTest;
+import com.sakan.support.TestUserFixtures;
 import com.sakan.support.security.EndpointSecurityAssertions;
 import com.sakan.support.tags.IntegrationTest;
 import com.sakan.support.tags.RegressionTest;
@@ -67,6 +69,9 @@ class ViewingStatusControllerIT extends AbstractIntegrationTest {
     @Autowired
     private ViewingRepository viewingRepository;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private MockMvc mvc;
     private Property ownerProperty;
     private Property otherProperty;
@@ -76,6 +81,9 @@ class ViewingStatusControllerIT extends AbstractIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        TestUserFixtures.ensureUsers(jdbcTemplate, OWNER_ID, ASSIGNED_AGENT_ID, OTHER_OWNER_ID,
+                BUYER_1_ID, BUYER_2_ID, UNRELATED_USER_ID);
+
         mvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();

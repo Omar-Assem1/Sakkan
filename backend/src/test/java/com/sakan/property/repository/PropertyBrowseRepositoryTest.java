@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sakan.TestcontainersConfiguration;
@@ -26,6 +27,7 @@ import com.sakan.property.domain.PropertyStatus;
 import com.sakan.property.service.PropertySpecifications;
 import com.sakan.support.tags.IntegrationTest;
 import com.sakan.support.tags.RegressionTest;
+import com.sakan.support.TestUserFixtures;
 
 import jakarta.persistence.EntityManager;
 
@@ -42,11 +44,16 @@ class PropertyBrowseRepositoryTest {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private Long prop1Id;
     private Long prop2Id;
 
     @BeforeEach
     void setUp() {
+        TestUserFixtures.ensureUsers(jdbcTemplate, 100L, 101L, 102L);
+
         Property p1 = new Property();
         p1.setTitle("P1 Published Smouha");
         p1.setDescription("Close to green spaces");
