@@ -4,7 +4,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -31,7 +33,8 @@ public interface ViewingSlotRepository extends JpaRepository<ViewingSlot, Long> 
 
     Optional<ViewingSlot> findByIdAndPropertyId(Long id, Long propertyId);
 
-    // TODO(SCRUM-99): add @Lock(LockModeType.PESSIMISTIC_WRITE) to serialize concurrent bookings on the same slot.
+    /** Acquires a PostgreSQL row-level {@code FOR UPDATE} lock on the slot to serialize concurrent bookings (FR-18). */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT s FROM ViewingSlot s WHERE s.id = :id")
     Optional<ViewingSlot> findByIdForUpdate(@Param("id") Long id);
 }

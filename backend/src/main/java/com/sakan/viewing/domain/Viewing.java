@@ -13,7 +13,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
-// TODO(SCRUM-99): finalize Viewing entity constraints and lifecycle hooks during SCRUM-99 implementation.
+/** A buyer/tenant viewing appointment booked against a {@code ViewingSlot} (FR-17, FR-18). */
 @Entity
 @Table(name = "viewing")
 public class Viewing {
