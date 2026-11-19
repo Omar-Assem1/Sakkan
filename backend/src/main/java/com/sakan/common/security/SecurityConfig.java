@@ -44,6 +44,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/properties/*/slots").hasAnyRole("OWNER", "AGENT")
                 .requestMatchers(HttpMethod.DELETE, "/api/properties/*/slots/*").hasAnyRole("OWNER", "AGENT")
                 .requestMatchers(HttpMethod.POST, "/api/viewings").hasAnyRole("BUYER_TENANT", "OWNER", "AGENT")
+                .requestMatchers(HttpMethod.PATCH, "/api/viewings/*/confirm", "/api/viewings/*/complete").hasAnyRole("OWNER", "AGENT")
+                .requestMatchers(HttpMethod.PATCH, "/api/viewings/*/cancel").hasAnyRole("BUYER_TENANT", "OWNER", "AGENT")
                 .requestMatchers(HttpMethod.GET, "/api/properties/**").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/actuator/**").permitAll()

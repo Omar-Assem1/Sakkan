@@ -1,5 +1,8 @@
 package com.sakan.viewing.service;
 
+import java.util.EnumSet;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +10,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sakan.common.exception.ForbiddenOperationException;
+import com.sakan.common.exception.ResourceNotFoundException;
 import com.sakan.common.exception.SlotConflictException;
 import com.sakan.common.security.AuthenticatedUser;
+import com.sakan.common.statemachine.StatusTransitions;
+import com.sakan.property.dto.PropertyResponse;
 import com.sakan.property.service.PropertyService;
 import com.sakan.viewing.domain.Viewing;
 import com.sakan.viewing.domain.ViewingStatus;
@@ -23,10 +30,13 @@ public class ViewingServiceImpl implements ViewingService {
 
     private static final Logger log = LoggerFactory.getLogger(ViewingServiceImpl.class);
 
+    private static final StatusTransitions<ViewingStatus> VIEWING_TRANSITIONS = StatusTransitions.of(Map.of(
+            ViewingStatus.REQUESTED, EnumSet.of(ViewingStatus.CONFIRMED, ViewingStatus.CANCELLED),
+            ViewingStatus.CONFIRMED, EnumSet.of(ViewingStatus.CANCELLED, ViewingStatus.COMPLETED)));
+
     private final ViewingConflictChecker conflictChecker;
     private final ViewingRepository viewingRepository;
     private final ViewingMapper mapper;
-    @SuppressWarnings("unused")
     private final PropertyService propertyService;
 
     @Autowired
@@ -73,16 +83,48 @@ public class ViewingServiceImpl implements ViewingService {
 
     @Override
     public ViewingResponse confirmViewing(Long viewingId, AuthenticatedUser actor) {
-        throw new UnsupportedOperationException("TODO(SCRUM-103): implement confirmViewing");
+        Viewing viewing = findViewingOrThrow(viewingId);
+        requirePropertyManager(viewing.getPropertyId(), actor);
+        return applyTransition(viewing, ViewingStatus.CONFIRMED, actor);
     }
 
     @Override
     public ViewingResponse cancelViewing(Long viewingId, AuthenticatedUser actor) {
-        throw new UnsupportedOperationException("TODO(SCRUM-103): implement cancelViewing");
+        Viewing viewing = findViewingOrThrow(viewingId);
+        if (!actor.id().equals(viewing.getBuyerId())) {
+            requirePropertyManager(viewing.getPropertyId(), actor);
+        }
+        return applyTransition(viewing, ViewingStatus.CANCELLED, actor);
     }
 
     @Override
     public ViewingResponse completeViewing(Long viewingId, AuthenticatedUser actor) {
-        throw new UnsupportedOperationException("TODO(SCRUM-103): implement completeViewing");
+        Viewing viewing = findViewingOrThrow(viewingId);
+        requirePropertyManager(viewing.getPropertyId(), actor);
+        return applyTransition(viewing, ViewingStatus.COMPLETED, actor);
+    }
+
+    private Viewing findViewingOrThrow(Long viewingId) {
+        return viewingRepository.findById(viewingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Viewing " + viewingId + " not found"));
+    }
+
+    private void requirePropertyManager(Long propertyId, AuthenticatedUser actor) {
+        PropertyResponse property = propertyService.getById(propertyId, actor);
+        boolean isManager = actor.id().equals(property.ownerId()) || actor.id().equals(property.agentId());
+        if (!isManager) {
+            throw new ForbiddenOperationException(
+                    "Only the property owner or assigned agent can perform this action on viewing for property "
+                            + propertyId);
+        }
+    }
+
+    private ViewingResponse applyTransition(Viewing viewing, ViewingStatus target, AuthenticatedUser actor) {
+        ViewingStatus previous = viewing.getStatus();
+        VIEWING_TRANSITIONS.assertAllowed(previous, target);
+        viewing.setStatus(target);
+        Viewing saved = viewingRepository.save(viewing);
+        log.info("Viewing {} transitioned {} -> {} by user {}", saved.getId(), previous, target, actor.id());
+        return mapper.toResponse(saved);
     }
 }
