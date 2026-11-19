@@ -2,12 +2,14 @@ package com.sakan.viewing.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sakan.common.exception.SlotConflictException;
 import com.sakan.common.security.AuthenticatedUser;
+import com.sakan.property.service.PropertyService;
 import com.sakan.viewing.domain.Viewing;
 import com.sakan.viewing.domain.ViewingStatus;
 import com.sakan.viewing.dto.RequestViewingRequest;
@@ -24,14 +26,26 @@ public class ViewingServiceImpl implements ViewingService {
     private final ViewingConflictChecker conflictChecker;
     private final ViewingRepository viewingRepository;
     private final ViewingMapper mapper;
+    @SuppressWarnings("unused")
+    private final PropertyService propertyService;
+
+    @Autowired
+    public ViewingServiceImpl(
+            ViewingConflictChecker conflictChecker,
+            ViewingRepository viewingRepository,
+            ViewingMapper mapper,
+            PropertyService propertyService) {
+        this.conflictChecker = conflictChecker;
+        this.viewingRepository = viewingRepository;
+        this.mapper = mapper;
+        this.propertyService = propertyService;
+    }
 
     public ViewingServiceImpl(
             ViewingConflictChecker conflictChecker,
             ViewingRepository viewingRepository,
             ViewingMapper mapper) {
-        this.conflictChecker = conflictChecker;
-        this.viewingRepository = viewingRepository;
-        this.mapper = mapper;
+        this(conflictChecker, viewingRepository, mapper, null);
     }
 
     @Override
@@ -55,5 +69,20 @@ public class ViewingServiceImpl implements ViewingService {
         log.info("Viewing {} requested on slot {} (property {}) by user {}",
                 saved.getId(), slot.getId(), slot.getPropertyId(), requester.id());
         return mapper.toResponse(saved);
+    }
+
+    @Override
+    public ViewingResponse confirmViewing(Long viewingId, AuthenticatedUser actor) {
+        throw new UnsupportedOperationException("TODO(SCRUM-103): implement confirmViewing");
+    }
+
+    @Override
+    public ViewingResponse cancelViewing(Long viewingId, AuthenticatedUser actor) {
+        throw new UnsupportedOperationException("TODO(SCRUM-103): implement cancelViewing");
+    }
+
+    @Override
+    public ViewingResponse completeViewing(Long viewingId, AuthenticatedUser actor) {
+        throw new UnsupportedOperationException("TODO(SCRUM-103): implement completeViewing");
     }
 }
