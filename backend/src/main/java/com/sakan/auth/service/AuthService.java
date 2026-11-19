@@ -60,15 +60,28 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request) {
+        return authenticate(request, false);
+    }
+
+    /** Admin sign-in (form 2): same checks as login, plus the ADMIN role. Any failure gives the same 401. */
+    public LoginResponse adminLogin(LoginRequest request) {
+        return authenticate(request, true);
+    }
+
+    private LoginResponse authenticate(LoginRequest request, boolean adminOnly) {
         User user = userService.findByUsername(request.username()).orElse(null);
         String hash = (user != null && user.getPasswordHash() != null) ? user.getPasswordHash() : dummyHash;
         boolean passwordOk = passwordEncoder.matches(request.password(), hash);
 
-        if (user == null || !passwordOk || !user.isEnabled() || user.getAuthProvider() != AuthProvider.LOCAL) {
+        boolean roleOk = !adminOnly || (user != null && user.getRoles().stream()
+                .anyMatch(r -> r.getName() == RoleName.ADMIN));
+
+        if (user == null || !passwordOk || !user.isEnabled()
+                || user.getAuthProvider() != AuthProvider.LOCAL || !roleOk) {
             throw new InvalidCredentialsException();
         }
         return LoginResponse.bearer(jwtService.generateToken(user));
-    }
+    }   
 
     public UserSummaryResponse currentUser(Long userId) {
         return userService.findById(userId)
