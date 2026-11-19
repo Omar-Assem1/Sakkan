@@ -12,4 +12,10 @@ export const AUTH_ROUTES: Routes = [
     loadComponent: () => import('./sign-up/sign-up.component').then((m) => m.SignUpComponent),
     title: 'Sakan',
   },
+  {
+    path: 'admin-sign-in',
+    loadComponent: () =>
+      import('./admin-sign-in/admin-sign-in.component').then((m) => m.AdminSignInComponent),
+    title: 'Sakan',
+  },
 ];

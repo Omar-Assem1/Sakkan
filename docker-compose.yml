@@ -33,6 +33,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-change_me}
       JWT_SECRET: ${JWT_SECRET:-dev-only-jwt-secret-change-in-production-min-32-chars}
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@sakan.local}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change_me}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}

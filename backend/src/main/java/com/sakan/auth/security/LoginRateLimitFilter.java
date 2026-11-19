@@ -10,7 +10,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
+import java.util.Set;
 /** Blocks repeated failed logins from one client address with 429 (problem+json). */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -25,9 +25,11 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
         this.limiter = limiter;
     }
 
+    private static final Set<String> LOGIN_PATHS = Set.of("/api/auth/login", "/api/auth/admin/login");
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !("POST".equals(request.getMethod()) && "/api/auth/login".equals(request.getRequestURI()));
+        return !("POST".equals(request.getMethod()) && LOGIN_PATHS.contains(request.getRequestURI()));
     }
 
     @Override

@@ -19,6 +19,10 @@ spring:
 app:
   images:
     root: ${IMAGE_STORAGE_ROOT:./uploads}
+  admin:
+    username: ${ADMIN_USERNAME:}
+    password: ${ADMIN_PASSWORD:}
+    email: ${ADMIN_EMAIL:}
   jwt:
     secret: ${JWT_SECRET}   # no default on purpose: the app must fail fast without it
     expiration: 24h

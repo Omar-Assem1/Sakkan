@@ -32,15 +32,24 @@ export class AuthService {
   private readonly storage = inject(TokenStorageService);
 
   login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>('/api/auth/login', { username, password }).pipe(
-      tap((res) => {
-        this.storage.saveToken(res.token);
-        const role = pickRole(rolesFromToken(res.token));
-        if (role) {
-          this.storage.saveRole(role);
-        }
-      }),
-    );
+    return this.http
+      .post<LoginResponse>('/api/auth/login', { username, password })
+      .pipe(tap((res) => this.storeSession(res)));
+  }
+
+  /** Admin sign-in (form 2). The server checks the ADMIN role; the UI only reads it from the token. */
+  adminLogin(username: string, password: string): Observable<LoginResponse> {
+    return this.http
+      .post<LoginResponse>('/api/auth/admin/login', { username, password })
+      .pipe(tap((res) => this.storeSession(res)));
+  }
+
+  private storeSession(res: LoginResponse): void {
+    this.storage.saveToken(res.token);
+    const role = pickRole(rolesFromToken(res.token));
+    if (role) {
+      this.storage.saveRole(role);
+    }
   }
 
   /** Registration does not log the user in: they sign in afterwards. */
