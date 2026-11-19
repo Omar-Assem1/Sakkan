@@ -122,7 +122,11 @@ function timeRangeValidator(group: AbstractControl): ValidationErrors | null {
           {{ 'VIEWINGS.AVAILABILITY.SLOTS_HEADING' | transloco }}
         </h2>
 
-        @if (slots().length === 0) {
+        @if (selectedPropertyId() === null) {
+          <p data-testid="select-property-prompt" class="mt-4 text-sm text-slate-500">
+            {{ 'VIEWINGS.AVAILABILITY.SELECT_PROPERTY_PROMPT' | transloco }}
+          </p>
+        } @else if (slots().length === 0) {
           <p data-testid="empty-slots" class="mt-4 text-sm text-slate-500">
             {{ 'VIEWINGS.AVAILABILITY.EMPTY_SLOTS' | transloco }}
           </p>
@@ -158,13 +162,14 @@ export class AvailabilityFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly slotService = inject(ViewingSlotService);
 
+  readonly selectedPropertyId = signal<number | null>(null);
   readonly slots = signal<ViewingSlot[]>([]);
   readonly apiErrorKey = signal<string | null>(null);
   readonly submitting = signal<boolean>(false);
 
-  readonly slotForm = this.fb.nonNullable.group(
+  readonly slotForm = this.fb.group(
     {
-      propertyId: [1, [Validators.required, Validators.min(1)]],
+      propertyId: [null as number | null, [Validators.required, Validators.min(1)]],
       startTime: ['', [Validators.required]],
       endTime: ['', [Validators.required]],
     },
@@ -172,17 +177,24 @@ export class AvailabilityFormComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    const routePropId = Number(this.route.snapshot.paramMap.get('propertyId'));
-    if (!Number.isNaN(routePropId) && routePropId > 0) {
+    const routeParam = this.route.snapshot.paramMap.get('propertyId');
+    const routePropId = routeParam ? Number(routeParam) : NaN;
+    if (Number.isInteger(routePropId) && routePropId > 0) {
+      this.selectedPropertyId.set(routePropId);
       this.slotForm.controls.propertyId.setValue(routePropId);
+      this.loadSlots(routePropId);
     }
-    this.loadSlots(this.slotForm.controls.propertyId.value);
   }
 
   onPropertyChange(): void {
-    const propId = this.slotForm.controls.propertyId.value;
-    if (propId >= 1) {
+    const raw = this.slotForm.controls.propertyId.value;
+    const propId = raw === null || raw === undefined ? NaN : Number(raw);
+    if (Number.isInteger(propId) && propId >= 1) {
+      this.selectedPropertyId.set(propId);
       this.loadSlots(propId);
+    } else {
+      this.selectedPropertyId.set(null);
+      this.slots.set([]);
     }
   }
 
@@ -202,6 +214,9 @@ export class AvailabilityFormComponent implements OnInit {
     }
 
     const { propertyId, startTime, endTime } = this.slotForm.getRawValue();
+    if (propertyId === null || !startTime || !endTime) {
+      return;
+    }
     const startIso = new Date(startTime).toISOString();
     const endIso = new Date(endTime).toISOString();
 
@@ -228,6 +243,9 @@ export class AvailabilityFormComponent implements OnInit {
 
   removeSlot(slotId: number): void {
     const propertyId = this.slotForm.controls.propertyId.value;
+    if (propertyId === null) {
+      return;
+    }
     this.apiErrorKey.set(null);
     this.slotService.deleteSlot(propertyId, slotId).subscribe({
       next: () => {

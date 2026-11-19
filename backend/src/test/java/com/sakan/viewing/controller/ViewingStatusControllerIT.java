@@ -34,7 +34,7 @@ import com.sakan.support.tags.IntegrationTest;
 import com.sakan.support.tags.RegressionTest;
 import com.sakan.viewing.domain.Viewing;
 import com.sakan.viewing.domain.ViewingStatus;
-import com.sakan.viewing.entity.ViewingSlot;
+import com.sakan.viewing.domain.ViewingSlot;
 import com.sakan.viewing.repository.ViewingRepository;
 import com.sakan.viewing.repository.ViewingSlotRepository;
 
@@ -197,13 +197,16 @@ class ViewingStatusControllerIT extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.content", hasSize(2)))
                 .andExpect(jsonPath("$.totalElements").value(2));
 
-        // OWNER_ID with ?status=CONFIRMED sees only the 1 CONFIRMED viewing on ownerProperty
+        // OWNER_ID with ?status=CONFIRMED sees only the 1 CONFIRMED viewing on ownerProperty with slot window and property title
         mvc.perform(get(VIEWINGS_BASE + "/my")
                         .param("status", "CONFIRMED")
                         .with(user(String.valueOf(OWNER_ID)).roles("OWNER")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(1)))
-                .andExpect(jsonPath("$.content[0].status").value("CONFIRMED"));
+                .andExpect(jsonPath("$.content[0].status").value("CONFIRMED"))
+                .andExpect(jsonPath("$.content[0].propertyTitle").value("Roushdy Corner Apartment"))
+                .andExpect(jsonPath("$.content[0].slotStartTime").isNotEmpty())
+                .andExpect(jsonPath("$.content[0].slotEndTime").isNotEmpty());
 
         // ASSIGNED_AGENT_ID sees the 2 viewings on assigned ownerProperty
         mvc.perform(get(VIEWINGS_BASE + "/my")

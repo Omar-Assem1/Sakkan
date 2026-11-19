@@ -13,5 +13,8 @@ public record ViewingResponse(
         ViewingStatus status,
         String notes,
         Instant createdAt,
-        Instant updatedAt) {
+        Instant updatedAt,
+        Instant slotStartTime,
+        Instant slotEndTime,
+        String propertyTitle) {
 }

@@ -67,10 +67,26 @@ describe('NavbarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render navigation links for listings and viewings', () => {
-    const navHtml = fixture.nativeElement.innerHTML;
-    expect(navHtml).toContain('/listings');
-    expect(navHtml).toContain('/viewings');
+  it('should render listings link by default and show viewings link only for BUYER_TENANT, OWNER, or AGENT', () => {
+    expect(fixture.nativeElement.innerHTML).toContain('/listings');
+    expect(fixture.nativeElement.querySelector('[data-testid="nav-viewings"]')).toBeNull();
+
+    tokenStorage.saveToken('admin-jwt');
+    tokenStorage.saveRole('ADMIN');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="nav-viewings"]')).toBeNull();
+
+    tokenStorage.saveRole('MAINTENANCE_STAFF');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="nav-viewings"]')).toBeNull();
+
+    tokenStorage.saveRole('BUYER_TENANT');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="nav-viewings"]')).toBeTruthy();
+
+    tokenStorage.saveRole('OWNER');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="nav-viewings"]')).toBeTruthy();
   });
 
   it('should render my properties link when authenticated and hide it when logged out', () => {

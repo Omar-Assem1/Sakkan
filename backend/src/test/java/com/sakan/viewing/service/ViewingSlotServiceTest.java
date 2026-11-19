@@ -36,7 +36,7 @@ import com.sakan.property.service.PropertyService;
 import com.sakan.support.tags.UnitTest;
 import com.sakan.viewing.dto.CreateViewingSlotRequest;
 import com.sakan.viewing.dto.ViewingSlotResponse;
-import com.sakan.viewing.entity.ViewingSlot;
+import com.sakan.viewing.domain.ViewingSlot;
 import com.sakan.viewing.repository.ViewingSlotRepository;
 
 import com.sakan.support.tags.RegressionTest;

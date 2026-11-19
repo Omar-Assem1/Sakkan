@@ -118,6 +118,9 @@ describe('MyViewingsComponent — Listing 8 (SCRUM-104 / SKN-27)', () => {
       notes: 'Afternoon preferred',
       createdAt: '2026-11-19T10:00:00Z',
       updatedAt: '2026-11-19T10:00:00Z',
+      slotStartTime: '2027-02-10T10:00:00Z',
+      slotEndTime: '2027-02-10T11:00:00Z',
+      propertyTitle: 'Smouha Sea View Flat',
     },
     {
       id: 2,
@@ -229,6 +232,31 @@ describe('MyViewingsComponent — Listing 8 (SCRUM-104 / SKN-27)', () => {
     expect(viewingServiceSpy.confirmViewing).toHaveBeenCalledWith(1);
     const badge = fixture.nativeElement.querySelector('[data-testid="viewing-status-1"]');
     expect(badge?.textContent).toContain('Confirmed');
+  });
+
+  it('displays property title and formatted appointment date/time instead of raw slot ID', async () => {
+    await setupWithRole('BUYER_TENANT');
+    const el: HTMLElement = fixture.nativeElement;
+
+    expect(el.querySelector('[data-testid="viewing-property-1"]')?.textContent).toContain(
+      'Smouha Sea View Flat',
+    );
+    const slotCell = el.querySelector('[data-testid="viewing-slot-1"]')?.textContent ?? '';
+    expect(slotCell).toContain('2027');
+    expect(slotCell).not.toContain('#10');
+  });
+
+  it('displays forbidden error banner when loading viewings returns 403 for disallowed roles', async () => {
+    await setupWithRole('ADMIN');
+    viewingServiceSpy.getMyViewings.mockReturnValueOnce(
+      throwError(() => new HttpErrorResponse({ status: 403, statusText: 'Forbidden' })),
+    );
+
+    component.loadViewings();
+    fixture.detectChanges();
+
+    const alert = fixture.nativeElement.querySelector('[data-testid="my-viewings-error"]');
+    expect(alert?.textContent).toContain('do not have permission');
   });
 
   it('displays localized 409 error banner when a transition fails with Conflict', async () => {

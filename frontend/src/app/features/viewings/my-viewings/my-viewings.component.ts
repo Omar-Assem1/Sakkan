@@ -134,10 +134,23 @@ const STATUS_FILTERS: readonly (ViewingStatus | null)[] = [
               <tbody class="divide-y divide-slate-200 bg-white">
                 @for (viewing of viewings(); track viewing.id) {
                   <tr [attr.data-testid]="'viewing-row-' + viewing.id">
-                    <td class="ps-4 pe-4 py-3 font-medium text-slate-900">
-                      #{{ viewing.propertyId }}
+                    <td
+                      [attr.data-testid]="'viewing-property-' + viewing.id"
+                      class="ps-4 pe-4 py-3 font-medium text-slate-900"
+                    >
+                      {{ viewing.propertyTitle || '#' + viewing.propertyId }}
                     </td>
-                    <td class="ps-4 pe-4 py-3 text-slate-700">#{{ viewing.slotId }}</td>
+                    <td
+                      [attr.data-testid]="'viewing-slot-' + viewing.id"
+                      class="ps-4 pe-4 py-3 text-slate-700"
+                    >
+                      @if (viewing.slotStartTime && viewing.slotEndTime) {
+                        {{ viewing.slotStartTime | date: 'medium' }} –
+                        {{ viewing.slotEndTime | date: 'shortTime' }}
+                      } @else {
+                        #{{ viewing.slotId }}
+                      }
+                    </td>
                     <td class="ps-4 pe-4 py-3">
                       <span
                         [attr.data-testid]="'viewing-status-' + viewing.id"
@@ -293,11 +306,13 @@ export class MyViewingsComponent implements OnInit {
       error: (err: HttpErrorResponse) => {
         this.viewings.set([]);
         this.loading.set(false);
-        this.errorKey.set(
-          err.status === 401
-            ? 'VIEWINGS.MY.ERRORS.UNAUTHORIZED_401'
-            : 'VIEWINGS.MY.ERRORS.LOAD_FAILED',
-        );
+        if (err.status === 401) {
+          this.errorKey.set('VIEWINGS.MY.ERRORS.UNAUTHORIZED_401');
+        } else if (err.status === 403) {
+          this.errorKey.set('VIEWINGS.MY.ERRORS.FORBIDDEN_403');
+        } else {
+          this.errorKey.set('VIEWINGS.MY.ERRORS.LOAD_FAILED');
+        }
       },
     });
   }

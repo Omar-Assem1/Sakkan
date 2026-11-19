@@ -9,6 +9,9 @@ export interface Viewing {
   notes: string | null;
   createdAt: string;
   updatedAt: string;
+  slotStartTime?: string | null;
+  slotEndTime?: string | null;
+  propertyTitle?: string | null;
 }
 
 export interface RequestViewingPayload {
