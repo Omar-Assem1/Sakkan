@@ -14,6 +14,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -55,6 +56,12 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
         String msg = String.format("Parameter '%s' value '%s' could not be converted", ex.getName(), ex.getValue());
         return createProblem(HttpStatus.BAD_REQUEST, "Type Mismatch", msg, "type-mismatch", request);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ProblemDetail handleMissingRequestParameter(MissingServletRequestParameterException ex, HttpServletRequest request) {
+        String msg = String.format("Required parameter '%s' is missing", ex.getParameterName());
+        return createProblem(HttpStatus.BAD_REQUEST, "Bad Request", msg, "missing-parameter", request);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
