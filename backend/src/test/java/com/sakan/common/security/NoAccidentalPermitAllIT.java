@@ -39,6 +39,8 @@ class NoAccidentalPermitAllIT extends AbstractIntegrationTest {
             "POST /api/auth/register",
             "POST /api/auth/login",
             "POST /api/auth/admin/login",
+            "POST /api/auth/google/exchange",
+            "POST /api/auth/google/complete",
             "GET /api/properties",
             "GET /api/properties/{}",
             "GET /api/properties/{}/slots",
