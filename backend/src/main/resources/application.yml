@@ -12,7 +12,13 @@ spring:
       ddl-auto: update
   flyway:
     enabled: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
 app:
+  images:
+    root: ${IMAGE_STORAGE_ROOT:./uploads}
   jwt:
     secret: ${JWT_SECRET}   # no default on purpose: the app must fail fast without it
     expiration: 24h
