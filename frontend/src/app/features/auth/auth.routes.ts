@@ -18,4 +18,9 @@ export const AUTH_ROUTES: Routes = [
       import('./admin-sign-in/admin-sign-in.component').then((m) => m.AdminSignInComponent),
     title: 'Sakan',
   },
+  {
+    path: 'google/callback',
+    loadComponent: () => import('./google-callback/google-callback.component').then((m) => m.GoogleCallbackComponent),
+    title: 'Complete Google sign-in',
+  },
 ];

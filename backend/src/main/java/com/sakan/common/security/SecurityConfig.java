@@ -19,6 +19,8 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import com.sakan.auth.security.GoogleOAuthSuccessHandler;
+import com.sakan.auth.security.GoogleOAuthFailureHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +33,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    RestAuthenticationEntryPoint entryPoint,
                                                    RestAccessDeniedHandler accessDeniedHandler,
-                                                   JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
+                                                   JwtAuthenticationConverter jwtAuthenticationConverter,
+                                                   GoogleOAuthSuccessHandler googleOAuthSuccessHandler,
+                                                   GoogleOAuthFailureHandler googleOAuthFailureHandler) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -41,6 +45,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // --- public ---
                 .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/admin/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/auth/google/exchange", "/api/auth/google/complete").permitAll()
+                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/property-images/**").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers(HttpMethod.GET, "/actuator/health/**", "/actuator/info").permitAll()
@@ -70,7 +76,10 @@ public class SecurityConfig {
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
                 .authenticationEntryPoint(entryPoint)
-                .accessDeniedHandler(accessDeniedHandler));
+                .accessDeniedHandler(accessDeniedHandler))
+            .oauth2Login(oauth -> oauth
+                .successHandler(googleOAuthSuccessHandler)
+                .failureHandler(googleOAuthFailureHandler));
 
         return http.build();
     }

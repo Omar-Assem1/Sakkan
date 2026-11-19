@@ -4,7 +4,11 @@ import com.sakan.auth.dto.LoginRequest;
 import com.sakan.auth.dto.LoginResponse;
 import com.sakan.auth.dto.RegisterRequest;
 import com.sakan.auth.dto.UserSummaryResponse;
+import com.sakan.auth.dto.GoogleCodeRequest;
+import com.sakan.auth.dto.GoogleExchangeResponse;
+import com.sakan.auth.dto.GoogleRegistrationRequest;
 import com.sakan.auth.service.AuthService;
+import com.sakan.auth.service.GoogleOAuthService;
 import com.sakan.common.security.CurrentUserProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +29,7 @@ import java.util.Set;
 public class AuthController {
 
     private final AuthService authService;
+    private final GoogleOAuthService googleOAuthService;
     private final CurrentUserProvider currentUserProvider;
 
     @PostMapping("/register")
@@ -42,6 +47,18 @@ public class AuthController {
     @Operation(summary = "Admin sign-in (form 2): username and password of an ADMIN, returns a JWT (HS256, 24 h)")
     public LoginResponse adminLogin(@Valid @RequestBody LoginRequest request) {
         return authService.adminLogin(request);
+    }
+
+    @PostMapping("/google/exchange")
+    @Operation(summary = "Exchange a one-time Google login code for a Sakan JWT or username registration step")
+    public GoogleExchangeResponse exchangeGoogleCode(@Valid @RequestBody GoogleCodeRequest request) {
+        return googleOAuthService.exchange(request.code());
+    }
+
+    @PostMapping("/google/complete")
+    @Operation(summary = "Complete a new Google account with a unique username")
+    public LoginResponse completeGoogleRegistration(@Valid @RequestBody GoogleRegistrationRequest request) {
+        return googleOAuthService.complete(request);
     }
     @GetMapping("/me")
     @Operation(summary = "Current user, from the JWT")

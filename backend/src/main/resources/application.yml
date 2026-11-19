@@ -12,11 +12,24 @@ spring:
       ddl-auto: update
   flyway:
     enabled: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            # Non-secret placeholders keep local startup working; real Google sign-in requires .env values.
+            client-id: ${GOOGLE_CLIENT_ID:local-google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:local-google-client-secret}
+            scope: openid,profile,email
+        provider:
+          google:
+            issuer-uri: https://accounts.google.com
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 100MB
 app:
+  frontend-url: ${FRONTEND_URL:http://localhost:4200}
   images:
     root: ${IMAGE_STORAGE_ROOT:./uploads}
   admin:
