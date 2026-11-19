@@ -58,6 +58,10 @@ class RbacEndpointMatrixIT extends AbstractIntegrationTest {
                 Arguments.of("property-images", HttpMethod.DELETE, "/api/properties/999999/images/1", LISTING_MANAGERS),
                 // group: viewings
                 Arguments.of("viewings", HttpMethod.POST, "/api/viewings", VIEWING_REQUESTERS),
+                Arguments.of("viewings", HttpMethod.GET, "/api/viewings/my", VIEWING_REQUESTERS),
+                Arguments.of("viewings", HttpMethod.PATCH, "/api/viewings/999999/confirm", LISTING_MANAGERS),
+                Arguments.of("viewings", HttpMethod.PATCH, "/api/viewings/999999/complete", LISTING_MANAGERS),
+                Arguments.of("viewings", HttpMethod.PATCH, "/api/viewings/999999/cancel", VIEWING_REQUESTERS),
                 // group: operations (actuator beyond health/info)
                 Arguments.of("operations", HttpMethod.GET, "/actuator/env", ADMIN_ONLY),
                 Arguments.of("operations", HttpMethod.GET, "/actuator/metrics", ADMIN_ONLY));
