@@ -50,7 +50,7 @@ import com.sakan.viewing.repository.ViewingSlotRepository;
 
 /**
  * Concurrency, row-locking, re-booking, self-booking, and security/validation integration tests
- * for SCRUM-98 / SCRUM-101 (POST /api/v1/viewings).
+ * for SCRUM-98 / SCRUM-101 (POST /api/viewings).
  *
  * <p>Intentionally NOT annotated with {@code @Transactional}: worker threads in the concurrency
  * test must see committed {@code Property} and {@code ViewingSlot} rows in PostgreSQL.
@@ -59,7 +59,7 @@ import com.sakan.viewing.repository.ViewingSlotRepository;
 @IntegrationTest
 class ViewingConcurrencyIT extends AbstractIntegrationTest {
 
-    private static final String VIEWINGS_URL = "/api/v1/viewings";
+    private static final String VIEWINGS_URL = "/api/viewings";
     private static final long OWNER_ID = 201L;
     private static final long ASSIGNED_AGENT_ID = 202L;
     private static final long BUYER_1_ID = 301L;
