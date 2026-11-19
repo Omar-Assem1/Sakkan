@@ -73,7 +73,11 @@ import { ViewingService } from '../services/viewing.service';
               {{ 'VIEWINGS.REQUEST.SLOTS_LABEL' | transloco }}
             </span>
 
-            @if (loadingSlots()) {
+            @if (selectedPropertyId() === null) {
+              <p data-testid="select-property-prompt" class="mt-2 text-sm text-slate-500">
+                {{ 'VIEWINGS.REQUEST.SELECT_PROPERTY_PROMPT' | transloco }}
+              </p>
+            } @else if (loadingSlots()) {
               <p data-testid="loading-slots" class="mt-2 text-sm text-slate-500">
                 {{ 'VIEWINGS.REQUEST.LOADING_SLOTS' | transloco }}
               </p>
@@ -152,6 +156,7 @@ export class RequestViewingFormComponent implements OnInit {
   private readonly slotService = inject(ViewingSlotService);
   private readonly viewingService = inject(ViewingService);
 
+  readonly selectedPropertyId = signal<number | null>(null);
   readonly slots = signal<ViewingSlot[]>([]);
   readonly loadingSlots = signal(false);
   readonly submitting = signal(false);
@@ -159,7 +164,7 @@ export class RequestViewingFormComponent implements OnInit {
   readonly bookedViewing = signal<Viewing | null>(null);
 
   readonly requestForm = this.fb.group({
-    propertyId: [1, [Validators.required, Validators.min(1)]],
+    propertyId: [null as number | null, [Validators.required, Validators.min(1)]],
     slotId: [null as number | null, [Validators.required]],
     notes: ['', [Validators.maxLength(1000)]],
   });
@@ -167,21 +172,28 @@ export class RequestViewingFormComponent implements OnInit {
   ngOnInit(): void {
     const inputId = this.propertyId();
     const routeParam = this.route.snapshot.paramMap.get('propertyId');
-    const resolvedId = inputId ?? (routeParam ? Number(routeParam) : 1);
+    const parsedRouteId = routeParam ? Number(routeParam) : null;
+    const resolvedId = inputId ?? parsedRouteId;
 
-    if (Number.isInteger(resolvedId) && resolvedId > 0) {
+    if (resolvedId !== null && Number.isInteger(resolvedId) && resolvedId > 0) {
+      this.selectedPropertyId.set(resolvedId);
       this.requestForm.controls.propertyId.setValue(resolvedId);
       this.loadSlots(resolvedId);
     }
   }
 
   onPropertyChange(): void {
-    const id = Number(this.requestForm.controls.propertyId.value);
+    const raw = this.requestForm.controls.propertyId.value;
+    const id = raw === null || raw === undefined ? NaN : Number(raw);
     this.requestForm.controls.slotId.reset(null);
     this.bookedViewing.set(null);
     this.apiErrorKey.set(null);
     if (Number.isInteger(id) && id > 0) {
+      this.selectedPropertyId.set(id);
       this.loadSlots(id);
+    } else {
+      this.selectedPropertyId.set(null);
+      this.slots.set([]);
     }
   }
 

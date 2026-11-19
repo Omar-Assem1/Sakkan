@@ -35,6 +35,7 @@ import com.sakan.viewing.domain.Viewing;
 import com.sakan.viewing.domain.ViewingStatus;
 import com.sakan.viewing.dto.ViewingResponse;
 import com.sakan.viewing.repository.ViewingRepository;
+import com.sakan.viewing.repository.ViewingSlotRepository;
 
 @RegressionTest
 @UnitTest
@@ -65,6 +66,9 @@ class ViewingStatusTransitionTest {
     private ViewingRepository viewingRepository;
 
     @Mock
+    private ViewingSlotRepository slotRepository;
+
+    @Mock
     private PropertyService propertyService;
 
     private ViewingService service;
@@ -72,7 +76,7 @@ class ViewingStatusTransitionTest {
     @BeforeEach
     void setUp() {
         ViewingMapper mapper = Mappers.getMapper(ViewingMapper.class);
-        service = new ViewingServiceImpl(conflictChecker, viewingRepository, mapper, propertyService);
+        service = new ViewingServiceImpl(conflictChecker, viewingRepository, slotRepository, mapper, propertyService);
     }
 
     // --- Valid transitions ---

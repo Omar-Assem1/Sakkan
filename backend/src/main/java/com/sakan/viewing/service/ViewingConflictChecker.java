@@ -14,7 +14,7 @@ import com.sakan.common.security.AuthenticatedUser;
 import com.sakan.property.dto.PropertyResponse;
 import com.sakan.property.service.PropertyService;
 import com.sakan.viewing.domain.ViewingStatus;
-import com.sakan.viewing.entity.ViewingSlot;
+import com.sakan.viewing.domain.ViewingSlot;
 import com.sakan.viewing.repository.ViewingRepository;
 import com.sakan.viewing.repository.ViewingSlotRepository;
 

@@ -29,15 +29,17 @@ import { UiButtonComponent } from '../ui-button/ui-button.component';
               >{{ 'NAV.LISTINGS' | transloco }}</a
             >
           </li>
-          <li>
-            <a
-              routerLink="/viewings"
-              routerLinkActive="bg-emerald-50 text-emerald-700"
-              class="rounded-md ps-3 pe-3 py-2 text-slate-700 hover:bg-slate-100"
-              data-testid="nav-viewings"
-              >{{ 'NAV.VIEWINGS' | transloco }}</a
-            >
-          </li>
+          @if (canAccessViewings()) {
+            <li>
+              <a
+                routerLink="/viewings"
+                routerLinkActive="bg-emerald-50 text-emerald-700"
+                class="rounded-md ps-3 pe-3 py-2 text-slate-700 hover:bg-slate-100"
+                data-testid="nav-viewings"
+                >{{ 'NAV.VIEWINGS' | transloco }}</a
+              >
+            </li>
+          }
           @if (isAuthenticated()) {
             <li>
               <a
@@ -94,6 +96,11 @@ export class NavbarComponent {
   private readonly router = inject(Router);
 
   protected readonly isAuthenticated = this.tokenStorage.isAuthenticated;
+  protected readonly canAccessViewings = computed(
+    () =>
+      this.tokenStorage.isAuthenticated() &&
+      this.tokenStorage.hasRole('BUYER_TENANT', 'OWNER', 'AGENT'),
+  );
   protected readonly isAdmin = computed(
     () => this.tokenStorage.isAuthenticated() && this.tokenStorage.currentRole() === 'ADMIN',
   );

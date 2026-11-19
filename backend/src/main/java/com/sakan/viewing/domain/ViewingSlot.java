@@ -1,4 +1,4 @@
-package com.sakan.viewing.entity;
+package com.sakan.viewing.domain;
 
 import java.time.Instant;
 
