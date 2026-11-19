@@ -120,4 +120,22 @@ describe('AdminSignInComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="auth-error"]')).toBeFalsy();
     expect(navigatedTo).toBe('/admin');
   });
+  it('S-F1 the password field is masked and uses the right autocomplete hint', () => {
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      'input[formControlName="password"]',
+    );
+
+    expect(input.type).toBe('password');
+    expect(input.getAttribute('autocomplete')).toBe('current-password');
+  });
+
+  it('S-F2 the typed password never appears in the page text, even after a failed attempt', () => {
+    adminLoginResult = () => throwError(() => ({ status: 401 }));
+    component.form.setValue({ username: 'admin', password: 'Sup3rSecretTyped' });
+
+    component.submit();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).not.toContain('Sup3rSecretTyped');
+  });
 });
