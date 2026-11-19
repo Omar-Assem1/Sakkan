@@ -40,6 +40,7 @@ import com.sakan.property.domain.PropertyStatus;
 import com.sakan.property.repository.PropertyRepository;
 import com.sakan.support.AbstractIntegrationTest;
 import com.sakan.support.security.EndpointSecurityAssertions;
+import com.sakan.support.security.Role;
 import com.sakan.support.tags.IntegrationTest;
 import com.sakan.support.tags.RegressionTest;
 import com.sakan.viewing.domain.Viewing;
@@ -239,9 +240,11 @@ class ViewingConcurrencyIT extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("Security & Validation: 401 Unauthorized without JWT, 400 Bad Request for null slotId or oversized notes")
+    @DisplayName("Security & Validation: 401 without JWT, 403 for disallowed roles, 400 for invalid payload, 404 for missing slot")
     void securityAndValidation_unauthenticatedReturns401_andInvalidPayloadReturns400() throws Exception {
         EndpointSecurityAssertions.assertUnauthorized(mvc, HttpMethod.POST, VIEWINGS_URL);
+        EndpointSecurityAssertions.assertForbiddenFor(
+                mvc, HttpMethod.POST, VIEWINGS_URL, Role.MAINTENANCE_STAFF, Role.ADMIN);
 
         // Null slotId -> 400 Bad Request ProblemDetail
         mvc.perform(post(VIEWINGS_URL)
@@ -265,5 +268,16 @@ class ViewingConcurrencyIT extends AbstractIntegrationTest {
                                 """.formatted(slot.getId(), oversizedNotes)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400));
+
+        // Non-existent slotId -> 404 Not Found ProblemDetail
+        mvc.perform(post(VIEWINGS_URL)
+                        .with(csrf())
+                        .with(user(String.valueOf(BUYER_1_ID)).roles("BUYER_TENANT"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"slotId": 999999}
+                                """))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404));
     }
 }
