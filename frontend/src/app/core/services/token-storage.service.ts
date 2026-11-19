@@ -1,21 +1,25 @@
 import { Injectable, computed, signal } from '@angular/core';
 
-export type UserRole = 'ADMIN' | 'OWNER' | 'AGENT' | 'BUYER_TENANT';
+export type UserRole = 'ADMIN' | 'OWNER' | 'AGENT' | 'BUYER_TENANT' | 'MAINTENANCE_STAFF';
 
 const TOKEN_KEY = 'sakan_token';
-const ROLE_KEY = 'sakan_role';
+const ROLES_KEY = 'sakan_roles';
+/** Key used before SCRUM-65 (single role). Still read so old sessions keep working. */
+const LEGACY_ROLE_KEY = 'sakan_role';
 
 /**
  * Stateless JWT storage. The backend keeps no session; the client only holds
- * the token + role and exposes them as Signals so the UI reacts instantly.
+ * the token + roles and exposes them as Signals so the UI reacts instantly.
+ * UX only: the backend still enforces @PreAuthorize on every endpoint.
  */
 @Injectable({ providedIn: 'root' })
 export class TokenStorageService {
   private readonly token = signal<string | null>(readStorage(TOKEN_KEY));
-  private readonly role = signal<string | null>(readStorage(ROLE_KEY));
+  private readonly roles = signal<string[]>(readRoles());
 
   readonly isAuthenticated = computed(() => !!this.token());
-  readonly currentRole = this.role.asReadonly();
+  /** First role, kept for the navbar and other code written before multi-role support. */
+  readonly currentRole = computed(() => this.roles()[0] ?? null);
 
   getToken(): string | null {
     return this.token();
@@ -27,25 +31,50 @@ export class TokenStorageService {
   }
 
   getRole(): string | null {
-    return this.role();
+    return this.roles()[0] ?? null;
   }
 
+  getRoles(): string[] {
+    return this.roles();
+  }
+
+  /** Single-role API kept for existing callers. */
   saveRole(role: UserRole | string): void {
-    writeStorage(ROLE_KEY, role);
-    this.role.set(role);
+    this.saveRoles([role]);
   }
 
-  hasRole(...roles: string[]): boolean {
-    const current = this.role();
-    return current !== null && roles.includes(current);
+  saveRoles(roles: readonly string[]): void {
+    const copy = [...roles];
+    writeStorage(ROLES_KEY, JSON.stringify(copy));
+    removeStorage(LEGACY_ROLE_KEY);
+    this.roles.set(copy);
+  }
+
+  hasRole(...wanted: string[]): boolean {
+    return this.roles().some((r) => wanted.includes(r));
   }
 
   clear(): void {
     removeStorage(TOKEN_KEY);
-    removeStorage(ROLE_KEY);
+    removeStorage(ROLES_KEY);
+    removeStorage(LEGACY_ROLE_KEY);
     this.token.set(null);
-    this.role.set(null);
+    this.roles.set([]);
   }
+}
+
+function readRoles(): string[] {
+  const raw = readStorage(ROLES_KEY);
+  if (raw !== null) {
+    try {
+      const parsed: unknown = JSON.parse(raw);
+      return Array.isArray(parsed) && parsed.every((r) => typeof r === 'string') ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  const legacy = readStorage(LEGACY_ROLE_KEY);
+  return legacy ? [legacy] : [];
 }
 
 /** localStorage can throw (private mode, quota, disabled storage) – never crash the app. */

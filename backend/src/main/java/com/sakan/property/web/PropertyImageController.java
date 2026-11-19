@@ -1,5 +1,5 @@
 package com.sakan.property.web;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.sakan.common.security.CurrentUserProvider;
 import com.sakan.property.dto.PropertyImageResponse;
 import com.sakan.property.service.PropertyImageService;
@@ -25,27 +25,29 @@ public class PropertyImageController {
         users = u;
         this.storage = storage;
     }
-
-    @Operation(summary = "List active property images")
+    @Operation(summary = "List active property images (visibility follows the property)")
     @GetMapping("/properties/{id}/images")
     public List<PropertyImageResponse> list(@PathVariable long id) {
-        return service.list(id);
+        return service.list(id, users.find().orElse(null));
     }
 
     @Operation(summary = "Upload property images (maximum 10 active)")
     @PostMapping(value = "/properties/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyRole('OWNER', 'AGENT')")
     public List<PropertyImageResponse> upload(@PathVariable long id, @RequestParam("files") List<MultipartFile> files) {
         return service.upload(id, files, users.require());
     }
 
     @Operation(summary = "Reorder active property images")
     @PutMapping("/properties/{id}/images/order")
+    @PreAuthorize("hasAnyRole('OWNER', 'AGENT')")
     public void reorder(@PathVariable long id, @RequestBody List<Long> imageIds) {
         service.reorder(id, imageIds, users.require());
     }
 
     @Operation(summary = "Archive a property image")
     @DeleteMapping("/properties/{id}/images/{imageId}")
+    @PreAuthorize("hasAnyRole('OWNER', 'AGENT')")
     public ResponseEntity<Void> delete(@PathVariable long id, @PathVariable long imageId) {
         service.delete(id, imageId, users.require());
         return ResponseEntity.noContent().build();

@@ -1,75 +1,46 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  ActivatedRouteSnapshot,
-  Router,
-  RouterStateSnapshot,
-  UrlTree,
-  provideRouter,
-} from '@angular/router';
+import { PartialMatchRouteSnapshot, Route, Router, UrlSegment, UrlTree, provideRouter } from '@angular/router';
 import { authGuard } from './auth.guard';
 import { TokenStorageService } from '../services/token-storage.service';
 
-describe('authGuard', () => {
-  let tokenStorage: TokenStorageService;
+describe('authGuard (canMatch)', () => {
+  let storage: TokenStorageService;
   let router: Router;
 
-  const mockState = { url: '/viewings' } as RouterStateSnapshot;
+  const route = {} as Route;
+  const segments = [new UrlSegment('viewings', {}), new UrlSegment('request', {})];
+  const snapshot = {} as PartialMatchRouteSnapshot;
+
+  const run = () =>
+    TestBed.runInInjectionContext(() => authGuard(route, segments, snapshot)) as boolean | UrlTree;
 
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({
       providers: [TokenStorageService, provideRouter([])],
     });
-    tokenStorage = TestBed.inject(TokenStorageService);
+    storage = TestBed.inject(TokenStorageService);
     router = TestBed.inject(Router);
   });
 
-  afterEach(() => {
-    localStorage.clear();
+  afterEach(() => localStorage.clear());
+
+  it('allows any authenticated user, whatever the role', () => {
+    storage.saveToken('valid-token');
+    expect(run()).toBe(true);
   });
 
-  it('should allow access when user is authenticated and no specific role is required', () => {
-    tokenStorage.saveToken('valid-token');
-    const route = { data: {} } as unknown as ActivatedRouteSnapshot;
-
-    const result = TestBed.runInInjectionContext(() => authGuard(route, mockState));
-    expect(result).toBe(true);
-  });
-
-  it('should block access and redirect to /auth when user is not authenticated', () => {
-    tokenStorage.clear();
-    const route = { data: {} } as unknown as ActivatedRouteSnapshot;
-
-    const result = TestBed.runInInjectionContext(() => authGuard(route, mockState));
+  it('redirects to sign-in with the requested URL as returnUrl when not authenticated', () => {
+    const result = run();
     expect(result instanceof UrlTree).toBe(true);
-    expect(router.serializeUrl(result as UrlTree)).toBe('/auth');
+    expect(router.serializeUrl(result as UrlTree)).toBe(
+      '/auth/sign-in?returnUrl=%2Fviewings%2Frequest',
+    );
   });
 
-  it('should allow access when user has one of the required route roles', () => {
-    tokenStorage.saveToken('valid-admin-token');
-    tokenStorage.saveRole('ADMIN');
-    const route = { data: { roles: ['ADMIN'] } } as unknown as ActivatedRouteSnapshot;
-
-    const result = TestBed.runInInjectionContext(() => authGuard(route, mockState));
-    expect(result).toBe(true);
-  });
-
-  it('should redirect to /listings when user is authenticated but lacks required role', () => {
-    tokenStorage.saveToken('valid-buyer-token');
-    tokenStorage.saveRole('BUYER_TENANT');
-    const route = { data: { roles: ['ADMIN'] } } as unknown as ActivatedRouteSnapshot;
-
-    const result = TestBed.runInInjectionContext(() => authGuard(route, mockState));
-    expect(result instanceof UrlTree).toBe(true);
-    expect(router.serializeUrl(result as UrlTree)).toBe('/listings');
-  });
-
-  it('should redirect to /listings when user has a token but no stored role on a role-protected route', () => {
-    tokenStorage.saveToken('token-without-role');
-    const route = { data: { roles: ['ADMIN'] } } as unknown as ActivatedRouteSnapshot;
-
-    const result = TestBed.runInInjectionContext(() => authGuard(route, mockState));
-    expect(result instanceof UrlTree).toBe(true);
-    expect(router.serializeUrl(result as UrlTree)).toBe('/listings');
+  it('redirects to sign-in after the session was cleared', () => {
+    storage.saveToken('valid-token');
+    storage.clear();
+    expect(run() instanceof UrlTree).toBe(true);
   });
 });

@@ -39,21 +39,33 @@ public class SecurityConfig {
                 .authenticationEntryPoint(entryPoint)
                 .accessDeniedHandler(accessDeniedHandler))
             .authorizeHttpRequests(auth -> auth
+                // --- public ---
                 .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/admin/login").permitAll()
-                // Checked before body validation, so disallowed roles get 403, not 400.
+                .requestMatchers(HttpMethod.GET, "/api/property-images/**").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .requestMatchers(HttpMethod.GET, "/actuator/health/**", "/actuator/info").permitAll()
+
+                // --- role rules, checked before body validation so wrong roles get 403, not 400 ---
+                .requestMatchers(HttpMethod.GET, "/api/properties/mine").hasAnyRole("OWNER", "AGENT")
+                .requestMatchers(HttpMethod.POST, "/api/properties").hasAnyRole("OWNER", "AGENT")
+                .requestMatchers(HttpMethod.PUT, "/api/properties/*").hasAnyRole("OWNER", "AGENT")
+                .requestMatchers(HttpMethod.POST, "/api/properties/*/publish", "/api/properties/*/archive").hasAnyRole("OWNER", "AGENT")
                 .requestMatchers(HttpMethod.POST, "/api/properties/*/slots").hasAnyRole("OWNER", "AGENT")
                 .requestMatchers(HttpMethod.DELETE, "/api/properties/*/slots/*").hasAnyRole("OWNER", "AGENT")
-                .requestMatchers(HttpMethod.GET, "/api/viewings/my").hasAnyRole("BUYER_TENANT", "OWNER", "AGENT")
                 .requestMatchers(HttpMethod.POST, "/api/properties/*/images").hasAnyRole("OWNER", "AGENT")
                 .requestMatchers(HttpMethod.PUT, "/api/properties/*/images/order").hasAnyRole("OWNER", "AGENT")
                 .requestMatchers(HttpMethod.DELETE, "/api/properties/*/images/*").hasAnyRole("OWNER", "AGENT")
-                .requestMatchers(HttpMethod.GET, "/api/property-images/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/viewings").hasAnyRole("BUYER_TENANT", "OWNER", "AGENT")
+                .requestMatchers(HttpMethod.GET, "/api/viewings/my").hasAnyRole("BUYER_TENANT", "OWNER", "AGENT")
                 .requestMatchers(HttpMethod.PATCH, "/api/viewings/*/confirm", "/api/viewings/*/complete").hasAnyRole("OWNER", "AGENT")
                 .requestMatchers(HttpMethod.PATCH, "/api/viewings/*/cancel").hasAnyRole("BUYER_TENANT", "OWNER", "AGENT")
-                .requestMatchers(HttpMethod.GET, "/api/properties/**").permitAll()
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                .requestMatchers("/actuator/**").permitAll()
+
+                // --- public reads: exact patterns instead of GET /api/properties/** ---
+                .requestMatchers(HttpMethod.GET, "/api/properties", "/api/properties/*", "/api/properties/*/images").permitAll()
+                // TODO(SCRUM-65): confirm with M3 that slot listing is public (GET /api/properties/*/slots)
+                .requestMatchers(HttpMethod.GET, "/api/properties/*/slots").permitAll()
+
+                .requestMatchers("/actuator/**").hasRole("ADMIN")
                 .anyRequest().authenticated())
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))

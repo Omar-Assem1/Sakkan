@@ -14,21 +14,22 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
   const token = tokenStorage.getToken();
+  const isApi = isBackendApiUrl(req.url);
 
   const authReq =
-    token && isBackendApiUrl(req.url)
-      ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-      : req;
+    token && isApi ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
 
   return next(authReq).pipe(
     catchError((error: unknown) => {
-      if (
-        error instanceof HttpErrorResponse &&
-        error.status === 401 &&
-        !req.url.startsWith('/api/auth/')
-      ) {
-        tokenStorage.clear();
-        router.navigate(['/auth']);
+      if (error instanceof HttpErrorResponse && isApi) {
+        if (error.status === 401 && !req.url.startsWith('/api/auth/')) {
+          // Expired or invalid token: drop the session and go to sign-in.
+          tokenStorage.clear();
+          router.navigate(['/auth/sign-in'], { queryParams: { returnUrl: router.url } });
+        } else if (error.status === 403) {
+          // Signed in but not allowed: keep the session, show the 403 page.
+          router.navigate(['/error'], { queryParams: { code: 403 } });
+        }
       }
       return throwError(() => error);
     }),

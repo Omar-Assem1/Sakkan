@@ -3,7 +3,7 @@ package com.sakan.property.web;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -93,6 +93,7 @@ public class PropertyController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('OWNER', 'AGENT')")
     public ResponseEntity<PropertyResponse> create(@Valid @RequestBody PropertyRequest request) {
         PropertyResponse created = service.create(request, currentUser.require());
         return ResponseEntity.created(URI.create("/api/properties/" + created.id())).body(created);
@@ -104,6 +105,7 @@ public class PropertyController {
     }
 
     @GetMapping("/mine")
+    @PreAuthorize("hasAnyRole('OWNER', 'AGENT')")
     public PageResponse<PropertyResponse> mine(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size) {
@@ -111,16 +113,19 @@ public class PropertyController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('OWNER', 'AGENT')")
     public PropertyResponse update(@PathVariable("id") Long id, @Valid @RequestBody PropertyRequest request) {
         return service.update(id, request, currentUser.require());
     }
 
     @PostMapping("/{id}/publish")
+    @PreAuthorize("hasAnyRole('OWNER', 'AGENT')")
     public PropertyResponse publish(@PathVariable("id") Long id) {
         return service.publish(id, currentUser.require());
     }
 
     @PostMapping("/{id}/archive")
+    @PreAuthorize("hasAnyRole('OWNER', 'AGENT')")
     public PropertyResponse archive(@PathVariable("id") Long id) {
         return service.archive(id, currentUser.require());
     }

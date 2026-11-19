@@ -1,5 +1,5 @@
 package com.sakan.auth.web;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.sakan.auth.dto.LoginRequest;
 import com.sakan.auth.dto.LoginResponse;
 import com.sakan.auth.dto.RegisterRequest;
@@ -45,6 +45,7 @@ public class AuthController {
     }
     @GetMapping("/me")
     @Operation(summary = "Current user, from the JWT")
+    @PreAuthorize("isAuthenticated()")
     public UserSummaryResponse me() {
         return authService.currentUser(currentUserProvider.require().id());
     }

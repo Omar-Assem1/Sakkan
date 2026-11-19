@@ -78,7 +78,7 @@ describe('authInterceptor', () => {
     externalReq.flush({});
   });
 
-  it('should clear stored token and redirect to /auth on 401 Unauthorized response', () => {
+  it('should clear stored token and redirect to sign-in on 401 Unauthorized response', () => {
     tokenStorage.saveToken('expired-jwt-token');
     tokenStorage.saveRole('BUYER_TENANT');
 
@@ -95,10 +95,13 @@ describe('authInterceptor', () => {
     expect(errorStatus).toBe(401);
     expect(tokenStorage.getToken()).toBeNull();
     expect(tokenStorage.getRole()).toBeNull();
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/auth']);
+    expect(routerSpy.navigate).toHaveBeenCalledWith(
+      ['/auth/sign-in'],
+      expect.objectContaining({ queryParams: expect.any(Object) }),
+    );
   });
 
-  it('should preserve token and NOT redirect to /auth on 403 Forbidden or 500 Server Error', () => {
+  it('should keep the session and go to the 403 page on 403 Forbidden', () => {
     tokenStorage.saveToken('valid-jwt-token');
     tokenStorage.saveRole('BUYER_TENANT');
 
@@ -115,6 +118,19 @@ describe('authInterceptor', () => {
     expect(errorStatus).toBe(403);
     expect(tokenStorage.getToken()).toBe('valid-jwt-token');
     expect(tokenStorage.getRole()).toBe('BUYER_TENANT');
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/error'], { queryParams: { code: 403 } });
+  });
+
+  it('should keep the session and NOT redirect on 500 Server Error', () => {
+    tokenStorage.saveToken('valid-jwt-token');
+    tokenStorage.saveRole('BUYER_TENANT');
+
+    http.get('/api/v1/properties/1').subscribe({ error: () => undefined });
+    httpMock
+      .expectOne('/api/v1/properties/1')
+      .flush({ title: 'Error', status: 500 }, { status: 500, statusText: 'Server Error' });
+
+    expect(tokenStorage.getToken()).toBe('valid-jwt-token');
     expect(routerSpy.navigate).not.toHaveBeenCalled();
   });
 });
