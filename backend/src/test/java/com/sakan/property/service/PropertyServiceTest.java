@@ -31,6 +31,7 @@ import com.sakan.common.exception.InvalidStatusTransitionException;
 import com.sakan.common.exception.ResourceNotFoundException;
 import com.sakan.common.response.PageResponse;
 import com.sakan.common.security.AuthenticatedUser;
+import com.sakan.common.statemachine.StatusTransitionService;
 import com.sakan.property.domain.Property;
 import com.sakan.property.domain.PropertyPurpose;
 import com.sakan.property.domain.PropertyStatus;
@@ -62,7 +63,8 @@ class PropertyServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new PropertyService(repository, Mappers.getMapper(PropertyMapper.class));
+        service = new PropertyService(repository, Mappers.getMapper(PropertyMapper.class),
+                new DefaultLocationHierarchyService(), new PropertySortValidator(), new StatusTransitionService(event -> { }));
     }
 
     @Test

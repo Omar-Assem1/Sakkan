@@ -18,6 +18,8 @@ import com.sakan.common.exception.InvalidStatusTransitionException;
 import com.sakan.common.exception.ResourceNotFoundException;
 import com.sakan.common.response.PageResponse;
 import com.sakan.common.security.AuthenticatedUser;
+import com.sakan.common.statemachine.StatusTransitionService;
+import com.sakan.common.statemachine.StatusTransitions;
 import com.sakan.property.domain.Property;
 import com.sakan.property.domain.PropertyStatus;
 import com.sakan.property.dto.PropertyMapper;
@@ -35,26 +37,33 @@ public class PropertyService {
     static final int MAX_PAGE_SIZE = 50;
 
     private static final Logger log = LoggerFactory.getLogger(PropertyService.class);
+    private static final StatusTransitions<PropertyStatus> PROPERTY_TRANSITIONS =
+            StatusTransitions.from(PropertyStatus.class, PropertyStatus::allowedTargets);
 
     private final PropertyRepository repository;
     private final PropertyMapper mapper;
     private final LocationHierarchyService locationHierarchyService;
     private final PropertySortValidator sortValidator;
+    private final StatusTransitionService statusTransitionService;
 
     @Autowired
     public PropertyService(
             PropertyRepository repository,
             PropertyMapper mapper,
             LocationHierarchyService locationHierarchyService,
-            PropertySortValidator sortValidator) {
+            PropertySortValidator sortValidator,
+            StatusTransitionService statusTransitionService) {
         this.repository = repository;
         this.mapper = mapper;
         this.locationHierarchyService = locationHierarchyService;
         this.sortValidator = sortValidator;
+        this.statusTransitionService = statusTransitionService;
     }
 
+    /** Convenience constructor retained for isolated unit tests that do not assert domain events. */
     public PropertyService(PropertyRepository repository, PropertyMapper mapper) {
-        this(repository, mapper, new DefaultLocationHierarchyService(), new PropertySortValidator());
+        this(repository, mapper, new DefaultLocationHierarchyService(), new PropertySortValidator(),
+                new StatusTransitionService(event -> { }));
     }
 
     @Transactional(readOnly = true)
@@ -159,11 +168,8 @@ public class PropertyService {
         Property property = findOrThrow(id);
         requireManager(property, actor);
         PropertyStatus current = property.getStatus();
-        if (!current.canTransitionTo(target)) {
-            throw new InvalidStatusTransitionException(
-                    "Property " + id + " cannot move from " + current + " to " + target);
-        }
-        property.setStatus(target);
+        statusTransitionService.transition("Property", id, current, target, "user:" + actor.id(),
+                PROPERTY_TRANSITIONS, property::setStatus);
         Property saved = repository.save(property);
         log.info("Property {} moved {} -> {} by user {}", id, current, target, actor.id());
         return mapper.toResponse(saved);
