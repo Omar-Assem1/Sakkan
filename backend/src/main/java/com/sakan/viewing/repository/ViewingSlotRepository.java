@@ -30,4 +30,8 @@ public interface ViewingSlotRepository extends JpaRepository<ViewingSlot, Long> 
     List<ViewingSlot> findByPropertyIdOrderByStartTimeAsc(Long propertyId);
 
     Optional<ViewingSlot> findByIdAndPropertyId(Long id, Long propertyId);
+
+    // TODO(SCRUM-99): add @Lock(LockModeType.PESSIMISTIC_WRITE) to serialize concurrent bookings on the same slot.
+    @Query("SELECT s FROM ViewingSlot s WHERE s.id = :id")
+    Optional<ViewingSlot> findByIdForUpdate(@Param("id") Long id);
 }
