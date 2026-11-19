@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import java.util.Set;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -38,7 +38,11 @@ public class AuthController {
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
     }
-
+    @PostMapping("/admin/login")
+    @Operation(summary = "Admin sign-in (form 2): username and password of an ADMIN, returns a JWT (HS256, 24 h)")
+    public LoginResponse adminLogin(@Valid @RequestBody LoginRequest request) {
+        return authService.adminLogin(request);
+    }
     @GetMapping("/me")
     @Operation(summary = "Current user, from the JWT")
     public UserSummaryResponse me() {
