@@ -17,7 +17,7 @@ import com.sakan.property.dto.PropertyResponse;
 import com.sakan.property.service.PropertyService;
 import com.sakan.viewing.dto.CreateViewingSlotRequest;
 import com.sakan.viewing.dto.ViewingSlotResponse;
-import com.sakan.viewing.entity.ViewingSlot;
+import com.sakan.viewing.domain.ViewingSlot;
 import com.sakan.viewing.repository.ViewingSlotRepository;
 
 @Service

@@ -18,6 +18,7 @@ const TEST_TRANSLATIONS = {
         END_TIME_LABEL: 'End Time',
         ADD_SLOT: 'Add Viewing Slot',
         SLOTS_HEADING: 'Available Time Slots',
+        SELECT_PROPERTY_PROMPT: 'Enter a property ID above to manage its viewing slots.',
         EMPTY_SLOTS: 'No viewing slots configured for this property yet.',
         REMOVE_SLOT: 'Remove',
         ERRORS: {
@@ -42,6 +43,7 @@ const TEST_TRANSLATIONS = {
         END_TIME_LABEL: 'وقت الانتهاء',
         ADD_SLOT: 'إضافة موعد معاينة',
         SLOTS_HEADING: 'المواعيد المتاحة',
+        SELECT_PROPERTY_PROMPT: 'أدخل رقم العقار أعلاه لإدارة مواعيد المعاينة الخاصة به.',
         EMPTY_SLOTS: 'لا توجد مواعيد معاينة مضافة لهذا العقار حتى الآن.',
         REMOVE_SLOT: 'حذف',
         ERRORS: {
@@ -103,13 +105,24 @@ describe('AvailabilityFormComponent — Form 7 (SCRUM-96 / SKN-25)', () => {
     fixture.detectChanges();
   });
 
-  it('should load and render existing viewing slots on init', () => {
+  it('should start empty without defaulting to property 1 and show prompt until a property is chosen', () => {
+    expect(slotServiceSpy.getSlots).not.toHaveBeenCalled();
+    expect(component.slotForm.controls.propertyId.value).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="select-property-prompt"]')).toBeTruthy();
+  });
+
+  it('should load and render existing viewing slots when a property ID is selected', () => {
+    component.slotForm.controls.propertyId.setValue(1);
+    component.onPropertyChange();
+    fixture.detectChanges();
+
     expect(slotServiceSpy.getSlots).toHaveBeenCalledWith(1);
     const items = fixture.nativeElement.querySelectorAll('[data-testid="slot-item"]');
     expect(items.length).toBe(1);
   });
 
   it('should validate client-side that endTime must be after startTime and block submission', () => {
+    component.slotForm.controls.propertyId.setValue(1);
     component.slotForm.controls.startTime.setValue('2026-12-15T14:00');
     component.slotForm.controls.endTime.setValue('2026-12-15T13:00');
     component.slotForm.markAllAsTouched();
@@ -135,6 +148,8 @@ describe('AvailabilityFormComponent — Form 7 (SCRUM-96 / SKN-25)', () => {
     };
     slotServiceSpy.createSlot.mockReturnValue(of(newSlot));
 
+    component.slotForm.controls.propertyId.setValue(1);
+    component.onPropertyChange();
     component.slotForm.controls.startTime.setValue('2026-12-15T11:00');
     component.slotForm.controls.endTime.setValue('2026-12-15T12:00');
     component.onSubmit();
@@ -161,6 +176,7 @@ describe('AvailabilityFormComponent — Form 7 (SCRUM-96 / SKN-25)', () => {
       ),
     );
 
+    component.slotForm.controls.propertyId.setValue(1);
     component.slotForm.controls.startTime.setValue('2026-12-15T10:30');
     component.slotForm.controls.endTime.setValue('2026-12-15T11:30');
     component.onSubmit();
@@ -174,6 +190,10 @@ describe('AvailabilityFormComponent — Form 7 (SCRUM-96 / SKN-25)', () => {
   });
 
   it('should remove slot from list when delete button is clicked', () => {
+    component.slotForm.controls.propertyId.setValue(1);
+    component.onPropertyChange();
+    fixture.detectChanges();
+
     const deleteBtn = fixture.nativeElement.querySelector(
       '[data-testid="delete-slot-btn"] button',
     ) as HTMLButtonElement;

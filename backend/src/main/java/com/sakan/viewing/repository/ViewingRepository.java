@@ -2,6 +2,8 @@ package com.sakan.viewing.repository;
 
 import java.util.Collection;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.sakan.viewing.domain.Viewing;
@@ -13,4 +15,12 @@ public interface ViewingRepository extends JpaRepository<Viewing, Long> {
     boolean existsBySlotIdAndStatusIn(Long slotId, Collection<ViewingStatus> statuses);
 
     long countBySlotIdAndStatusIn(Long slotId, Collection<ViewingStatus> statuses);
+
+    Page<Viewing> findByBuyerId(Long buyerId, Pageable pageable);
+
+    Page<Viewing> findByBuyerIdAndStatus(Long buyerId, ViewingStatus status, Pageable pageable);
+
+    Page<Viewing> findByPropertyIdIn(Collection<Long> propertyIds, Pageable pageable);
+
+    Page<Viewing> findByPropertyIdInAndStatus(Collection<Long> propertyIds, ViewingStatus status, Pageable pageable);
 }

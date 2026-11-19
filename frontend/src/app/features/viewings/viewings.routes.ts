@@ -1,17 +1,17 @@
 import { Routes } from '@angular/router';
 import { roleGuard } from '../../core/guards/role.guard';
 
-/** Same roles as the backend: slots = OWNER/AGENT, viewing requests = BUYER_TENANT/OWNER/AGENT. */
+/** Same roles as the backend: slots = OWNER/AGENT; my viewings and viewing requests = BUYER_TENANT/OWNER/AGENT. */
 const MANAGE_SLOTS = [roleGuard('OWNER', 'AGENT')];
 const REQUEST_VIEWING = [roleGuard('BUYER_TENANT', 'OWNER', 'AGENT')];
 
 export const VIEWINGS_ROUTES: Routes = [
   {
     path: '',
-    canMatch: MANAGE_SLOTS,
+    canMatch: REQUEST_VIEWING,
     loadComponent: () =>
-      import('./availability-form/availability-form.component').then(
-        (m) => m.AvailabilityFormComponent,
+      import('./my-viewings/my-viewings.component').then(
+        (m) => m.MyViewingsComponent,
       ),
     title: 'Sakan',
   },

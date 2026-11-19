@@ -17,6 +17,7 @@ const TEST_TRANSLATIONS = {
         SUBTITLE: 'Select an available time slot to book a viewing for this property.',
         PROPERTY_ID_LABEL: 'Property ID',
         SLOTS_LABEL: 'Available Time Slots',
+        SELECT_PROPERTY_PROMPT: 'Enter a property ID above to view its available slots.',
         LOADING_SLOTS: 'Loading available slots...',
         EMPTY_SLOTS: 'No viewing slots are currently available for this property.',
         NOTES_LABEL: 'Notes (optional)',
@@ -42,6 +43,7 @@ const TEST_TRANSLATIONS = {
         SUBTITLE: 'اختر فترة زمنية متاحة لحجز معاينة لهذا العقار.',
         PROPERTY_ID_LABEL: 'رقم العقار',
         SLOTS_LABEL: 'المواعيد المتاحة',
+        SELECT_PROPERTY_PROMPT: 'أدخل رقم العقار أعلاه لعرض المواعيد المتاحة.',
         LOADING_SLOTS: 'جاري تحميل المواعيد المتاحة...',
         EMPTY_SLOTS: 'لا توجد مواعيد معاينة متاحة لهذا العقار حالياً.',
         NOTES_LABEL: 'ملاحظات (اختياري)',
@@ -122,10 +124,22 @@ describe('RequestViewingFormComponent — Form 6 (SCRUM-100 / SKN-26)', () => {
 
     fixture = TestBed.createComponent(RequestViewingFormComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('propertyId', 1);
     fixture.detectChanges();
   });
 
-  it('loads and displays available viewing slots on init', () => {
+  it('starts empty without loading property 1 when no propertyId input or route param is given', () => {
+    slotServiceSpy.getSlots.mockClear();
+    const standaloneFixture = TestBed.createComponent(RequestViewingFormComponent);
+    standaloneFixture.detectChanges();
+
+    expect(slotServiceSpy.getSlots).not.toHaveBeenCalled();
+    expect(
+      standaloneFixture.nativeElement.querySelector('[data-testid="select-property-prompt"]'),
+    ).toBeTruthy();
+  });
+
+  it('loads and displays available viewing slots on init when propertyId is provided', () => {
     expect(slotServiceSpy.getSlots).toHaveBeenCalledWith(1);
     const el: HTMLElement = fixture.nativeElement;
     expect(el.querySelector('[data-testid="slot-option-10"]')).toBeTruthy();
