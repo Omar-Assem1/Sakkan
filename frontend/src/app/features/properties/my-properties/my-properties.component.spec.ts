@@ -24,7 +24,13 @@ const TEST_TRANSLATIONS = {
       ACTIONS: {
         EDIT: 'Edit',
         PUBLISH: 'Publish',
-        ARCHIVE: 'Archive'
+        REPUBLISH: 'Republish',
+        ARCHIVE: 'Archive',
+        AVAILABILITY: 'Availability'
+      },
+      PAGINATION: {
+        PREVIOUS: 'Previous',
+        NEXT: 'Next'
       },
       EMPTY: {
         TITLE: 'No properties found',
@@ -66,6 +72,7 @@ const TEST_TRANSLATIONS = {
       ACTIONS: {
         EDIT: 'تعديل',
         PUBLISH: 'نشر',
+        REPUBLISH: 'إعادة النشر',
         ARCHIVE: 'أرشفة'
       },
       EMPTY: {
@@ -221,6 +228,31 @@ describe('MyPropertiesComponent — Form 5 (SKN-21)', () => {
 
     expect(propertyServiceSpy.archiveProperty).toHaveBeenCalledWith(2);
     expect(component.properties()[1].status).toBe('ARCHIVED');
+  });
+
+  it('should allow republishing an archived property', () => {
+    const archivedList: PropertyResponse[] = [{ ...MOCK_PROPERTIES[1], status: 'ARCHIVED' }];
+    propertyServiceSpy.getMyProperties.mockReturnValue(
+      of({ content: archivedList, page: 0, size: 10, totalElements: 1, totalPages: 1 })
+    );
+    propertyServiceSpy.publishProperty.mockReturnValue(
+      of({ ...MOCK_PROPERTIES[1], status: 'PUBLISHED' })
+    );
+
+    component.loadMyProperties(0);
+    fixture.detectChanges();
+
+    const republishBtn = fixture.nativeElement.querySelector(
+      '[data-testid="action-publish"]'
+    ) as HTMLButtonElement;
+    expect(republishBtn).toBeTruthy();
+    expect(republishBtn.textContent).toContain('Republish');
+
+    republishBtn.click();
+    fixture.detectChanges();
+
+    expect(propertyServiceSpy.publishProperty).toHaveBeenCalledWith(2);
+    expect(component.properties()[0].status).toBe('PUBLISHED');
   });
 
   it('should navigate to edit page when edit button is clicked', () => {

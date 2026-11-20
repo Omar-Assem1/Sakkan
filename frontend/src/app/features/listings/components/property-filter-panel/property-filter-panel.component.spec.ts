@@ -135,6 +135,30 @@ describe('PropertyFilterPanelComponent', () => {
     expect(component.selectedGovernorateId()).toBe(1);
   });
 
+  it('should resolve 3-level location hierarchy (GOVERNORATE -> CITY -> DISTRICT)', () => {
+    component.locations = [
+      { id: 1, nameEn: 'Cairo', nameAr: 'القاهرة', type: 'GOVERNORATE', parentId: null },
+      { id: 4, nameEn: 'New Cairo', nameAr: 'القاهرة الجديدة', type: 'CITY', parentId: 1 },
+      { id: 10, nameEn: 'Fifth Settlement', nameAr: 'التجمع الخامس', type: 'DISTRICT', parentId: 4 },
+    ];
+    component.initialFilters = { locationId: 10 };
+
+    component.ngOnChanges({
+      initialFilters: {
+        currentValue: component.initialFilters,
+        previousValue: {},
+        firstChange: false,
+        isFirstChange: () => false,
+      },
+    });
+
+    expect(component.selectedGovernorateId()).toBe(1);
+    expect(component.selectedCityId()).toBe(4);
+    expect(component.selectedDistrictId()).toBe(10);
+    expect(component.cities().length).toBe(1);
+    expect(component.districts().length).toBe(1);
+  });
+
   it('should contain zero physical directional Tailwind classes in filter panel template', () => {
     const allElements = fixture.nativeElement.querySelectorAll('*');
     allElements.forEach((el: Element) => {

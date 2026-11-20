@@ -1,14 +1,24 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoTestingModule } from '@jsverse/transloco';
+import { TokenStorageService } from '../../../../core/services/token-storage.service';
 import { PropertyCardComponent } from './property-card.component';
 import { PropertySummaryDto } from '../../models/property-browse.model';
+
+function createJwt(payload: Record<string, unknown>): string {
+  const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const body = btoa(JSON.stringify(payload));
+  return `${header}.${body}.sig`;
+}
 
 describe('PropertyCardComponent', () => {
   let component: PropertyCardComponent;
   let fixture: ComponentFixture<PropertyCardComponent>;
+  let tokenStorage: TokenStorageService;
 
   const mockProperty: PropertySummaryDto = {
     id: 1,
+    ownerId: 10,
+    agentId: null,
     title: 'Sunny Smouha Apartment',
     description: 'Spacious apartment near Green Plaza with balcony',
     purpose: 'SALE',
@@ -25,6 +35,7 @@ describe('PropertyCardComponent', () => {
   };
 
   beforeEach(async () => {
+    localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [
         PropertyCardComponent,
@@ -39,6 +50,14 @@ describe('PropertyCardComponent', () => {
                   BEDS: 'Beds',
                   BATHS: 'Baths',
                   SQM: 'm²',
+                  VIEW_DETAILS: 'View Details',
+                  REQUEST_VIEWING: 'Request Viewing',
+                  YOUR_LISTING: 'Your Listing',
+                },
+              },
+              MY_PROPERTIES: {
+                ACTIONS: {
+                  AVAILABILITY: 'Availability',
                 },
               },
             },
@@ -50,12 +69,18 @@ describe('PropertyCardComponent', () => {
           },
         }),
       ],
+      providers: [TokenStorageService],
     }).compileComponents();
 
+    tokenStorage = TestBed.inject(TokenStorageService);
     fixture = TestBed.createComponent(PropertyCardComponent);
     component = fixture.componentInstance;
     component.property = mockProperty;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    localStorage.clear();
   });
 
   it('should create and render property title and details', () => {
@@ -81,6 +106,25 @@ describe('PropertyCardComponent', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('For Rent');
+  });
+
+  it('should hide Request Viewing and show Availability for the property owner', () => {
+    tokenStorage.saveRoles(['OWNER']);
+    tokenStorage.saveToken(createJwt({ sub: '10', roles: ['OWNER'] }));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="request-viewing-btn"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="manage-availability-btn"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="own-listing-badge"]')).toBeTruthy();
+  });
+
+  it('should show Request Viewing for another owner or buyer', () => {
+    tokenStorage.saveRoles(['OWNER']);
+    tokenStorage.saveToken(createJwt({ sub: '99', roles: ['OWNER'] }));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="request-viewing-btn"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="manage-availability-btn"]')).toBeNull();
   });
 
   it('should contain zero physical directional Tailwind classes in template', () => {

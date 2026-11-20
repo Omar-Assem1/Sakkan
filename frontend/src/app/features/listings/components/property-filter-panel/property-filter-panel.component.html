@@ -1,7 +1,15 @@
-<aside class="w-full bg-white p-6 rounded-xl shadow-xs border border-slate-200">
-  <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-    <h2 class="text-lg font-bold text-slate-800">{{ 'LISTINGS.FILTERS.TITLE' | transloco }}</h2>
-    <button (click)="onReset()" type="button" class="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition">
+<aside
+  class="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs transition-colors dark:border-slate-800 dark:bg-slate-900"
+>
+  <div class="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+    <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100">
+      {{ 'LISTINGS.FILTERS.TITLE' | transloco }}
+    </h2>
+    <button
+      (click)="onReset()"
+      type="button"
+      class="cursor-pointer text-sm font-medium text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
+    >
       {{ 'LISTINGS.FILTERS.CLEAR' | transloco }}
     </button>
   </div>
@@ -9,21 +17,31 @@
   <div class="mt-6 space-y-5">
     <!-- Purpose Selection -->
     <div>
-      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.PURPOSE' | transloco }}</label>
+      <label class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        {{ 'LISTINGS.FILTERS.PURPOSE' | transloco }}
+      </label>
       <div class="grid grid-cols-2 gap-2">
         <button
           type="button"
           (click)="purpose.set(purpose() === 'SALE' ? null : 'SALE')"
-          [class]="purpose() === 'SALE' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
-          class="py-2 px-3 text-sm font-medium rounded-lg transition"
+          [class]="
+            purpose() === 'SALE'
+              ? 'bg-emerald-600 text-white shadow-2xs'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+          "
+          class="cursor-pointer rounded-xl ps-3 pe-3 py-2 text-sm font-medium transition"
         >
           {{ 'LISTINGS.FILTERS.FOR_SALE' | transloco }}
         </button>
         <button
           type="button"
           (click)="purpose.set(purpose() === 'RENT' ? null : 'RENT')"
-          [class]="purpose() === 'RENT' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
-          class="py-2 px-3 text-sm font-medium rounded-lg transition"
+          [class]="
+            purpose() === 'RENT'
+              ? 'bg-emerald-600 text-white shadow-2xs'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+          "
+          class="cursor-pointer rounded-xl ps-3 pe-3 py-2 text-sm font-medium transition"
         >
           {{ 'LISTINGS.FILTERS.FOR_RENT' | transloco }}
         </button>
@@ -32,28 +50,54 @@
 
     <!-- Cascading Location Filters -->
     <div>
-      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.LOCATION' | transloco }}</label>
+      <label class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        {{ 'LISTINGS.FILTERS.LOCATION' | transloco }}
+      </label>
       <div class="space-y-2">
         <select
           [ngModel]="selectedGovernorateId()"
           (ngModelChange)="onGovernorateChange($event)"
-          class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 ps-3 pe-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
         >
           <option [ngValue]="null">{{ 'LISTINGS.FILTERS.SELECT_GOV' | transloco }}</option>
-          <option *ngFor="let gov of governorates()" [value]="gov.id">
+          <option *ngFor="let gov of governorates()" [ngValue]="gov.id">
             {{ isRtl() ? gov.nameAr : gov.nameEn }}
           </option>
         </select>
 
         <select
+          *ngIf="cities().length > 0"
+          [ngModel]="selectedCityId()"
+          (ngModelChange)="onCityChange($event)"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 ps-3 pe-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+        >
+          <option [ngValue]="null">{{ 'LISTINGS.FILTERS.SELECT_CITY' | transloco }}</option>
+          <option *ngFor="let city of cities()" [ngValue]="city.id">
+            {{ isRtl() ? city.nameAr : city.nameEn }}
+          </option>
+        </select>
+
+        <select
           [ngModel]="selectedDistrictId()"
-          (ngModelChange)="selectedDistrictId.set($event ? +$event : null)"
+          (ngModelChange)="onDistrictChange($event)"
           [disabled]="districts().length === 0"
-          class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden disabled:opacity-40"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 ps-3 pe-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
         >
           <option [ngValue]="null">{{ 'LISTINGS.FILTERS.SELECT_DISTRICT' | transloco }}</option>
-          <option *ngFor="let dist of districts()" [value]="dist.id">
+          <option *ngFor="let dist of districts()" [ngValue]="dist.id">
             {{ isRtl() ? dist.nameAr : dist.nameEn }}
+          </option>
+        </select>
+
+        <select
+          *ngIf="compounds().length > 0"
+          [ngModel]="selectedCompoundId()"
+          (ngModelChange)="selectedCompoundId.set($event ? +$event : null)"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 ps-3 pe-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+        >
+          <option [ngValue]="null">{{ 'LISTINGS.FILTERS.SELECT_COMPOUND' | transloco }}</option>
+          <option *ngFor="let comp of compounds()" [ngValue]="comp.id">
+            {{ isRtl() ? comp.nameAr : comp.nameEn }}
           </option>
         </select>
       </div>
@@ -61,22 +105,32 @@
 
     <!-- Price Range with Currency -->
     <div>
-      <div class="flex justify-between items-center mb-2">
-        <label class="text-sm font-semibold text-slate-700">{{ 'LISTINGS.FILTERS.PRICE_RANGE' | transloco }}</label>
-        <div class="inline-flex rounded-md shadow-2xs">
+      <div class="mb-2 flex items-center justify-between">
+        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">
+          {{ 'LISTINGS.FILTERS.PRICE_RANGE' | transloco }}
+        </label>
+        <div class="inline-flex rounded-lg shadow-2xs">
           <button
             type="button"
             (click)="currency.set('EGP')"
-            [class]="currency() === 'EGP' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600'"
-            class="px-2 py-1 text-xs font-semibold rounded-s-md"
+            [class]="
+              currency() === 'EGP'
+                ? 'bg-slate-800 text-white dark:bg-emerald-600'
+                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+            "
+            class="cursor-pointer rounded-s-lg ps-2.5 pe-2.5 py-1 text-xs font-semibold transition"
           >
             EGP
           </button>
           <button
             type="button"
             (click)="currency.set('USD')"
-            [class]="currency() === 'USD' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600'"
-            class="px-2 py-1 text-xs font-semibold rounded-e-md"
+            [class]="
+              currency() === 'USD'
+                ? 'bg-slate-800 text-white dark:bg-emerald-600'
+                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+            "
+            class="cursor-pointer rounded-e-lg ps-2.5 pe-2.5 py-1 text-xs font-semibold transition"
           >
             USD
           </button>
@@ -89,7 +143,7 @@
           [placeholder]="'LISTINGS.FILTERS.MIN_PRICE' | transloco"
           [ngModel]="minPrice()"
           (ngModelChange)="minPrice.set($event ? +$event : null)"
-          class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 ps-3 pe-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
         />
         <input
           type="number"
@@ -97,21 +151,23 @@
           [placeholder]="'LISTINGS.FILTERS.MAX_PRICE' | transloco"
           [ngModel]="maxPrice()"
           (ngModelChange)="maxPrice.set($event ? +$event : null)"
-          class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 ps-3 pe-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
         />
       </div>
     </div>
 
     <!-- Property Type -->
     <div>
-      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.TYPE' | transloco }}</label>
+      <label class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        {{ 'LISTINGS.FILTERS.TYPE' | transloco }}
+      </label>
       <select
         [ngModel]="selectedPropertyTypeId()"
         (ngModelChange)="selectedPropertyTypeId.set($event ? +$event : null)"
-        class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+        class="w-full rounded-xl border border-slate-200 bg-slate-50 ps-3 pe-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
       >
         <option [ngValue]="null">{{ 'LISTINGS.FILTERS.ALL_TYPES' | transloco }}</option>
-        <option *ngFor="let t of propertyTypes" [value]="t.id">
+        <option *ngFor="let t of propertyTypes" [ngValue]="t.id">
           {{ isRtl() ? t.nameAr : t.nameEn }}
         </option>
       </select>
@@ -119,14 +175,20 @@
 
     <!-- Minimum Bedrooms -->
     <div>
-      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.BEDROOMS' | transloco }}</label>
+      <label class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        {{ 'LISTINGS.FILTERS.BEDROOMS' | transloco }}
+      </label>
       <div class="flex gap-2">
         <button
           *ngFor="let bed of [1, 2, 3, 4, 5]"
           type="button"
           (click)="minBedrooms.set(minBedrooms() === bed ? null : bed)"
-          [class]="minBedrooms() === bed ? 'bg-emerald-600 text-white' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'"
-          class="flex-1 py-1.5 text-sm font-medium rounded-lg border border-slate-200 transition"
+          [class]="
+            minBedrooms() === bed
+              ? 'border-emerald-600 bg-emerald-600 text-white'
+              : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+          "
+          class="flex-1 cursor-pointer rounded-xl border py-1.5 text-sm font-medium transition"
         >
           {{ bed }}+
         </button>
@@ -135,14 +197,19 @@
 
     <!-- Amenities Checkboxes -->
     <div>
-      <label class="block text-sm font-semibold text-slate-700 mb-2">{{ 'LISTINGS.FILTERS.AMENITIES' | transloco }}</label>
-      <div class="space-y-2 max-h-40 overflow-y-auto ps-1">
-        <label *ngFor="let amenity of amenities" class="flex items-center gap-2 cursor-pointer text-sm text-slate-600">
+      <label class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        {{ 'LISTINGS.FILTERS.AMENITIES' | transloco }}
+      </label>
+      <div class="max-h-40 space-y-2 overflow-y-auto ps-1">
+        <label
+          *ngFor="let amenity of amenities"
+          class="flex cursor-pointer items-center gap-2 text-sm text-slate-600 transition hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+        >
           <input
             type="checkbox"
             [checked]="selectedAmenityIds().includes(amenity.id)"
             (change)="toggleAmenity(amenity.id)"
-            class="rounded-sm border-slate-300 text-emerald-600 focus:ring-emerald-500"
+            class="rounded-sm border-slate-300 text-emerald-600 accent-emerald-600 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800"
           />
           <span>{{ isRtl() ? amenity.nameAr : amenity.nameEn }}</span>
         </label>
@@ -152,7 +219,7 @@
     <button
       (click)="applyFilters()"
       type="button"
-      class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg shadow-xs transition"
+      class="w-full cursor-pointer rounded-xl bg-emerald-600 ps-4 pe-4 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-emerald-700 dark:hover:bg-emerald-500"
     >
       {{ 'LISTINGS.FILTERS.APPLY' | transloco }}
     </button>

@@ -224,6 +224,26 @@ class ViewingStatusControllerIT extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.totalElements").value(2));
     }
 
+    @Test
+    @DisplayName("GET /api/viewings/my and PATCH cancel succeed (200) for a buyer even after the property is archived")
+    void buyerViewings_whenPropertyIsArchived_doNotFailWith500() throws Exception {
+        Viewing viewing = saveViewing(ownerSlot1.getId(), ownerProperty.getId(), BUYER_1_ID, ViewingStatus.REQUESTED);
+        ownerProperty.setStatus(PropertyStatus.ARCHIVED);
+        propertyRepository.saveAndFlush(ownerProperty);
+
+        mvc.perform(get(VIEWINGS_BASE + "/my")
+                        .with(user(String.valueOf(BUYER_1_ID)).roles("BUYER_TENANT")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id").value(viewing.getId()));
+
+        mvc.perform(patch(VIEWINGS_BASE + "/" + viewing.getId() + "/cancel")
+                        .with(csrf())
+                        .with(user(String.valueOf(BUYER_1_ID)).roles("BUYER_TENANT")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("CANCELLED"));
+    }
+
     private Property savePublishedProperty(Long ownerId, Long agentId, String title) {
         Property p = new Property();
         p.setOwnerId(ownerId);

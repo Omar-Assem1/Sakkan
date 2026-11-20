@@ -11,7 +11,10 @@
     "LOGIN": "تسجيل الدخول",
     "LOGOUT": "تسجيل الخروج",
     "TOGGLE_LANG": "English",
-    "TOGGLE_LANG_LABEL": "التبديل إلى الإنجليزية"
+    "TOGGLE_LANG_LABEL": "التبديل إلى الإنجليزية",
+    "TOGGLE_THEME_DARK": "داكن",
+    "TOGGLE_THEME_LIGHT": "فاتح",
+    "TOGGLE_THEME_LABEL": "تبديل وضع الألوان"
   },
   "AUTH": {
     "TITLE": "تسجيل الدخول إلى سكن",
@@ -43,7 +46,9 @@
       "FOR_RENT": "للإيجار",
       "LOCATION": "الموقع",
       "SELECT_GOV": "اختر المحافظة",
+      "SELECT_CITY": "اختر المدينة",
       "SELECT_DISTRICT": "اختر الحي",
+      "SELECT_COMPOUND": "اختر الكمبوند",
       "PRICE_RANGE": "نطاق السعر",
       "MIN_PRICE": "الحد الأدنى",
       "MAX_PRICE": "الحد الأقصى",
@@ -59,7 +64,10 @@
       "FOR_RENT": "للإيجار",
       "BEDS": "غرف",
       "BATHS": "حمامات",
-      "SQM": "م²"
+      "SQM": "م²",
+      "VIEW_DETAILS": "عرض التفاصيل",
+      "REQUEST_VIEWING": "طلب معاينة",
+      "YOUR_LISTING": "عقارك"
     },
     "EMPTY": {
       "TITLE": "لم يتم العثور على عقارات",
@@ -218,7 +226,9 @@
       "CITY": "المدينة",
       "SELECT_CITY": "اختر المدينة",
       "DISTRICT": "المنطقة / الحي",
-      "SELECT_DISTRICT": "اختر المنطقة"
+      "SELECT_DISTRICT": "اختر المنطقة",
+      "COMPOUND": "الكمبوند (اختياري)",
+      "SELECT_COMPOUND": "اختر الكمبوند (اختياري)"
     },
     "PURPOSE": {
       "SALE": "للبيع",
@@ -256,12 +266,21 @@
       "HELP": "يمكنك رفع 10 صور بحد أقصى بصيغ JPEG أو PNG أو WebP، على ألا يتجاوز حجم الصورة 10 ميجابايت.",
       "CHOOSE": "اختر الصور",
       "REMOVE": "إزالة",
+      "PRIMARY": "الرئيسية",
+      "SET_PRIMARY": "تعيين كرئيسية",
       "UPLOADING": "جارٍ الرفع",
       "MAX_COUNT": "يمكن إضافة 10 صور كحد أقصى للعقار.",
       "INVALID_TYPE": "اختر صورة بصيغة JPEG أو PNG أو WebP.",
       "TOO_LARGE": "يجب ألا يتجاوز حجم الصورة 10 ميجابايت.",
       "COMPRESSION_FAILED": "تعذرت معالجة هذه الصورة.",
       "UPLOAD_FAILED": "تعذر رفع الصور. يمكنك إعادة المحاولة بتعديل العقار."
+    },
+    "DETAIL": {
+      "BACK_TO_LISTINGS": "العودة إلى العقارات",
+      "NO_DESCRIPTION": "لا يوجد وصف إضافي لهذا العقار.",
+      "NO_AMENITIES": "لا توجد مرافق محددة مسجلة لهذا العقار.",
+      "OPEN_FULL_BOOKING": "فتح صفحة طلب المعاينة الكاملة",
+      "OWNER_SLOTS_SUBTITLE": "إدارة مواعيد المعاينة المتاحة والطلبات الواردة لعقارك."
     }
   },
   "MY_PROPERTIES": {
@@ -280,7 +299,13 @@
     "ACTIONS": {
       "EDIT": "تعديل",
       "PUBLISH": "نشر",
-      "ARCHIVE": "أرشفة"
+      "REPUBLISH": "إعادة النشر",
+      "ARCHIVE": "أرشفة",
+      "AVAILABILITY": "مواعيد المعاينة"
+    },
+    "PAGINATION": {
+      "PREVIOUS": "السابق",
+      "NEXT": "التالي"
     },
     "EMPTY": {
       "TITLE": "لا توجد عقارات",

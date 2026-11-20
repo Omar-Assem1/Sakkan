@@ -65,16 +65,25 @@ export class AuthService {
   }
 
   private storeSession(res: LoginResponse): void {
-    this.storage.saveToken(res.token);
     const roles = sortByPriority(rolesFromToken(res.token));
-    if (roles.length > 0) {
-      this.storage.saveRoles(roles);
-    }
+    this.storage.saveRoles(roles);
+    this.storage.saveToken(res.token);
   }
 
   /** Registration does not log the user in: they sign in afterwards. */
   register(payload: RegisterPayload): Observable<UserSummary> {
     return this.http.post<UserSummary>('/api/auth/register', payload);
+  }
+
+  /** Fetches the current authenticated user's profile from GET /api/auth/me and refreshes roles. */
+  me(): Observable<UserSummary> {
+    return this.http.get<UserSummary>('/api/auth/me').pipe(
+      tap((user) => {
+        if (Array.isArray(user.roles) && user.roles.length > 0) {
+          this.storage.saveRoles(sortByPriority(user.roles));
+        }
+      }),
+    );
   }
 
   logout(): void {

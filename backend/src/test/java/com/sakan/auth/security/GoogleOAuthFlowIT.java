@@ -102,6 +102,7 @@ class GoogleOAuthFlowIT extends AbstractIntegrationTest {
                 .andExpect(header().string("Location", allOf(
                         containsString("accounts.google.com"),
                         containsString("client_id=test-google-client-id"),
+                        containsString("redirect_uri=http://localhost/login/oauth2/code/google"),
                         containsString("scope="), containsString("openid"), containsString("state="))));
     }
 

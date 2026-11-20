@@ -1,5 +1,6 @@
 package com.sakan.property.storage;
 
+import com.sakan.common.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
@@ -25,7 +26,11 @@ public class LocalImageStorage implements ImageStorage {
     }
 
     public byte[] load(String key) throws IOException {
-        return Files.readAllBytes(resolve(key));
+        Path target = resolve(key);
+        if (!Files.exists(target)) {
+            throw new ResourceNotFoundException("Image not found");
+        }
+        return Files.readAllBytes(target);
     }
 
     public void delete(String key) throws IOException {

@@ -9,6 +9,7 @@ import {
   PropertyRequest,
   PropertyResponse,
   RegisterRequest,
+  UserSummaryResponse,
   ViewingSlotResponse,
 } from '../models';
 
@@ -24,12 +25,20 @@ export class ApiClientService {
   private readonly baseUrl = '/api';
 
   // Auth endpoints
-  register(request: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/register`, request);
+  register(request: RegisterRequest): Observable<UserSummaryResponse> {
+    return this.http.post<UserSummaryResponse>(`${this.baseUrl}/auth/register`, request);
   }
 
   login(request: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, request);
+  }
+
+  adminLogin(request: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/admin/login`, request);
+  }
+
+  me(): Observable<UserSummaryResponse> {
+    return this.http.get<UserSummaryResponse>(`${this.baseUrl}/auth/me`);
   }
 
   // Property endpoints
@@ -39,15 +48,23 @@ export class ApiClientService {
     sort?: string;
     purpose?: string;
     propertyType?: string;
+    propertyTypeId?: number;
+    currency?: string;
     minPrice?: number;
     maxPrice?: number;
     minBedrooms?: number;
     locationId?: number;
+    amenityIds?: number[];
+    q?: string;
   }): Observable<PropertyPageResponse> {
     let httpParams = new HttpParams();
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
+        if (Array.isArray(value)) {
+          value.forEach((v) => {
+            httpParams = httpParams.append(key, v.toString());
+          });
+        } else if (value !== undefined && value !== null) {
           httpParams = httpParams.set(key, value.toString());
         }
       });

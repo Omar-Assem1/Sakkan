@@ -55,6 +55,7 @@ export interface PropertyResponse {
   status: PropertyStatus;
   createdAt: string;
   updatedAt?: string;
+  thumbnailUrl?: string | null;
 }
 
 export interface PageResponse<T> {

@@ -1,10 +1,10 @@
-export type RoleName = 'BUYER_TENANT' | 'OWNER' | 'AGENT' | 'ADMIN';
+export type RoleName = 'BUYER_TENANT' | 'OWNER' | 'AGENT' | 'MAINTENANCE_STAFF' | 'ADMIN';
 
 export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
-  phoneNumber: string;
+  phone: string;
   role: RoleName;
 }
 
@@ -15,7 +15,12 @@ export interface LoginRequest {
 
 export interface AuthResponse {
   token: string;
-  expiresIn?: number;
-  username?: string;
-  roles?: string[];
+  tokenType?: string;
+}
+
+export interface UserSummaryResponse {
+  id: number;
+  username: string;
+  email: string;
+  roles: RoleName[];
 }

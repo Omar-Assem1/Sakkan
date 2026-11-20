@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { PageResponse } from '../../properties/models/property.model';
 import { AdminRole, AdminUserResponse } from '../models/admin-user.models';
 
-export interface AdminUserFilters { q?: string | null; role?: AdminRole | null; enabled?: boolean | null; }
+export interface AdminUserFilters { q?: string | null; role?: AdminRole | null; enabled?: boolean | null; sort?: string | null; }
 
 @Injectable({ providedIn: 'root' })
 export class AdminUserService {
@@ -17,6 +17,7 @@ export class AdminUserService {
     if (q) params = params.set('q', q);
     if (filters.role) params = params.set('role', filters.role);
     if (filters.enabled !== null && filters.enabled !== undefined) params = params.set('enabled', filters.enabled);
+    if (filters.sort) params = params.set('sort', filters.sort);
     return this.http.get<PageResponse<AdminUserResponse>>(this.url, { params });
   }
 

@@ -7,9 +7,13 @@ import { TranslocoPipe } from '@jsverse/transloco';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslocoPipe],
   template: `
-    <section class="rounded-xl border border-slate-200 bg-white ps-6 pe-6 py-8 text-start">
-      <h1 class="text-2xl font-bold text-slate-900">{{ 'VIEWINGS.TITLE' | transloco }}</h1>
-      <p class="mt-2 text-slate-600">{{ 'VIEWINGS.PLACEHOLDER' | transloco }}</p>
+    <section
+      class="rounded-2xl border border-slate-200 bg-white ps-6 pe-6 py-8 text-start shadow-2xs dark:border-slate-800 dark:bg-slate-900"
+    >
+      <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">
+        {{ 'VIEWINGS.TITLE' | transloco }}
+      </h1>
+      <p class="mt-2 text-slate-600 dark:text-slate-400">{{ 'VIEWINGS.PLACEHOLDER' | transloco }}</p>
     </section>
   `,
 })

@@ -42,5 +42,6 @@ export class PropertyImageService {
     return this.http.request<PropertyImage[]>(req);
   }
   list(propertyId: number): Observable<PropertyImage[]> { return this.http.get<PropertyImage[]>(`/api/properties/${propertyId}/images`); }
+  reorder(propertyId: number, imageIds: number[]): Observable<void> { return this.http.put<void>(`/api/properties/${propertyId}/images/order`, imageIds); }
   remove(propertyId: number, imageId: number): Observable<void> { return this.http.delete<void>(`/api/properties/${propertyId}/images/${imageId}`); }
 }

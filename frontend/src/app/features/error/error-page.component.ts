@@ -22,8 +22,12 @@ export class ErrorPageComponent implements OnInit {
   timestamp = '';
 
   ngOnInit(): void {
-    const query = this.route.snapshot.queryParams;
-    const data = this.route.snapshot.data;
+    this.readParams(this.route.snapshot?.queryParams || {});
+    this.route.queryParams?.subscribe((params) => this.readParams(params));
+  }
+
+  private readParams(query: Record<string, string | undefined>): void {
+    const data = this.route.snapshot?.data || {};
     const navState = history.state || {};
 
     const code = Number(query['code'] || data['code'] || navState['code'] || 404);
@@ -36,36 +40,42 @@ export class ErrorPageComponent implements OnInit {
     this.timestamp = query['timestamp'] || navState['timestamp'] || '';
   }
 
-  get displayTitle(): string {
-    if (this.errorTitle) return this.errorTitle;
-
+  get titleKey(): string {
     switch (this.errorCode) {
       case 400:
-        return this.transloco.translate('ERROR_PAGE.DEFAULT_TITLE');
+        return 'ERROR_PAGE.DEFAULT_TITLE';
       case 401:
       case 403:
-        return this.transloco.translate('ERROR_PAGE.FORBIDDEN_TITLE');
+        return 'ERROR_PAGE.FORBIDDEN_TITLE';
       case 404:
-        return this.transloco.translate('ERROR_PAGE.NOT_FOUND_TITLE');
+        return 'ERROR_PAGE.NOT_FOUND_TITLE';
       case 500:
       default:
-        return this.transloco.translate('ERROR_PAGE.SERVER_ERROR_TITLE');
+        return 'ERROR_PAGE.SERVER_ERROR_TITLE';
     }
+  }
+
+  get messageKey(): string {
+    switch (this.errorCode) {
+      case 401:
+      case 403:
+        return 'ERROR_PAGE.FORBIDDEN_MESSAGE';
+      case 404:
+        return 'ERROR_PAGE.NOT_FOUND_MESSAGE';
+      case 500:
+      default:
+        return 'ERROR_PAGE.SERVER_ERROR_MESSAGE';
+    }
+  }
+
+  get displayTitle(): string {
+    if (this.errorTitle) return this.errorTitle;
+    return this.transloco.translate(this.titleKey);
   }
 
   get displayMessage(): string {
     if (this.errorMessage) return this.errorMessage;
-
-    switch (this.errorCode) {
-      case 401:
-      case 403:
-        return this.transloco.translate('ERROR_PAGE.FORBIDDEN_MESSAGE');
-      case 404:
-        return this.transloco.translate('ERROR_PAGE.NOT_FOUND_MESSAGE');
-      case 500:
-      default:
-        return this.transloco.translate('ERROR_PAGE.SERVER_ERROR_MESSAGE');
-    }
+    return this.transloco.translate(this.messageKey);
   }
 
   goBack(): void {

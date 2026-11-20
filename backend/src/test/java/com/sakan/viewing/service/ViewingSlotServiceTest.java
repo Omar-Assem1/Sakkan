@@ -291,6 +291,26 @@ class ViewingSlotServiceTest {
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
+    @Test
+    @DisplayName("deleteSlot translates FK constraint DataIntegrityViolationException into SlotConflictException (409)")
+    void deleteSlot_withAssociatedViewings_throwsSlotConflictException() {
+        ViewingSlot slot = new ViewingSlot();
+        slot.setId(55L);
+        slot.setPropertyId(PROPERTY_ID);
+        slot.setCreatedBy(OWNER_ID);
+
+        when(propertyService.getById(PROPERTY_ID, OWNER))
+                .thenReturn(propertyResponse(PropertyStatus.PUBLISHED));
+        when(slotRepository.findByIdAndPropertyId(55L, PROPERTY_ID))
+                .thenReturn(Optional.of(slot));
+        org.mockito.Mockito.doThrow(new org.springframework.dao.DataIntegrityViolationException("viewing_slot_id_fkey"))
+                .when(slotRepository).flush();
+
+        assertThatThrownBy(() -> service.deleteSlot(PROPERTY_ID, 55L, OWNER))
+                .isInstanceOf(SlotConflictException.class)
+                .hasMessageContaining("55");
+    }
+
     private static PropertyResponse propertyResponse(PropertyStatus status) {
         return new PropertyResponse(
                 PROPERTY_ID,

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
+import { LanguageService } from '../../../core/services/language.service';
 import { PropertyService } from '../services/property.service';
 import { PropertyImage, PropertyImageService } from '../services/property-image.service';
 import { AmenityDto, LocationNode, PropertyRequest, PropertyTypeDto } from '../models/property.model';
@@ -20,6 +21,9 @@ export class PropertyFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly imageService = inject(PropertyImageService);
+  private readonly languageService = inject(LanguageService, { optional: true });
+
+  readonly isRtl = computed(() => this.languageService?.currentLang() === 'ar');
 
   isEditMode = signal<boolean>(false);
   propertyId = signal<number | null>(null);
@@ -36,6 +40,8 @@ export class PropertyFormComponent implements OnInit {
 
   selectedGovernorateId = signal<number | null>(null);
   selectedCityId = signal<number | null>(null);
+  selectedDistrictId = signal<number | null>(null);
+  selectedCompoundId = signal<number | null>(null);
 
   governorates = computed(() => this.locations().filter((l) => l.type === 'GOVERNORATE'));
   cities = computed(() => {
@@ -45,6 +51,10 @@ export class PropertyFormComponent implements OnInit {
   districts = computed(() => {
     const cityId = this.selectedCityId();
     return cityId ? this.locations().filter((l) => l.type === 'DISTRICT' && l.parentId === cityId) : [];
+  });
+  compounds = computed(() => {
+    const distId = this.selectedDistrictId();
+    return distId ? this.locations().filter((l) => l.type === 'COMPOUND' && l.parentId === distId) : [];
   });
 
   form: FormGroup = this.fb.group({
@@ -108,20 +118,54 @@ export class PropertyFormComponent implements OnInit {
   }
 
   resolveHierarchyForLocation(locationId: number): void {
-    const loc = this.locations().find((l) => l.id === locationId);
+    const all = this.locations();
+    const loc = all.find((l) => l.id === locationId);
     if (!loc) return;
 
-    if (loc.type === 'DISTRICT') {
-      const city = this.locations().find((l) => l.id === loc.parentId);
+    if (loc.type === 'COMPOUND') {
+      const district = all.find((l) => l.id === loc.parentId);
+      const city = district ? all.find((l) => l.id === district.parentId) : undefined;
+      if (district && city) {
+        this.selectedGovernorateId.set(city.parentId);
+        this.selectedCityId.set(city.id);
+        this.selectedDistrictId.set(district.id);
+        this.selectedCompoundId.set(loc.id);
+        this.form.patchValue({
+          governorateId: city.parentId,
+          cityId: city.id,
+          locationId: district.id
+        });
+      }
+    } else if (loc.type === 'DISTRICT') {
+      const city = all.find((l) => l.id === loc.parentId);
       if (city) {
         this.selectedGovernorateId.set(city.parentId);
         this.selectedCityId.set(city.id);
+        this.selectedDistrictId.set(loc.id);
+        this.selectedCompoundId.set(null);
         this.form.patchValue({
           governorateId: city.parentId,
           cityId: city.id,
           locationId: loc.id
         });
       }
+    } else if (loc.type === 'CITY') {
+      this.selectedGovernorateId.set(loc.parentId);
+      this.selectedCityId.set(loc.id);
+      this.selectedDistrictId.set(null);
+      this.selectedCompoundId.set(null);
+      this.form.patchValue({
+        governorateId: loc.parentId,
+        cityId: loc.id
+      });
+    } else if (loc.type === 'GOVERNORATE') {
+      this.selectedGovernorateId.set(loc.id);
+      this.selectedCityId.set(null);
+      this.selectedDistrictId.set(null);
+      this.selectedCompoundId.set(null);
+      this.form.patchValue({
+        governorateId: loc.id
+      });
     }
   }
 
@@ -129,6 +173,8 @@ export class PropertyFormComponent implements OnInit {
     const govId = val ? Number(val) : null;
     this.selectedGovernorateId.set(govId);
     this.selectedCityId.set(null);
+    this.selectedDistrictId.set(null);
+    this.selectedCompoundId.set(null);
     this.form.patchValue({
       governorateId: govId,
       cityId: null,
@@ -139,10 +185,23 @@ export class PropertyFormComponent implements OnInit {
   onCityChange(val: string | number | null): void {
     const cityId = val ? Number(val) : null;
     this.selectedCityId.set(cityId);
+    this.selectedDistrictId.set(null);
+    this.selectedCompoundId.set(null);
     this.form.patchValue({
       cityId: cityId,
       locationId: null
     });
+  }
+
+  onDistrictChange(val: string | number | null): void {
+    const distId = val ? Number(val) : null;
+    this.selectedDistrictId.set(distId);
+    this.selectedCompoundId.set(null);
+  }
+
+  onCompoundChange(val: string | number | null): void {
+    const compId = val ? Number(val) : null;
+    this.selectedCompoundId.set(compId);
   }
 
   toggleAmenity(amenityId: number): void {
@@ -176,7 +235,26 @@ export class PropertyFormComponent implements OnInit {
 
   deletePropertyImage(image: PropertyImage): void {
     const id = this.propertyId(); if (!id) return;
-    this.imageService.remove(id, image.id).subscribe(() => this.propertyImages.update(items => items.filter(item => item.id !== image.id)));
+    this.imageService.remove(id, image.id).subscribe({
+      next: () => this.propertyImages.update(items => items.filter(item => item.id !== image.id)),
+      error: () => this.errorMessage.set('PROPERTY.ERRORS.SAVE_FAILED')
+    });
+  }
+
+  makePrimaryImage(image: PropertyImage): void {
+    const id = this.propertyId();
+    if (!id || !this.imageService.reorder) return;
+    const current = this.propertyImages();
+    const reordered = [image, ...current.filter((item) => item.id !== image.id)];
+    const ids = reordered.map((item) => item.id);
+    this.imageService.reorder(id, ids).subscribe({
+      next: () => {
+        this.propertyImages.set(
+          reordered.map((item, idx) => ({ ...item, primary: idx === 0, displayOrder: idx }))
+        );
+      },
+      error: () => this.errorMessage.set('PROPERTY.ERRORS.SAVE_FAILED')
+    });
   }
 
   onSubmit(): void {
@@ -186,12 +264,13 @@ export class PropertyFormComponent implements OnInit {
     }
 
     const val = this.form.value;
+    const targetLocationId = this.selectedCompoundId() ?? Number(val.locationId);
     const request: PropertyRequest = {
       title: val.title,
       description: val.description,
       purpose: val.purpose,
       propertyTypeId: Number(val.propertyTypeId),
-      locationId: Number(val.locationId),
+      locationId: targetLocationId,
       price: Number(val.price),
       currency: val.currency,
       bedrooms: Number(val.bedrooms),
@@ -211,7 +290,11 @@ export class PropertyFormComponent implements OnInit {
       });
     } else {
       this.propertyService.createProperty(request).subscribe({
-        next: property => this.uploadPendingImages(property.id),
+        next: property => {
+          this.propertyId.set(property.id);
+          this.isEditMode.set(true);
+          this.uploadPendingImages(property.id);
+        },
         error: () => {
           this.isLoading.set(false);
           this.errorMessage.set('PROPERTY.ERRORS.SAVE_FAILED');
