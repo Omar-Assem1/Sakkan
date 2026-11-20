@@ -23,11 +23,13 @@ import { ViewingService } from '../services/viewing.service';
   imports: [ReactiveFormsModule, DatePipe, TranslocoPipe, UiButtonComponent],
   template: `
     <section class="mx-auto max-w-3xl space-y-6 text-start">
-      <div class="rounded-xl border border-slate-200 bg-white ps-6 pe-6 py-6 shadow-xs">
-        <h1 class="text-2xl font-bold text-slate-900">
+      <div
+        class="rounded-2xl border border-slate-200 bg-white ps-6 pe-6 py-6 shadow-2xs transition-colors dark:border-slate-800 dark:bg-slate-900"
+      >
+        <h1 class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
           {{ 'VIEWINGS.REQUEST.TITLE' | transloco }}
         </h1>
-        <p class="mt-1 text-sm text-slate-600">
+        <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
           {{ 'VIEWINGS.REQUEST.SUBTITLE' | transloco }}
         </p>
 
@@ -35,7 +37,7 @@ import { ViewingService } from '../services/viewing.service';
           <div
             role="alert"
             data-testid="api-error"
-            class="mt-4 rounded-lg border-s-4 border-rose-600 bg-rose-50 ps-4 pe-4 py-3 text-sm text-rose-800"
+            class="mt-4 rounded-xl border-s-4 border-rose-600 bg-rose-50 ps-4 pe-4 py-3 text-sm font-medium text-rose-800 dark:bg-rose-950/50 dark:text-rose-200"
           >
             {{ apiErrorKey()! | transloco }}
           </div>
@@ -45,7 +47,7 @@ import { ViewingService } from '../services/viewing.service';
           <div
             role="status"
             data-testid="booking-success"
-            class="mt-4 rounded-lg border-s-4 border-emerald-600 bg-emerald-50 ps-4 pe-4 py-3 text-sm text-emerald-800"
+            class="mt-4 rounded-xl border-s-4 border-emerald-600 bg-emerald-50 ps-4 pe-4 py-3 text-sm font-medium text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"
           >
             {{ 'VIEWINGS.REQUEST.SUCCESS' | transloco }}
           </div>
@@ -54,7 +56,10 @@ import { ViewingService } from '../services/viewing.service';
         <form [formGroup]="requestForm" (ngSubmit)="onSubmit()" class="mt-6 space-y-5" novalidate>
           @if (!propertyId()) {
             <div>
-              <label for="requestPropertyId" class="block text-sm font-medium text-slate-700">
+              <label
+                for="requestPropertyId"
+                class="block text-sm font-semibold text-slate-700 dark:text-slate-300"
+              >
                 {{ 'VIEWINGS.REQUEST.PROPERTY_ID_LABEL' | transloco }}
               </label>
               <input
@@ -63,26 +68,26 @@ import { ViewingService } from '../services/viewing.service';
                 min="1"
                 formControlName="propertyId"
                 (change)="onPropertyChange()"
-                class="mt-1 block w-full rounded-lg border border-slate-300 ps-3 pe-3 py-2 text-sm text-slate-900 focus:border-emerald-600 focus:outline-none"
+                class="mt-1 block w-full rounded-xl border border-slate-300 bg-slate-50/50 ps-3.5 pe-3.5 py-2.5 text-sm text-slate-900 focus:border-emerald-600 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:bg-slate-800"
               />
             </div>
           }
 
           <div>
-            <span class="block text-sm font-medium text-slate-700">
+            <span class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
               {{ 'VIEWINGS.REQUEST.SLOTS_LABEL' | transloco }}
             </span>
 
             @if (selectedPropertyId() === null) {
-              <p data-testid="select-property-prompt" class="mt-2 text-sm text-slate-500">
+              <p data-testid="select-property-prompt" class="mt-2 text-sm text-slate-500 dark:text-slate-400">
                 {{ 'VIEWINGS.REQUEST.SELECT_PROPERTY_PROMPT' | transloco }}
               </p>
             } @else if (loadingSlots()) {
-              <p data-testid="loading-slots" class="mt-2 text-sm text-slate-500">
+              <p data-testid="loading-slots" class="mt-2 text-sm text-slate-500 dark:text-slate-400">
                 {{ 'VIEWINGS.REQUEST.LOADING_SLOTS' | transloco }}
               </p>
             } @else if (slots().length === 0) {
-              <p data-testid="empty-slots" class="mt-2 text-sm text-slate-500">
+              <p data-testid="empty-slots" class="mt-2 text-sm text-slate-500 dark:text-slate-400">
                 {{ 'VIEWINGS.REQUEST.EMPTY_SLOTS' | transloco }}
               </p>
             } @else {
@@ -90,18 +95,20 @@ import { ViewingService } from '../services/viewing.service';
                 @for (slot of slots(); track slot.id) {
                   <label
                     [attr.data-testid]="'slot-option-' + slot.id"
-                    class="flex cursor-pointer items-center gap-3 rounded-lg border ps-4 pe-4 py-3 text-sm transition-colors"
-                    [class.border-emerald-600]="requestForm.controls.slotId.value === slot.id"
-                    [class.bg-emerald-50]="requestForm.controls.slotId.value === slot.id"
-                    [class.border-slate-200]="requestForm.controls.slotId.value !== slot.id"
+                    class="flex cursor-pointer items-center gap-3 rounded-xl border ps-4 pe-4 py-3 text-sm transition-colors"
+                    [class]="
+                      requestForm.controls.slotId.value === slot.id
+                        ? 'border-emerald-600 bg-emerald-50 dark:border-emerald-500 dark:bg-emerald-950/50'
+                        : 'border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800'
+                    "
                   >
                     <input
                       type="radio"
                       formControlName="slotId"
                       [value]="slot.id"
-                      class="h-4 w-4 text-emerald-600 focus:ring-emerald-600"
+                      class="h-4 w-4 text-emerald-600 accent-emerald-600 focus:ring-emerald-600"
                     />
-                    <span class="font-medium text-slate-800">
+                    <span class="font-medium text-slate-800 dark:text-slate-200">
                       {{ slot.startTime | date: 'medium' }} – {{ slot.endTime | date: 'shortTime' }}
                     </span>
                   </label>
@@ -110,14 +117,17 @@ import { ViewingService } from '../services/viewing.service';
             }
 
             @if (requestForm.controls.slotId.touched && requestForm.controls.slotId.hasError('required')) {
-              <p data-testid="slot-required-error" class="mt-2 text-sm font-medium text-rose-600">
+              <p data-testid="slot-required-error" class="mt-2 text-sm font-medium text-rose-600 dark:text-rose-400">
                 {{ 'VIEWINGS.REQUEST.ERRORS.SLOT_REQUIRED' | transloco }}
               </p>
             }
           </div>
 
           <div>
-            <label for="viewingNotes" class="block text-sm font-medium text-slate-700">
+            <label
+              for="viewingNotes"
+              class="block text-sm font-semibold text-slate-700 dark:text-slate-300"
+            >
               {{ 'VIEWINGS.REQUEST.NOTES_LABEL' | transloco }}
             </label>
             <textarea
@@ -125,10 +135,10 @@ import { ViewingService } from '../services/viewing.service';
               rows="3"
               formControlName="notes"
               [placeholder]="'VIEWINGS.REQUEST.NOTES_PLACEHOLDER' | transloco"
-              class="mt-1 block w-full rounded-lg border border-slate-300 ps-3 pe-3 py-2 text-sm text-slate-900 focus:border-emerald-600 focus:outline-none"
+              class="mt-1 block w-full rounded-xl border border-slate-300 bg-slate-50/50 ps-3.5 pe-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-800"
             ></textarea>
             @if (requestForm.controls.notes.touched && requestForm.controls.notes.hasError('maxlength')) {
-              <p data-testid="notes-maxlength-error" class="mt-1 text-sm font-medium text-rose-600">
+              <p data-testid="notes-maxlength-error" class="mt-1 text-sm font-medium text-rose-600 dark:text-rose-400">
                 {{ 'VIEWINGS.REQUEST.ERRORS.NOTES_MAXLENGTH' | transloco }}
               </p>
             }

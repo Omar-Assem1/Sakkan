@@ -34,11 +34,13 @@ function timeRangeValidator(group: AbstractControl): ValidationErrors | null {
   imports: [ReactiveFormsModule, DatePipe, TranslocoPipe, UiButtonComponent],
   template: `
     <section class="mx-auto max-w-3xl space-y-6 text-start">
-      <div class="rounded-xl border border-slate-200 bg-white ps-6 pe-6 py-6 shadow-xs">
-        <h1 class="text-2xl font-bold text-slate-900">
+      <div
+        class="rounded-2xl border border-slate-200 bg-white ps-6 pe-6 py-6 shadow-2xs transition-colors dark:border-slate-800 dark:bg-slate-900"
+      >
+        <h1 class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
           {{ 'VIEWINGS.AVAILABILITY.TITLE' | transloco }}
         </h1>
-        <p class="mt-1 text-sm text-slate-600">
+        <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
           {{ 'VIEWINGS.AVAILABILITY.SUBTITLE' | transloco }}
         </p>
 
@@ -46,7 +48,7 @@ function timeRangeValidator(group: AbstractControl): ValidationErrors | null {
           <div
             role="alert"
             data-testid="api-error"
-            class="mt-4 rounded-lg border-s-4 border-rose-600 bg-rose-50 ps-4 pe-4 py-3 text-sm text-rose-800"
+            class="mt-4 rounded-xl border-s-4 border-rose-600 bg-rose-50 ps-4 pe-4 py-3 text-sm font-medium text-rose-800 dark:bg-rose-950/50 dark:text-rose-200"
           >
             {{ apiErrorKey()! | transloco }}
           </div>
@@ -54,7 +56,10 @@ function timeRangeValidator(group: AbstractControl): ValidationErrors | null {
 
         <form [formGroup]="slotForm" (ngSubmit)="onSubmit()" class="mt-6 space-y-4" novalidate>
           <div>
-            <label for="propertyId" class="block text-sm font-medium text-slate-700">
+            <label
+              for="propertyId"
+              class="block text-sm font-semibold text-slate-700 dark:text-slate-300"
+            >
               {{ 'VIEWINGS.AVAILABILITY.PROPERTY_ID_LABEL' | transloco }}
             </label>
             <input
@@ -63,38 +68,44 @@ function timeRangeValidator(group: AbstractControl): ValidationErrors | null {
               min="1"
               formControlName="propertyId"
               (change)="onPropertyChange()"
-              class="mt-1 block w-full rounded-lg border border-slate-300 ps-3 pe-3 py-2 text-sm text-slate-900 focus:border-emerald-600 focus:outline-none"
+              class="mt-1 block w-full rounded-xl border border-slate-300 bg-slate-50/50 ps-3.5 pe-3.5 py-2.5 text-sm text-slate-900 focus:border-emerald-600 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:bg-slate-800"
             />
           </div>
 
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label for="startTime" class="block text-sm font-medium text-slate-700">
+              <label
+                for="startTime"
+                class="block text-sm font-semibold text-slate-700 dark:text-slate-300"
+              >
                 {{ 'VIEWINGS.AVAILABILITY.START_TIME_LABEL' | transloco }}
               </label>
               <input
                 id="startTime"
                 type="datetime-local"
                 formControlName="startTime"
-                class="mt-1 block w-full rounded-lg border border-slate-300 ps-3 pe-3 py-2 text-sm text-slate-900 focus:border-emerald-600 focus:outline-none"
+                class="mt-1 block w-full rounded-xl border border-slate-300 bg-slate-50/50 ps-3.5 pe-3.5 py-2.5 text-sm text-slate-900 focus:border-emerald-600 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:bg-slate-800"
               />
             </div>
 
             <div>
-              <label for="endTime" class="block text-sm font-medium text-slate-700">
+              <label
+                for="endTime"
+                class="block text-sm font-semibold text-slate-700 dark:text-slate-300"
+              >
                 {{ 'VIEWINGS.AVAILABILITY.END_TIME_LABEL' | transloco }}
               </label>
               <input
                 id="endTime"
                 type="datetime-local"
                 formControlName="endTime"
-                class="mt-1 block w-full rounded-lg border border-slate-300 ps-3 pe-3 py-2 text-sm text-slate-900 focus:border-emerald-600 focus:outline-none"
+                class="mt-1 block w-full rounded-xl border border-slate-300 bg-slate-50/50 ps-3.5 pe-3.5 py-2.5 text-sm text-slate-900 focus:border-emerald-600 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:bg-slate-800"
               />
             </div>
           </div>
 
           @if (slotForm.touched && slotForm.hasError('invalidTimeRange')) {
-            <p data-testid="time-range-error" class="text-sm font-medium text-rose-600">
+            <p data-testid="time-range-error" class="text-sm font-medium text-rose-600 dark:text-rose-400">
               {{ 'VIEWINGS.AVAILABILITY.ERRORS.INVALID_RANGE' | transloco }}
             </p>
           }
@@ -104,7 +115,7 @@ function timeRangeValidator(group: AbstractControl): ValidationErrors | null {
             (slotForm.controls.startTime.hasError('required') ||
               slotForm.controls.endTime.hasError('required'))
           ) {
-            <p data-testid="required-error" class="text-sm font-medium text-rose-600">
+            <p data-testid="required-error" class="text-sm font-medium text-rose-600 dark:text-rose-400">
               {{ 'VIEWINGS.AVAILABILITY.ERRORS.REQUIRED' | transloco }}
             </p>
           }
@@ -117,29 +128,31 @@ function timeRangeValidator(group: AbstractControl): ValidationErrors | null {
         </form>
       </div>
 
-      <div class="rounded-xl border border-slate-200 bg-white ps-6 pe-6 py-6 shadow-xs">
-        <h2 class="text-lg font-semibold text-slate-900">
+      <div
+        class="rounded-2xl border border-slate-200 bg-white ps-6 pe-6 py-6 shadow-2xs transition-colors dark:border-slate-800 dark:bg-slate-900"
+      >
+        <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100">
           {{ 'VIEWINGS.AVAILABILITY.SLOTS_HEADING' | transloco }}
         </h2>
 
         @if (selectedPropertyId() === null) {
-          <p data-testid="select-property-prompt" class="mt-4 text-sm text-slate-500">
+          <p data-testid="select-property-prompt" class="mt-4 text-sm text-slate-500 dark:text-slate-400">
             {{ 'VIEWINGS.AVAILABILITY.SELECT_PROPERTY_PROMPT' | transloco }}
           </p>
         } @else if (slots().length === 0) {
-          <p data-testid="empty-slots" class="mt-4 text-sm text-slate-500">
+          <p data-testid="empty-slots" class="mt-4 text-sm text-slate-500 dark:text-slate-400">
             {{ 'VIEWINGS.AVAILABILITY.EMPTY_SLOTS' | transloco }}
           </p>
         } @else {
-          <ul class="mt-4 divide-y divide-slate-200">
+          <ul class="mt-4 divide-y divide-slate-200 dark:divide-slate-800">
             @for (slot of slots(); track slot.id) {
               <li
                 data-testid="slot-item"
                 class="flex flex-wrap items-center justify-between gap-4 py-3"
               >
-                <div class="text-sm text-slate-800">
+                <div class="text-sm text-slate-800 dark:text-slate-200">
                   <span class="font-medium">{{ slot.startTime | date: 'medium' }}</span>
-                  <span class="ms-2 me-2 text-slate-400">&ndash;</span>
+                  <span class="ms-2 me-2 text-slate-400 dark:text-slate-500">&ndash;</span>
                   <span class="font-medium">{{ slot.endTime | date: 'medium' }}</span>
                 </div>
                 <app-ui-button
@@ -217,6 +230,7 @@ export class AvailabilityFormComponent implements OnInit {
     if (propertyId === null || !startTime || !endTime) {
       return;
     }
+    this.selectedPropertyId.set(Number(propertyId));
     const startIso = new Date(startTime).toISOString();
     const endIso = new Date(endTime).toISOString();
 
@@ -234,6 +248,8 @@ export class AvailabilityFormComponent implements OnInit {
           this.apiErrorKey.set('VIEWINGS.AVAILABILITY.ERRORS.CONFLICT_409');
         } else if (err instanceof HttpErrorResponse && err.status === 403) {
           this.apiErrorKey.set('VIEWINGS.AVAILABILITY.ERRORS.FORBIDDEN_403');
+        } else if (err instanceof HttpErrorResponse && err.status === 400) {
+          this.apiErrorKey.set('VIEWINGS.AVAILABILITY.ERRORS.PAST_TIME');
         } else {
           this.apiErrorKey.set('VIEWINGS.AVAILABILITY.ERRORS.GENERIC');
         }
@@ -252,7 +268,9 @@ export class AvailabilityFormComponent implements OnInit {
         this.slots.update((current) => current.filter((s) => s.id !== slotId));
       },
       error: (err: unknown) => {
-        if (err instanceof HttpErrorResponse && err.status === 403) {
+        if (err instanceof HttpErrorResponse && err.status === 409) {
+          this.apiErrorKey.set('VIEWINGS.AVAILABILITY.ERRORS.CONFLICT_409');
+        } else if (err instanceof HttpErrorResponse && err.status === 403) {
           this.apiErrorKey.set('VIEWINGS.AVAILABILITY.ERRORS.FORBIDDEN_403');
         } else {
           this.apiErrorKey.set('VIEWINGS.AVAILABILITY.ERRORS.GENERIC');

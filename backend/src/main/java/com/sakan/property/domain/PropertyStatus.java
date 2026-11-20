@@ -15,7 +15,7 @@ public enum PropertyStatus {
             case PUBLISHED -> Set.of(RENTED, SOLD, ARCHIVED);
             case RENTED -> Set.of(PUBLISHED, ARCHIVED);
             case SOLD -> Set.of(ARCHIVED);
-            case ARCHIVED -> Set.of();
+            case ARCHIVED -> Set.of(PUBLISHED);
         };
     }
 

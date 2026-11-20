@@ -1,6 +1,8 @@
 package com.sakan.property.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +23,14 @@ import com.sakan.common.security.AuthenticatedUser;
 import com.sakan.common.statemachine.StatusTransitionService;
 import com.sakan.common.statemachine.StatusTransitions;
 import com.sakan.property.domain.Property;
+import com.sakan.property.domain.PropertyImage;
 import com.sakan.property.domain.PropertyStatus;
 import com.sakan.property.dto.PropertyMapper;
 import com.sakan.property.dto.PropertyRequest;
 import com.sakan.property.dto.PropertyResponse;
 import com.sakan.property.dto.PropertySearchCriteria;
 import com.sakan.property.dto.PropertySummaryResponse;
+import com.sakan.property.repository.PropertyImageRepository;
 import com.sakan.property.repository.PropertyRepository;
 
 @Service
@@ -45,6 +49,7 @@ public class PropertyService {
     private final LocationHierarchyService locationHierarchyService;
     private final PropertySortValidator sortValidator;
     private final StatusTransitionService statusTransitionService;
+    private final PropertyImageRepository imageRepository;
 
     @Autowired
     public PropertyService(
@@ -52,18 +57,30 @@ public class PropertyService {
             PropertyMapper mapper,
             LocationHierarchyService locationHierarchyService,
             PropertySortValidator sortValidator,
-            StatusTransitionService statusTransitionService) {
+            StatusTransitionService statusTransitionService,
+            PropertyImageRepository imageRepository) {
         this.repository = repository;
         this.mapper = mapper;
         this.locationHierarchyService = locationHierarchyService;
         this.sortValidator = sortValidator;
         this.statusTransitionService = statusTransitionService;
+        this.imageRepository = imageRepository;
+    }
+
+    /** Convenience constructor retained for isolated unit tests that do not inject imageRepository. */
+    public PropertyService(
+            PropertyRepository repository,
+            PropertyMapper mapper,
+            LocationHierarchyService locationHierarchyService,
+            PropertySortValidator sortValidator,
+            StatusTransitionService statusTransitionService) {
+        this(repository, mapper, locationHierarchyService, sortValidator, statusTransitionService, null);
     }
 
     /** Convenience constructor retained for isolated unit tests that do not assert domain events. */
     public PropertyService(PropertyRepository repository, PropertyMapper mapper) {
         this(repository, mapper, rootId -> rootId == null ? List.of() : List.of(rootId), new PropertySortValidator(),
-                new StatusTransitionService(event -> { }));
+                new StatusTransitionService(event -> { }), null);
     }
 
     @Transactional(readOnly = true)
@@ -105,7 +122,14 @@ public class PropertyService {
         }
 
         Page<Property> pageResult = repository.findAll(spec, pageable);
-        return PageResponse.from(pageResult.map(mapper::toSummaryResponse));
+        Map<Long, String> thumbnails = loadPrimaryThumbnails(pageResult.getContent());
+        return PageResponse.from(pageResult.map(property -> {
+            PropertySummaryResponse summary = mapper.toSummaryResponse(property);
+            String thumbnailUrl = property.getId() != null ? thumbnails.get(property.getId()) : null;
+            return (summary != null && thumbnailUrl != null)
+                    ? PropertySummaryResponse.withThumbnailUrl(summary, thumbnailUrl)
+                    : summary;
+        }));
     }
 
     public PropertyResponse create(PropertyRequest request, AuthenticatedUser actor) {
@@ -123,7 +147,7 @@ public class PropertyService {
         return mapper.toResponse(saved);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, noRollbackFor = ResourceNotFoundException.class)
     public PropertyResponse getById(Long id, AuthenticatedUser viewer) {
         Property property = findOrThrow(id);
         boolean visible = property.getStatus() == PropertyStatus.PUBLISHED
@@ -131,7 +155,13 @@ public class PropertyService {
         if (!visible) {
             throw notFound(id);
         }
-        return mapper.toResponse(property);
+        PropertyResponse response = mapper.toResponse(property);
+        String thumbnailUrl = property.getId() != null
+                ? loadPrimaryThumbnails(List.of(property)).get(property.getId())
+                : null;
+        return (response != null && thumbnailUrl != null)
+                ? PropertyResponse.withThumbnailUrl(response, thumbnailUrl)
+                : response;
     }
 
     @Transactional(readOnly = true)
@@ -142,7 +172,14 @@ public class PropertyService {
         Pageable pageable = PageRequest.of(
                 Math.max(page, 0), clampSize(size), Sort.by(Sort.Direction.DESC, "updatedAt"));
         Page<Property> result = repository.findManagedBy(actor.id(), pageable);
-        return PageResponse.from(result.map(mapper::toResponse));
+        Map<Long, String> thumbnails = loadPrimaryThumbnails(result.getContent());
+        return PageResponse.from(result.map(property -> {
+            PropertyResponse response = mapper.toResponse(property);
+            String thumbnailUrl = property.getId() != null ? thumbnails.get(property.getId()) : null;
+            return (response != null && thumbnailUrl != null)
+                    ? PropertyResponse.withThumbnailUrl(response, thumbnailUrl)
+                    : response;
+        }));
     }
 
     public PropertyResponse update(Long id, PropertyRequest request, AuthenticatedUser actor) {
@@ -198,5 +235,30 @@ public class PropertyService {
             return DEFAULT_PAGE_SIZE;
         }
         return Math.min(size, MAX_PAGE_SIZE);
+    }
+
+    private Map<Long, String> loadPrimaryThumbnails(List<Property> properties) {
+        if (imageRepository == null || properties.isEmpty()) {
+            return Map.of();
+        }
+        List<Long> ids = properties.stream()
+                .map(Property::getId)
+                .filter(id -> id != null)
+                .toList();
+        if (ids.isEmpty()) {
+            return Map.of();
+        }
+        Map<Long, String> thumbnails = new HashMap<>();
+        List<PropertyImage> activeImages =
+                imageRepository.findByPropertyIdInAndArchivedFalseOrderByDisplayOrderAsc(ids);
+        for (PropertyImage img : activeImages) {
+            String url = "/api/property-images/" + img.getThumbnailPath();
+            if (img.isPrimary()) {
+                thumbnails.put(img.getPropertyId(), url);
+            } else {
+                thumbnails.putIfAbsent(img.getPropertyId(), url);
+            }
+        }
+        return thumbnails;
     }
 }

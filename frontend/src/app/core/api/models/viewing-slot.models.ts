@@ -6,7 +6,8 @@ export interface CreateViewingSlotRequest {
 export interface ViewingSlotResponse {
   id: number;
   propertyId: number;
+  createdBy: number;
   startTime: string;
   endTime: string;
-  status: string;
+  createdAt: string;
 }

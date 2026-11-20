@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,7 +87,13 @@ public class ViewingSlotServiceImpl implements ViewingSlotService {
         ViewingSlot slot = slotRepository.findByIdAndPropertyId(slotId, propertyId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Viewing slot " + slotId + " not found on property " + propertyId));
-        slotRepository.delete(slot);
+        try {
+            slotRepository.delete(slot);
+            slotRepository.flush();
+        } catch (DataIntegrityViolationException ex) {
+            throw new SlotConflictException(
+                    "Cannot delete viewing slot " + slotId + " because it has associated viewings");
+        }
         log.info("Viewing slot {} deleted from property {} by user {}", slotId, propertyId, actor.id());
     }
 

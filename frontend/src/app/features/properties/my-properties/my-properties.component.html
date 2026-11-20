@@ -1,25 +1,30 @@
-<div class="mx-auto max-w-7xl px-4 py-8" *transloco="let t">
-  <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+<div class="mx-auto max-w-7xl ps-4 pe-4 py-6 text-start" *transloco="let t">
+  <div
+    class="mb-6 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs transition-colors sm:flex-row sm:items-center sm:justify-between dark:border-slate-800 dark:bg-slate-900"
+  >
     <div>
-      <h1 class="text-2xl font-bold text-gray-900" data-testid="page-title">
+      <h1
+        class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100"
+        data-testid="page-title"
+      >
         {{ t('MY_PROPERTIES.TITLE') }}
       </h1>
-      <p class="mt-1 text-sm text-gray-500">
+      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
         {{ t('MY_PROPERTIES.SUBTITLE') }}
       </p>
     </div>
     <a
       routerLink="/properties/new"
-      class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-xs hover:bg-indigo-700"
+      class="inline-flex items-center justify-center rounded-xl bg-emerald-600 ps-5 pe-5 py-2.5 text-sm font-semibold text-white shadow-2xs transition hover:bg-emerald-700 dark:hover:bg-emerald-500"
       data-testid="add-property-button"
     >
-      {{ t('MY_PROPERTIES.ADD_BUTTON') }}
+      + {{ t('MY_PROPERTIES.ADD_BUTTON') }}
     </a>
   </div>
 
   @if (errorMessage()) {
     <div
-      class="mb-6 rounded-lg bg-red-50 p-4 text-sm text-red-700"
+      class="mb-6 rounded-xl bg-rose-50 p-4 text-sm font-medium text-rose-800 ring-1 ring-rose-200 dark:bg-rose-950/50 dark:text-rose-200 dark:ring-rose-800/80"
       role="alert"
       data-testid="api-error"
     >
@@ -29,102 +34,184 @@
 
   @if (isLoading()) {
     <div class="flex justify-center py-12" data-testid="loading-spinner">
-      <div class="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
+      <div class="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent"></div>
     </div>
   } @else if (properties().length === 0) {
     <!-- Empty State -->
     <div
-      class="rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center"
+      class="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center shadow-2xs dark:border-slate-700 dark:bg-slate-900"
       data-testid="empty-state"
     >
-      <h3 class="text-lg font-medium text-gray-900">{{ t('MY_PROPERTIES.EMPTY.TITLE') }}</h3>
-      <p class="mt-2 text-sm text-gray-500">{{ t('MY_PROPERTIES.EMPTY.DESCRIPTION') }}</p>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">{{ t('MY_PROPERTIES.EMPTY.TITLE') }}</h3>
+      <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">{{ t('MY_PROPERTIES.EMPTY.DESCRIPTION') }}</p>
       <div class="mt-6">
         <a
           routerLink="/properties/new"
-          class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-indigo-700"
+          class="inline-flex items-center rounded-xl bg-emerald-600 ps-5 pe-5 py-2.5 text-sm font-semibold text-white shadow-2xs transition hover:bg-emerald-700 dark:hover:bg-emerald-500"
         >
-          {{ t('MY_PROPERTIES.ADD_BUTTON') }}
+          + {{ t('MY_PROPERTIES.ADD_BUTTON') }}
         </a>
       </div>
     </div>
   } @else {
     <!-- Properties Table / List -->
-    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
+    <div
+      class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xs dark:border-slate-800 dark:bg-slate-900"
+    >
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 text-start">
-          <thead class="bg-gray-50">
+        <table class="min-w-full divide-y divide-slate-200 text-start dark:divide-slate-800">
+          <thead class="bg-slate-50 dark:bg-slate-800/70">
             <tr>
-              <th scope="col" class="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th
+                scope="col"
+                class="ps-6 pe-6 py-3.5 text-start text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+              >
                 {{ t('MY_PROPERTIES.TABLE.TITLE') }}
               </th>
-              <th scope="col" class="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th
+                scope="col"
+                class="ps-6 pe-6 py-3.5 text-start text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+              >
                 {{ t('MY_PROPERTIES.TABLE.PURPOSE') }}
               </th>
-              <th scope="col" class="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th
+                scope="col"
+                class="ps-6 pe-6 py-3.5 text-start text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+              >
                 {{ t('MY_PROPERTIES.TABLE.PRICE') }}
               </th>
-              <th scope="col" class="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th
+                scope="col"
+                class="ps-6 pe-6 py-3.5 text-start text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+              >
                 {{ t('MY_PROPERTIES.TABLE.STATUS') }}
               </th>
-              <th scope="col" class="px-6 py-3 text-end text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th
+                scope="col"
+                class="ps-6 pe-6 py-3.5 text-end text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+              >
                 {{ t('MY_PROPERTIES.TABLE.ACTIONS') }}
               </th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-200 bg-white">
+          <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
             @for (property of properties(); track property.id) {
-              <tr class="hover:bg-gray-50" data-testid="property-row">
-                <td class="whitespace-nowrap px-6 py-4">
-                  <div class="text-sm font-medium text-gray-900" data-testid="property-title">
-                    {{ property.title }}
-                  </div>
-                  <div class="text-xs text-gray-500">
-                    {{ property.bedrooms }} {{ t('MY_PROPERTIES.BEDS') }} • {{ property.bathrooms }} {{ t('MY_PROPERTIES.BATHS') }} • {{ property.areaSqm }} m²
+              <tr
+                class="transition hover:bg-slate-50/80 dark:hover:bg-slate-800/50"
+                data-testid="property-row"
+              >
+                <td class="whitespace-nowrap ps-6 pe-6 py-4">
+                  <div class="flex items-center gap-3">
+                    @if (property.thumbnailUrl) {
+                      <img
+                        [src]="property.thumbnailUrl"
+                        [alt]="property.title"
+                        class="h-12 w-16 shrink-0 rounded-lg border border-slate-200 object-cover dark:border-slate-700"
+                      />
+                    } @else {
+                      <div
+                        class="flex h-12 w-16 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500"
+                      >
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.5"
+                            d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                          />
+                        </svg>
+                      </div>
+                    }
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="rounded bg-slate-100 ps-1.5 pe-1.5 py-0.5 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                        >
+                          #{{ property.id }}
+                        </span>
+                        <a
+                          [routerLink]="['/listings', property.id]"
+                          class="text-sm font-bold text-slate-900 hover:text-emerald-700 hover:underline dark:text-slate-100 dark:hover:text-emerald-400"
+                          data-testid="property-title"
+                        >
+                          {{ property.title }}
+                        </a>
+                      </div>
+                      <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        {{ property.bedrooms }} {{ t('MY_PROPERTIES.BEDS') }} •
+                        {{ property.bathrooms }} {{ t('MY_PROPERTIES.BATHS') }} •
+                        {{ property.areaSqm }} m²
+                      </div>
+                    </div>
                   </div>
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                <td class="whitespace-nowrap ps-6 pe-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300">
                   {{ t('PROPERTY.PURPOSE.' + property.purpose) }}
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-sm font-semibold text-gray-900">
+                <td class="whitespace-nowrap ps-6 pe-6 py-4 text-sm font-bold text-emerald-700 dark:text-emerald-400">
                   {{ property.price | number }} {{ property.currency }}
                 </td>
-                <td class="whitespace-nowrap px-6 py-4">
+                <td class="whitespace-nowrap ps-6 pe-6 py-4">
                   <span
-                    class="inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold"
+                    class="inline-flex rounded-full border ps-2.5 pe-2.5 py-0.5 text-xs font-semibold"
                     [ngClass]="getStatusClass(property.status)"
                     data-testid="status-badge"
                   >
                     {{ t('PROPERTY.STATUS.' + property.status) }}
                   </span>
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-end text-sm font-medium">
+                <td class="whitespace-nowrap ps-6 pe-6 py-4 text-end text-sm font-medium">
                   <div class="flex items-center justify-end gap-2">
-                    <button
-                      type="button"
-                      (click)="onEdit(property.id)"
-                      class="text-indigo-600 hover:text-indigo-900"
-                      data-testid="action-edit"
-                    >
-                      {{ t('MY_PROPERTIES.ACTIONS.EDIT') }}
-                    </button>
+                    @if (property.status === 'DRAFT' || property.status === 'PUBLISHED') {
+                      <button
+                        type="button"
+                        (click)="onEdit(property.id)"
+                        class="cursor-pointer rounded-lg border border-slate-200 bg-white ps-3 pe-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                        data-testid="action-edit"
+                      >
+                        {{ t('MY_PROPERTIES.ACTIONS.EDIT') }}
+                      </button>
+                    }
 
-                    @if (property.status === 'DRAFT' || property.status === 'ARCHIVED') {
+                    @if (
+                      property.status === 'DRAFT' ||
+                      property.status === 'RENTED' ||
+                      property.status === 'ARCHIVED'
+                    ) {
                       <button
                         type="button"
                         (click)="onPublish(property.id)"
-                        class="text-emerald-600 hover:text-emerald-900"
+                        class="cursor-pointer rounded-lg bg-emerald-600 ps-3 pe-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700 dark:hover:bg-emerald-500"
                         data-testid="action-publish"
                       >
-                        {{ t('MY_PROPERTIES.ACTIONS.PUBLISH') }}
+                        {{
+                          property.status === 'ARCHIVED'
+                            ? t('MY_PROPERTIES.ACTIONS.REPUBLISH')
+                            : t('MY_PROPERTIES.ACTIONS.PUBLISH')
+                        }}
                       </button>
                     }
 
                     @if (property.status === 'PUBLISHED') {
                       <button
                         type="button"
+                        (click)="onManageAvailability(property.id)"
+                        class="cursor-pointer rounded-lg border border-emerald-600 bg-emerald-50 ps-3 pe-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-600 hover:text-white dark:border-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-600 dark:hover:text-white"
+                        data-testid="action-availability"
+                      >
+                        {{ t('MY_PROPERTIES.ACTIONS.AVAILABILITY') }}
+                      </button>
+                    }
+
+                    @if (
+                      property.status === 'PUBLISHED' ||
+                      property.status === 'RENTED' ||
+                      property.status === 'SOLD'
+                    ) {
+                      <button
+                        type="button"
                         (click)="onArchive(property.id)"
-                        class="text-amber-600 hover:text-amber-900"
+                        class="cursor-pointer rounded-lg border border-amber-300 bg-amber-50 ps-3 pe-3 py-1.5 text-xs font-semibold text-amber-800 transition hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-950/60 dark:text-amber-300 dark:hover:bg-amber-900/60"
                         data-testid="action-archive"
                       >
                         {{ t('MY_PROPERTIES.ACTIONS.ARCHIVE') }}
@@ -138,5 +225,33 @@
         </table>
       </div>
     </div>
+
+    @if (totalPages() > 1) {
+      <nav
+        class="mt-6 flex items-center justify-between rounded-2xl border border-slate-200 bg-white ps-6 pe-6 py-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900"
+      >
+        <button
+          type="button"
+          [disabled]="currentPage() === 0"
+          (click)="goToPage(currentPage() - 1)"
+          data-testid="prev-page"
+          class="cursor-pointer rounded-xl border border-slate-300 bg-white ps-4 pe-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+        >
+          {{ t('MY_PROPERTIES.PAGINATION.PREVIOUS') }}
+        </button>
+        <span class="text-sm font-semibold text-slate-600 dark:text-slate-300">
+          {{ currentPage() + 1 }} / {{ totalPages() }}
+        </span>
+        <button
+          type="button"
+          [disabled]="currentPage() + 1 >= totalPages()"
+          (click)="goToPage(currentPage() + 1)"
+          data-testid="next-page"
+          class="cursor-pointer rounded-xl border border-slate-300 bg-white ps-4 pe-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+        >
+          {{ t('MY_PROPERTIES.PAGINATION.NEXT') }}
+        </button>
+      </nav>
+    }
   }
 </div>

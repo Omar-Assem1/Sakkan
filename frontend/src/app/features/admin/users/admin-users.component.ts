@@ -23,6 +23,7 @@ export class AdminUsersComponent {
   readonly query = signal('');
   readonly selectedRole = signal<AdminRole | null>(null);
   readonly selectedEnabled = signal<boolean | null>(null);
+  readonly selectedSort = signal<string>('');
   readonly roleOptions = ROLES;
 
   constructor() { this.load(); }
@@ -42,6 +43,7 @@ export class AdminUsersComponent {
   setQuery(value: string): void { this.query.set(value); }
   setRole(value: string): void { this.selectedRole.set(value ? value as AdminRole : null); }
   setEnabled(value: string): void { this.selectedEnabled.set(value === '' ? null : value === 'true'); }
+  setSort(value: string): void { this.selectedSort.set(value); }
   applyFilters(): void { this.currentPage.set(0); this.load(); }
   previous(): void { if (this.currentPage() > 0) { this.currentPage.update((p) => p - 1); this.load(); } }
   next(): void { if (this.currentPage() + 1 < this.totalPages()) { this.currentPage.update((p) => p + 1); this.load(); } }
@@ -61,6 +63,10 @@ export class AdminUsersComponent {
   }
 
   private filters(): AdminUserFilters {
-    return { q: this.query(), role: this.selectedRole(), enabled: this.selectedEnabled() };
+    const f: AdminUserFilters = { q: this.query(), role: this.selectedRole(), enabled: this.selectedEnabled() };
+    if (this.selectedSort()) {
+      f.sort = this.selectedSort();
+    }
+    return f;
   }
 }

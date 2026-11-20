@@ -67,4 +67,25 @@ describe('PropertyBrowseService', () => {
     expect(req.request.method).toBe('GET');
     req.flush(mockResponse);
   });
+
+  it('should load 4-level location hierarchy from /api/locations endpoints', () => {
+    let actual: unknown[] = [];
+    service.getLocations().subscribe((locs) => {
+      actual = locs;
+    });
+
+    const govReq = httpMock.expectOne('/api/locations/governorates');
+    govReq.flush([{ id: 1, parentId: null, type: 'GOVERNORATE', name: 'Cairo' }]);
+
+    const cityReq = httpMock.expectOne('/api/locations/cities?parentId=1');
+    cityReq.flush([{ id: 4, parentId: 1, type: 'CITY', name: 'New Cairo' }]);
+
+    const distReq = httpMock.expectOne('/api/locations/districts?parentId=4');
+    distReq.flush([{ id: 10, parentId: 4, type: 'DISTRICT', name: 'Fifth Settlement' }]);
+
+    const compReq = httpMock.expectOne('/api/locations/compounds?parentId=10');
+    compReq.flush([{ id: 18, parentId: 10, type: 'COMPOUND', name: 'Madinaty' }]);
+
+    expect(actual.length).toBe(4);
+  });
 });

@@ -24,7 +24,8 @@ class StatusTransitionsTest {
     private static final Set<String> PROPERTY_ALLOWED = Set.of(
             "DRAFT->PUBLISHED", "DRAFT->ARCHIVED",
             "PUBLISHED->RENTED", "PUBLISHED->SOLD", "PUBLISHED->ARCHIVED",
-            "RENTED->PUBLISHED", "RENTED->ARCHIVED", "SOLD->ARCHIVED");
+            "RENTED->PUBLISHED", "RENTED->ARCHIVED", "SOLD->ARCHIVED",
+            "ARCHIVED->PUBLISHED");
 
     private static final Set<String> VIEWING_ALLOWED = Set.of(
             "REQUESTED->CONFIRMED", "REQUESTED->CANCELLED",

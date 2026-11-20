@@ -3,6 +3,8 @@ export type PropertyStatus = 'DRAFT' | 'PUBLISHED' | 'RENTED' | 'SOLD' | 'ARCHIV
 
 export interface PropertySummaryDto {
   id: number;
+  ownerId?: number;
+  agentId?: number | null;
   title: string;
   description: string;
   purpose: PropertyPurpose;
@@ -16,6 +18,7 @@ export interface PropertySummaryDto {
   amenityIds: number[];
   status: PropertyStatus;
   createdAt: string;
+  thumbnailUrl?: string | null;
 }
 
 export interface PageResponse<T> {
