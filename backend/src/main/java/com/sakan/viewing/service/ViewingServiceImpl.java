@@ -1,6 +1,5 @@
 package com.sakan.viewing.service;
 
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -44,9 +43,8 @@ public class ViewingServiceImpl implements ViewingService {
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final int MAX_PAGE_SIZE = 50;
 
-    private static final StatusTransitions<ViewingStatus> VIEWING_TRANSITIONS = StatusTransitions.of(Map.of(
-            ViewingStatus.REQUESTED, EnumSet.of(ViewingStatus.CONFIRMED, ViewingStatus.CANCELLED),
-            ViewingStatus.CONFIRMED, EnumSet.of(ViewingStatus.CANCELLED, ViewingStatus.COMPLETED)));
+    private static final StatusTransitions<ViewingStatus> VIEWING_TRANSITIONS =
+            StatusTransitions.from(ViewingStatus.class, ViewingStatus::allowedTargets);
 
     private final ViewingConflictChecker conflictChecker;
     private final ViewingRepository viewingRepository;
