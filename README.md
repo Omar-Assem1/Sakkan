@@ -131,6 +131,7 @@ cd backend
 
 # 3. Set JWT_SECRET (min 32 chars) and run the executable JAR
 $env:JWT_SECRET="dev-only-jwt-secret-change-in-production-min-32-chars"
+$env:SPRING_PROFILES_ACTIVE="dev"
 java -jar target/sakan-api-0.0.1-SNAPSHOT.jar
 ```
 
@@ -138,7 +139,7 @@ java -jar target/sakan-api-0.0.1-SNAPSHOT.jar
 ```bash
 docker compose up -d db
 cd backend && ./mvnw -B -DskipTests package
-JWT_SECRET="dev-only-jwt-secret-change-in-production-min-32-chars" java -jar target/sakan-api-0.0.1-SNAPSHOT.jar
+SPRING_PROFILES_ACTIVE=dev JWT_SECRET="dev-only-jwt-secret-change-in-production-min-32-chars" java -jar target/sakan-api-0.0.1-SNAPSHOT.jar
 ```
 
 ---
@@ -148,7 +149,7 @@ JWT_SECRET="dev-only-jwt-secret-change-in-production-min-32-chars" java -jar tar
 ```bash
 cp .env.example .env
 docker compose up -d db
-cd backend && JWT_SECRET="dev-only-jwt-secret-change-in-production-min-32-chars" ./mvnw spring-boot:run
+cd backend && SPRING_PROFILES_ACTIVE=dev JWT_SECRET="dev-only-jwt-secret-change-in-production-min-32-chars" ./mvnw spring-boot:run
 cd frontend && npm ci && npm start
 ```
 
