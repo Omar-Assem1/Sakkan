@@ -1,0 +1,564 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=19mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\definecolor{SakanBlue}{HTML}{164E78}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+\setlength{\LTpre}{0.4em}
+\setlength{\LTpost}{0.8em}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.14}
+\hypersetup{pdftitle={Sakan Project File Catalog},pdfauthor={Sakan Project Team}}
+\newcommand{\filepath}[1]{\path{#1}}
+\title{Sakan Project File Catalog\\\large File-by-file summary and objectives}
+\author{Sakan Project Team}
+\date{20 November 2026}
+\begin{document}
+\maketitle
+\section*{Purpose and coverage}
+This catalog lists all 468 files tracked by Git in the repository snapshot, plus the two LaTeX report files created for this request. Each entry gives the file's primary objective based on its location, name, and project context. Test files are summarized by the application behavior they exercise; generated build outputs and untracked local files are excluded. Directory placeholders are included because they are tracked files.
+\textbf{Cataloged files: }470 (468 tracked project files and 2 report files).
+\section{Project and CI}
+\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.46\textwidth}>{\raggedright\arraybackslash}p{0.50\textwidth}@{}}
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endfirsthead
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endhead
+\filepath{.env.example} & Configures env example for local development, tests, tooling, or deployment. \\
+\filepath{.github/pull_request_template.md} & Documents setup, configuration, or development guidance for pull request template. \\
+\filepath{.github/workflows/ci.yml} & Automates repository CI or pull-request checks through GitHub Actions. \\
+\filepath{.github/workflows/pr-jira-key.yml} & Automates repository CI or pull-request checks through GitHub Actions. \\
+\filepath{.gitignore} & Configures gitignore for local development, tests, tooling, or deployment. \\
+\filepath{README.md} & Explains project purpose, setup, operation, testing, and development conventions. \\
+\filepath{docker-compose.yml} & Defines the local multi-container database, API, and web stack. \\
+\end{longtable}
+\section{Backend build and configuration}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.46\textwidth}>{\raggedright\arraybackslash}p{0.50\textwidth}@{}}
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endfirsthead
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endhead
+\filepath{backend/.dockerignore} & Configures dockerignore for local development, tests, tooling, or deployment. \\
+\filepath{backend/.gitattributes} & Configures gitattributes for local development, tests, tooling, or deployment. \\
+\filepath{backend/.gitignore} & Configures gitignore for local development, tests, tooling, or deployment. \\
+\filepath{backend/.mvn/wrapper/maven-wrapper.properties} & Configures maven wrapper properties for local development, tests, tooling, or deployment. \\
+\filepath{backend/Dockerfile} & Defines the container image build for the backend API. \\
+\filepath{backend/lombok.config} & Supports the project build, development, documentation, or deployment workflow. \\
+\filepath{backend/mvnw} & Supports the project build, development, documentation, or deployment workflow. \\
+\filepath{backend/mvnw.cmd} & Provides the Maven wrapper launcher for the corresponding operating system. \\
+\filepath{backend/perf-check.js} & Implements the perf check tooling or performance utility. \\
+\filepath{backend/pom.xml} & Defines backend dependencies, Java version, build plugins, tests, and coverage rules. \\
+\end{longtable}
+\section{Backend application and database}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.48\textwidth}>{\raggedright\arraybackslash}p{0.48\textwidth}@{}}
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endfirsthead
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endhead
+\filepath{backend/src/main/java/com/sakan/SakanApplication.java} & Implements a backend application component for sakan application. \\
+\filepath{backend/src/main/java/com/sakan/admin/domain/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/admin/dto/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/admin/dto/AdminUserResponse.java} & Defines validated API request or response data for admin user response. \\
+\filepath{backend/src/main/java/com/sakan/admin/dto/AdminUserSearchCriteria.java} & Defines validated API request or response data for admin user search criteria. \\
+\filepath{backend/src/main/java/com/sakan/admin/dto/RoleChangeRequest.java} & Defines validated API request or response data for role change request. \\
+\filepath{backend/src/main/java/com/sakan/admin/repository/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/admin/service/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/admin/service/AdminUserMapper.java} & Implements application operations and business rules for admin user mapper. \\
+\filepath{backend/src/main/java/com/sakan/admin/service/AdminUserService.java} & Implements application operations and business rules for admin user service. \\
+\filepath{backend/src/main/java/com/sakan/admin/service/AdminUserServiceImpl.java} & Implements application operations and business rules for admin user service impl. \\
+\filepath{backend/src/main/java/com/sakan/admin/web/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/admin/web/AdminUserController.java} & Exposes HTTP endpoints and translates requests and responses for admin user controller. \\
+\filepath{backend/src/main/java/com/sakan/auth/controller/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/auth/domain/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/auth/dto/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/auth/dto/GoogleCodeRequest.java} & Defines validated API request or response data for google code request. \\
+\filepath{backend/src/main/java/com/sakan/auth/dto/GoogleExchangeResponse.java} & Defines validated API request or response data for google exchange response. \\
+\filepath{backend/src/main/java/com/sakan/auth/dto/GoogleRegistrationRequest.java} & Defines validated API request or response data for google registration request. \\
+\filepath{backend/src/main/java/com/sakan/auth/dto/LoginRequest.java} & Defines validated API request or response data for login request. \\
+\filepath{backend/src/main/java/com/sakan/auth/dto/LoginResponse.java} & Defines validated API request or response data for login response. \\
+\filepath{backend/src/main/java/com/sakan/auth/dto/RegisterRequest.java} & Defines validated API request or response data for register request. \\
+\filepath{backend/src/main/java/com/sakan/auth/dto/UserSummaryResponse.java} & Defines validated API request or response data for user summary response. \\
+\filepath{backend/src/main/java/com/sakan/auth/entity/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/auth/repository/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/auth/security/GoogleOAuthFailureHandler.java} & Implements authentication, authorization, or security handling for google oauth failure handler. \\
+\filepath{backend/src/main/java/com/sakan/auth/security/GoogleOAuthSuccessHandler.java} & Implements authentication, authorization, or security handling for google oauth success handler. \\
+\filepath{backend/src/main/java/com/sakan/auth/security/LoginAttemptLimiter.java} & Implements authentication, authorization, or security handling for login attempt limiter. \\
+\filepath{backend/src/main/java/com/sakan/auth/security/LoginRateLimitFilter.java} & Implements authentication, authorization, or security handling for login rate limit filter. \\
+\filepath{backend/src/main/java/com/sakan/auth/service/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/auth/service/AuthService.java} & Implements application operations and business rules for auth service. \\
+\filepath{backend/src/main/java/com/sakan/auth/service/GoogleOAuthService.java} & Implements application operations and business rules for google oauth service. \\
+\filepath{backend/src/main/java/com/sakan/auth/service/JwtService.java} & Implements application operations and business rules for jwt service. \\
+\filepath{backend/src/main/java/com/sakan/auth/service/SeededAdminRunner.java} & Implements application operations and business rules for seeded admin runner. \\
+\filepath{backend/src/main/java/com/sakan/auth/web/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/auth/web/AuthController.java} & Exposes HTTP endpoints and translates requests and responses for auth controller. \\
+\filepath{backend/src/main/java/com/sakan/auth/web/AuthExceptionHandler.java} & Exposes HTTP endpoints and translates requests and responses for auth exception handler. \\
+\filepath{backend/src/main/java/com/sakan/common/config/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/common/config/AdminSeedProperties.java} & Supplies shared application configuration for admin seed properties. \\
+\filepath{backend/src/main/java/com/sakan/common/config/JwtProperties.java} & Supplies shared application configuration for jwt properties. \\
+\filepath{backend/src/main/java/com/sakan/common/config/OpenApiConfig.java} & Supplies shared application configuration for open api config. \\
+\filepath{backend/src/main/java/com/sakan/common/domain/Currency.java} & Defines domain state or persistence types for currency. \\
+\filepath{backend/src/main/java/com/sakan/common/event/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/common/event/StatusChangedEvent.java} & Defines application events used to communicate state changes. status changed event. \\
+\filepath{backend/src/main/java/com/sakan/common/exception/DuplicateEmailException.java} & Defines or handles application errors for duplicate email exception. \\
+\filepath{backend/src/main/java/com/sakan/common/exception/DuplicateUsernameException.java} & Defines or handles application errors for duplicate username exception. \\
+\filepath{backend/src/main/java/com/sakan/common/exception/ForbiddenOperationException.java} & Defines or handles application errors for forbidden operation exception. \\
+\filepath{backend/src/main/java/com/sakan/common/exception/GlobalExceptionHandler.java} & Defines or handles application errors for global exception handler. \\
+\filepath{backend/src/main/java/com/sakan/common/exception/InvalidCredentialsException.java} & Defines or handles application errors for invalid credentials exception. \\
+\filepath{backend/src/main/java/com/sakan/common/exception/InvalidStatusTransitionException.java} & Defines or handles application errors for invalid status transition exception. \\
+\filepath{backend/src/main/java/com/sakan/common/exception/ResourceNotFoundException.java} & Defines or handles application errors for resource not found exception. \\
+\filepath{backend/src/main/java/com/sakan/common/exception/RoleConflictException.java} & Defines or handles application errors for role conflict exception. \\
+\filepath{backend/src/main/java/com/sakan/common/exception/RoleNotAllowedException.java} & Defines or handles application errors for role not allowed exception. \\
+\filepath{backend/src/main/java/com/sakan/common/exception/SlotConflictException.java} & Defines or handles application errors for slot conflict exception. \\
+\filepath{backend/src/main/java/com/sakan/common/response/PageResponse.java} & Implements a backend application component for page response. \\
+\filepath{backend/src/main/java/com/sakan/common/security/AuthenticatedUser.java} & Implements authentication, authorization, or security handling for authenticated user. \\
+\filepath{backend/src/main/java/com/sakan/common/security/CurrentUserProvider.java} & Implements authentication, authorization, or security handling for current user provider. \\
+\filepath{backend/src/main/java/com/sakan/common/security/RestAccessDeniedHandler.java} & Implements authentication, authorization, or security handling for rest access denied handler. \\
+\filepath{backend/src/main/java/com/sakan/common/security/RestAuthenticationEntryPoint.java} & Implements authentication, authorization, or security handling for rest authentication entry point. \\
+\filepath{backend/src/main/java/com/sakan/common/security/SecurityConfig.java} & Implements authentication, authorization, or security handling for security config. \\
+\filepath{backend/src/main/java/com/sakan/common/security/SecurityContextCurrentUserProvider.java} & Implements authentication, authorization, or security handling for security context current user provider. \\
+\filepath{backend/src/main/java/com/sakan/common/statemachine/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/common/statemachine/StatusTransitionService.java} & Defines reusable status-transition rules and behavior. status transition service. \\
+\filepath{backend/src/main/java/com/sakan/common/statemachine/StatusTransitions.java} & Defines reusable status-transition rules and behavior. status transitions. \\
+\filepath{backend/src/main/java/com/sakan/common/util/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/contract/domain/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/contract/dto/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/contract/repository/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/contract/service/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/contract/web/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/demo/DemoDatasetGenerator.java} & Implements a backend application component for demo dataset generator. \\
+\filepath{backend/src/main/java/com/sakan/lead/domain/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/lead/dto/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/lead/repository/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/lead/service/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/lead/web/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/location/controller/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/location/domain/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/location/domain/LocationType.java} & Defines domain state or persistence types for location type. \\
+\filepath{backend/src/main/java/com/sakan/location/dto/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/location/dto/LocationResponse.java} & Defines validated API request or response data for location response. \\
+\filepath{backend/src/main/java/com/sakan/location/entity/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/location/repository/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/location/repository/LocationRepository.java} & Provides database access for location repository. \\
+\filepath{backend/src/main/java/com/sakan/location/service/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/location/service/LocationService.java} & Implements application operations and business rules for location service. \\
+\filepath{backend/src/main/java/com/sakan/location/web/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/location/web/LocationController.java} & Exposes HTTP endpoints and translates requests and responses for location controller. \\
+\filepath{backend/src/main/java/com/sakan/maintenance/domain/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/maintenance/dto/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/maintenance/repository/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/maintenance/service/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/maintenance/web/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/offer/domain/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/offer/dto/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/offer/repository/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/offer/service/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/offer/web/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/payment/domain/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/payment/dto/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/payment/repository/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/payment/service/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/payment/web/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/property/domain/Property.java} & Defines domain state or persistence types for property. \\
+\filepath{backend/src/main/java/com/sakan/property/domain/PropertyImage.java} & Defines domain state or persistence types for property image. \\
+\filepath{backend/src/main/java/com/sakan/property/domain/PropertyPurpose.java} & Defines domain state or persistence types for property purpose. \\
+\filepath{backend/src/main/java/com/sakan/property/domain/PropertyStatus.java} & Defines domain state or persistence types for property status. \\
+\filepath{backend/src/main/java/com/sakan/property/dto/PropertyImageResponse.java} & Defines validated API request or response data for property image response. \\
+\filepath{backend/src/main/java/com/sakan/property/dto/PropertyMapper.java} & Defines validated API request or response data for property mapper. \\
+\filepath{backend/src/main/java/com/sakan/property/dto/PropertyRequest.java} & Defines validated API request or response data for property request. \\
+\filepath{backend/src/main/java/com/sakan/property/dto/PropertyResponse.java} & Defines validated API request or response data for property response. \\
+\filepath{backend/src/main/java/com/sakan/property/dto/PropertySearchCriteria.java} & Defines validated API request or response data for property search criteria. \\
+\filepath{backend/src/main/java/com/sakan/property/dto/PropertySummaryResponse.java} & Defines validated API request or response data for property summary response. \\
+\filepath{backend/src/main/java/com/sakan/property/repository/PropertyImageRepository.java} & Provides database access for property image repository. \\
+\filepath{backend/src/main/java/com/sakan/property/repository/PropertyRepository.java} & Provides database access for property repository. \\
+\filepath{backend/src/main/java/com/sakan/property/service/LocationHierarchyService.java} & Implements application operations and business rules for location hierarchy service. \\
+\filepath{backend/src/main/java/com/sakan/property/service/PropertyImageService.java} & Implements application operations and business rules for property image service. \\
+\filepath{backend/src/main/java/com/sakan/property/service/PropertyService.java} & Implements application operations and business rules for property service. \\
+\filepath{backend/src/main/java/com/sakan/property/service/PropertySortValidator.java} & Implements application operations and business rules for property sort validator. \\
+\filepath{backend/src/main/java/com/sakan/property/service/PropertySpecifications.java} & Implements application operations and business rules for property specifications. \\
+\filepath{backend/src/main/java/com/sakan/property/storage/ImageStorage.java} & Defines image-storage behavior or its local implementation. image storage. \\
+\filepath{backend/src/main/java/com/sakan/property/storage/LocalImageStorage.java} & Defines image-storage behavior or its local implementation. local image storage. \\
+\filepath{backend/src/main/java/com/sakan/property/web/PropertyController.java} & Exposes HTTP endpoints and translates requests and responses for property controller. \\
+\filepath{backend/src/main/java/com/sakan/property/web/PropertyImageController.java} & Exposes HTTP endpoints and translates requests and responses for property image controller. \\
+\filepath{backend/src/main/java/com/sakan/review/domain/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/review/dto/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/review/repository/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/review/service/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/review/web/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/roommate/domain/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/roommate/dto/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/roommate/repository/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/roommate/service/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/roommate/web/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/shared/error/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/shared/event/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/shared/security/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/shared/status/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/shared/storage/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/user/domain/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/user/domain/AuthProvider.java} & Defines domain state or persistence types for auth provider. \\
+\filepath{backend/src/main/java/com/sakan/user/domain/Role.java} & Defines domain state or persistence types for role. \\
+\filepath{backend/src/main/java/com/sakan/user/domain/RoleName.java} & Defines domain state or persistence types for role name. \\
+\filepath{backend/src/main/java/com/sakan/user/domain/User.java} & Defines domain state or persistence types for user. \\
+\filepath{backend/src/main/java/com/sakan/user/dto/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/user/repository/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/user/repository/RoleRepository.java} & Provides database access for role repository. \\
+\filepath{backend/src/main/java/com/sakan/user/repository/UserRepository.java} & Provides database access for user repository. \\
+\filepath{backend/src/main/java/com/sakan/user/service/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/user/service/UserService.java} & Implements application operations and business rules for user service. \\
+\filepath{backend/src/main/java/com/sakan/user/service/UserServiceImpl.java} & Implements application operations and business rules for user service impl. \\
+\filepath{backend/src/main/java/com/sakan/user/web/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/useradmin/controller/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/useradmin/dto/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/useradmin/entity/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/useradmin/repository/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/useradmin/service/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/viewing/controller/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/viewing/controller/ViewingController.java} & Exposes HTTP endpoints and translates requests and responses for viewing controller. \\
+\filepath{backend/src/main/java/com/sakan/viewing/controller/ViewingSlotController.java} & Exposes HTTP endpoints and translates requests and responses for viewing slot controller. \\
+\filepath{backend/src/main/java/com/sakan/viewing/domain/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/viewing/domain/Viewing.java} & Defines domain state or persistence types for viewing. \\
+\filepath{backend/src/main/java/com/sakan/viewing/domain/ViewingSlot.java} & Defines domain state or persistence types for viewing slot. \\
+\filepath{backend/src/main/java/com/sakan/viewing/domain/ViewingStatus.java} & Defines domain state or persistence types for viewing status. \\
+\filepath{backend/src/main/java/com/sakan/viewing/dto/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/viewing/dto/CreateViewingSlotRequest.java} & Defines validated API request or response data for create viewing slot request. \\
+\filepath{backend/src/main/java/com/sakan/viewing/dto/RequestViewingRequest.java} & Defines validated API request or response data for request viewing request. \\
+\filepath{backend/src/main/java/com/sakan/viewing/dto/ViewingResponse.java} & Defines validated API request or response data for viewing response. \\
+\filepath{backend/src/main/java/com/sakan/viewing/dto/ViewingSlotResponse.java} & Defines validated API request or response data for viewing slot response. \\
+\filepath{backend/src/main/java/com/sakan/viewing/entity/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/viewing/repository/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/viewing/repository/ViewingRepository.java} & Provides database access for viewing repository. \\
+\filepath{backend/src/main/java/com/sakan/viewing/repository/ViewingSlotRepository.java} & Provides database access for viewing slot repository. \\
+\filepath{backend/src/main/java/com/sakan/viewing/service/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/java/com/sakan/viewing/service/ViewingConflictChecker.java} & Implements application operations and business rules for viewing conflict checker. \\
+\filepath{backend/src/main/java/com/sakan/viewing/service/ViewingMapper.java} & Implements application operations and business rules for viewing mapper. \\
+\filepath{backend/src/main/java/com/sakan/viewing/service/ViewingService.java} & Implements application operations and business rules for viewing service. \\
+\filepath{backend/src/main/java/com/sakan/viewing/service/ViewingServiceImpl.java} & Implements application operations and business rules for viewing service impl. \\
+\filepath{backend/src/main/java/com/sakan/viewing/service/ViewingSlotMapper.java} & Implements application operations and business rules for viewing slot mapper. \\
+\filepath{backend/src/main/java/com/sakan/viewing/service/ViewingSlotService.java} & Implements application operations and business rules for viewing slot service. \\
+\filepath{backend/src/main/java/com/sakan/viewing/service/ViewingSlotServiceImpl.java} & Implements application operations and business rules for viewing slot service impl. \\
+\filepath{backend/src/main/java/com/sakan/viewing/web/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/resources/application-dev.yml} & Configures application dev yml for local development, tests, tooling, or deployment. \\
+\filepath{backend/src/main/resources/application-test.yml} & Configures application test yml for local development, tests, tooling, or deployment. \\
+\filepath{backend/src/main/resources/application.yml} & Configures application yml for local development, tests, tooling, or deployment. \\
+\filepath{backend/src/main/resources/db/migration/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/resources/db/migration/V10__auth_users_roles_extensions.sql} & Applies the versioned database change described by this migration: auth users roles extensions. \\
+\filepath{backend/src/main/resources/db/migration/V11__seeded_admin_unique_index.sql} & Applies the versioned database change described by this migration: seeded admin unique index. \\
+\filepath{backend/src/main/resources/db/migration/V1__baseline_schema.sql} & Applies the versioned database change described by this migration: baseline schema. \\
+\filepath{backend/src/main/resources/db/migration/V20__add_property_browse_indexes.sql} & Applies the versioned database change described by this migration: add property browse indexes. \\
+\filepath{backend/src/main/resources/db/migration/V21__add_property_fulltext_search_indexes.sql} & Applies the versioned database change described by this migration: add property fulltext search indexes. \\
+\filepath{backend/src/main/resources/db/migration/V22__create_property_images.sql} & Applies the versioned database change described by this migration: create property images. \\
+\filepath{backend/src/main/resources/db/migration/V2__seed_reference_data.sql} & Applies the versioned database change described by this migration: seed reference data. \\
+\filepath{backend/src/main/resources/db/migration/V30__create_viewing_slot_table.sql} & Applies the versioned database change described by this migration: create viewing slot table. \\
+\filepath{backend/src/main/resources/db/migration/V31__create_viewing_table.sql} & Applies the versioned database change described by this migration: create viewing table. \\
+\filepath{backend/src/main/resources/db/migration/V32__location_reference_data_compatibility.sql} & Applies the versioned database change described by this migration: location reference data compatibility. \\
+\filepath{backend/src/main/resources/db/migration/V33__google_oauth_handoffs.sql} & Applies the versioned database change described by this migration: google oauth handoffs. \\
+\filepath{backend/src/main/resources/static/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/main/resources/templates/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\end{longtable}
+\section{Backend tests and fixtures}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.48\textwidth}>{\raggedright\arraybackslash}p{0.48\textwidth}@{}}
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endfirsthead
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endhead
+\filepath{backend/src/test/java/com/sakan/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/SakanApplicationTests.java} & Supports the project build, development, documentation, or deployment workflow. \\
+\filepath{backend/src/test/java/com/sakan/TestSakanApplication.java} & Supports the project build, development, documentation, or deployment workflow. \\
+\filepath{backend/src/test/java/com/sakan/TestcontainersConfiguration.java} & Supports the project build, development, documentation, or deployment workflow. \\
+\filepath{backend/src/test/java/com/sakan/admin/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/admin/service/AdminUserServiceTest.java} & Tests the admin user service test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/admin/web/AdminEndpointAccessIT.java} & Tests the admin endpoint access it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/admin/web/AdminUserControllerIT.java} & Tests the admin user controller it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/admin/web/AdminUserSecurityIT.java} & Tests the admin user security it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/architecture/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/auth/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/auth/security/AdminSignInSecurityIT.java} & Tests the admin sign in security it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/auth/security/AuthSecurityIT.java} & Tests the auth security it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/auth/security/GoogleOAuthFlowIT.java} & Tests the google oauth flow it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/auth/security/LoginRateLimitIT.java} & Tests the login rate limit it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/auth/security/SecurityProbeController.java} & Supports the project build, development, documentation, or deployment workflow. \\
+\filepath{backend/src/test/java/com/sakan/auth/service/AuthServiceAdminLoginTest.java} & Tests the auth service admin login test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/auth/service/AuthServiceTest.java} & Tests the auth service test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/auth/service/JwtServiceTest.java} & Tests the jwt service test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/auth/service/SeededAdminRunnerTest.java} & Tests the seeded admin runner test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/auth/web/AdminLoginControllerIT.java} & Tests the admin login controller it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/auth/web/AuthControllerIT.java} & Tests the auth controller it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/auth/web/SeededAdminIT.java} & Tests the seeded admin it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/common/exception/GlobalExceptionHandlerTest.java} & Tests the global exception handler test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/common/security/JwtTamperingSecurityIT.java} & Tests the jwt tampering security it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/common/security/NoAccidentalPermitAllIT.java} & Tests the no accidental permit all it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/common/security/RbacEndpointMatrixIT.java} & Tests the rbac endpoint matrix it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/common/security/RbacOwnershipHttpIT.java} & Tests the rbac ownership http it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/common/security/RbacSecurityGapsIT.java} & Tests the rbac security gaps it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/common/security/SecurityContextCurrentUserProviderTest.java} & Tests the security context current user provider test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/common/statemachine/StatusTransitionServiceTest.java} & Tests the status transition service test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/common/statemachine/StatusTransitionsTest.java} & Tests the status transitions test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/contract/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/demo/DemoDatasetGeneratorIT.java} & Tests the demo dataset generator it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/demo/DemoDatasetGeneratorTest.java} & Tests the demo dataset generator test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/lead/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/location/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/location/web/LocationControllerIT.java} & Tests the location controller it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/maintenance/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/offer/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/payment/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/property/domain/PropertyStatusTest.java} & Tests the property status test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/property/repository/PropertyBrowseRepositoryTest.java} & Tests the property browse repository test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/property/search/PropertySearchIntegrationTest.java} & Tests the property search integration test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/property/search/PropertySearchTestFixtures.java} & Supports the project build, development, documentation, or deployment workflow. \\
+\filepath{backend/src/test/java/com/sakan/property/service/PropertyBrowseServiceTest.java} & Tests the property browse service test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/property/service/PropertyImageServiceAccessTest.java} & Tests the property image service access test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/property/service/PropertyImageServiceTest.java} & Tests the property image service test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/property/service/PropertySearchServiceTest.java} & Tests the property search service test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/property/service/PropertyServiceOwnershipTest.java} & Tests the property service ownership test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/property/service/PropertyServiceTest.java} & Tests the property service test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/property/service/PropertySortValidatorTest.java} & Tests the property sort validator test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/property/web/PropertyBrowseControllerTest.java} & Tests the property browse controller test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/property/web/PropertyControllerTest.java} & Tests the property controller test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/property/web/PropertySearchControllerTest.java} & Tests the property search controller test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/property/web/PropertySecurityTest.java} & Tests the property security test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/review/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/roommate/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/support/AbstractIntegrationTest.java} & Tests shared test infrastructure, fixtures, security assertions, or test-tag behavior. \\
+\filepath{backend/src/test/java/com/sakan/support/AbstractIntegrationTestSmokeTest.java} & Tests shared test infrastructure, fixtures, security assertions, or test-tag behavior. \\
+\filepath{backend/src/test/java/com/sakan/support/TestUserFixtures.java} & Supports the project build, development, documentation, or deployment workflow. \\
+\filepath{backend/src/test/java/com/sakan/support/migration/BaselineMigrationIT.java} & Tests shared test infrastructure, fixtures, security assertions, or test-tag behavior. \\
+\filepath{backend/src/test/java/com/sakan/support/security/EndpointSecurityAssertions.java} & Supports the project build, development, documentation, or deployment workflow. \\
+\filepath{backend/src/test/java/com/sakan/support/security/EndpointSecurityAssertionsTest.java} & Tests shared test infrastructure, fixtures, security assertions, or test-tag behavior. \\
+\filepath{backend/src/test/java/com/sakan/support/security/Role.java} & Supports the project build, development, documentation, or deployment workflow. \\
+\filepath{backend/src/test/java/com/sakan/support/tags/IntegrationTest.java} & Tests shared test infrastructure, fixtures, security assertions, or test-tag behavior. \\
+\filepath{backend/src/test/java/com/sakan/support/tags/RegressionTest.java} & Tests shared test infrastructure, fixtures, security assertions, or test-tag behavior. \\
+\filepath{backend/src/test/java/com/sakan/support/tags/TestTagAnnotationsTest.java} & Tests shared test infrastructure, fixtures, security assertions, or test-tag behavior. \\
+\filepath{backend/src/test/java/com/sakan/support/tags/UnitTest.java} & Tests shared test infrastructure, fixtures, security assertions, or test-tag behavior. \\
+\filepath{backend/src/test/java/com/sakan/user/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/user/service/UserServiceRoleTest.java} & Tests the user service role test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/viewing/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{backend/src/test/java/com/sakan/viewing/controller/ViewingConcurrencyIT.java} & Tests the viewing concurrency it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/viewing/controller/ViewingSlotControllerIntegrationTest.java} & Tests the viewing slot controller integration test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/viewing/controller/ViewingSlotControllerTest.java} & Tests the viewing slot controller test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/viewing/controller/ViewingStatusControllerIT.java} & Tests the viewing status controller it behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/viewing/service/ViewingConflictCheckerTest.java} & Tests the viewing conflict checker test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/viewing/service/ViewingServiceImplTest.java} & Tests the viewing service impl test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/viewing/service/ViewingSlotServiceTest.java} & Tests the viewing slot service test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/viewing/service/ViewingStatusChangeEventTest.java} & Tests the viewing status change event test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/java/com/sakan/viewing/service/ViewingStatusTransitionTest.java} & Tests the viewing status transition test behavior, API, or security rules represented by the matching application module. \\
+\filepath{backend/src/test/resources/application-test.yml} & Configures application test yml for local development, tests, tooling, or deployment. \\
+\filepath{backend/src/test/resources/application.properties} & Configures application properties for local development, tests, tooling, or deployment. \\
+\end{longtable}
+\section{Frontend build and configuration}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.48\textwidth}>{\raggedright\arraybackslash}p{0.48\textwidth}@{}}
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endfirsthead
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endhead
+\filepath{frontend/.dockerignore} & Configures dockerignore for local development, tests, tooling, or deployment. \\
+\filepath{frontend/.editorconfig} & Configures editorconfig for local development, tests, tooling, or deployment. \\
+\filepath{frontend/.gitignore} & Configures gitignore for local development, tests, tooling, or deployment. \\
+\filepath{frontend/.postcssrc.json} & Configures postcssrc json for local development, tests, tooling, or deployment. \\
+\filepath{frontend/.prettierrc} & Configures prettierrc for local development, tests, tooling, or deployment. \\
+\filepath{frontend/Dockerfile} & Defines the container image build for the frontend web application. \\
+\filepath{frontend/README.md} & Explains project purpose, setup, operation, testing, and development conventions. \\
+\filepath{frontend/angular.json} & Configures angular json for local development, tests, tooling, or deployment. \\
+\filepath{frontend/eslint.config.js} & Implements the eslint config tooling or performance utility. \\
+\filepath{frontend/nginx.conf} & Configures nginx conf for local development, tests, tooling, or deployment. \\
+\filepath{frontend/package-lock.json} & Locks exact frontend dependency versions for repeatable npm installs. \\
+\filepath{frontend/package.json} & Defines frontend dependencies and development, build, test, lint, API generation, and end-to-end commands. \\
+\filepath{frontend/playwright.config.ts} & Configures or implements playwright config for the frontend toolchain. \\
+\filepath{frontend/proxy.conf.json} & Configures proxy conf json for local development, tests, tooling, or deployment. \\
+\filepath{frontend/public/assets/i18n/ar.json} & Provides Arabic translation strings for the user interface. \\
+\filepath{frontend/public/assets/i18n/en.json} & Provides English translation strings for the user interface. \\
+\filepath{frontend/public/favicon.ico} & Provides the browser favicon for the web application. \\
+\filepath{frontend/scripts/generate-api.js} & Implements the generate api tooling or performance utility. \\
+\filepath{frontend/tsconfig.app.json} & Configures tsconfig app json for local development, tests, tooling, or deployment. \\
+\filepath{frontend/tsconfig.json} & Configures tsconfig json for local development, tests, tooling, or deployment. \\
+\filepath{frontend/tsconfig.spec.json} & Configures tsconfig spec json for local development, tests, tooling, or deployment. \\
+\end{longtable}
+\section{Frontend application and localization}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.48\textwidth}>{\raggedright\arraybackslash}p{0.48\textwidth}@{}}
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endfirsthead
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endhead
+\filepath{frontend/src/app/app.component.spec.ts} & Tests the app component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/app.component.ts} & Implements the Angular UI component app component. \\
+\filepath{frontend/src/app/app.config.ts} & Implements application setup or shared frontend behavior for app config. \\
+\filepath{frontend/src/app/app.routes.rbac.spec.ts} & Tests the app routes rbac behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/app.routes.ts} & Declares feature routes and lazy-loading configuration for app routes. \\
+\filepath{frontend/src/app/app.spec.ts} & Tests the app behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/app.ts} & Implements application setup or shared frontend behavior for app. \\
+\filepath{frontend/src/app/core/api/index.ts} & Implements application setup or shared frontend behavior for index. \\
+\filepath{frontend/src/app/core/api/models/auth.models.ts} & Defines frontend data types used by auth models. \\
+\filepath{frontend/src/app/core/api/models/index.ts} & Defines frontend data types used by index. \\
+\filepath{frontend/src/app/core/api/models/problem-detail.model.ts} & Defines frontend data types used by problem detail model. \\
+\filepath{frontend/src/app/core/api/models/property.models.ts} & Defines frontend data types used by property models. \\
+\filepath{frontend/src/app/core/api/models/viewing-slot.models.ts} & Defines frontend data types used by viewing slot models. \\
+\filepath{frontend/src/app/core/api/services/api-client.service.ts} & Provides frontend API or feature operations for api client service. \\
+\filepath{frontend/src/app/core/auth/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/core/guards/auth.guard.spec.ts} & Tests the auth guard behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/core/guards/auth.guard.ts} & Controls navigation based on auth guard. \\
+\filepath{frontend/src/app/core/guards/guard-redirects.ts} & Controls navigation based on guard redirects. \\
+\filepath{frontend/src/app/core/guards/role.guard.spec.ts} & Tests the role guard behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/core/guards/role.guard.ts} & Controls navigation based on role guard. \\
+\filepath{frontend/src/app/core/i18n/transloco-loader.ts} & Implements application setup or shared frontend behavior for transloco loader. \\
+\filepath{frontend/src/app/core/interceptors/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/core/interceptors/auth.interceptor.rbac.spec.ts} & Tests the auth interceptor rbac behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/core/interceptors/auth.interceptor.spec.ts} & Tests the auth interceptor behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/core/interceptors/auth.interceptor.ts} & Applies shared HTTP request or response behavior for auth interceptor. \\
+\filepath{frontend/src/app/core/services/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/core/services/auth.service.spec.ts} & Tests the auth service behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/core/services/auth.service.ts} & Provides frontend API or feature operations for auth service. \\
+\filepath{frontend/src/app/core/services/language.service.spec.ts} & Tests the language service behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/core/services/language.service.ts} & Provides frontend API or feature operations for language service. \\
+\filepath{frontend/src/app/core/services/token-storage-roles.spec.ts} & Tests the token storage roles behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/core/services/token-storage.service.spec.ts} & Tests the token storage service behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/core/services/token-storage.service.ts} & Provides frontend API or feature operations for token storage service. \\
+\filepath{frontend/src/app/features/admin/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/features/admin/admin-page.component.ts} & Implements the Angular UI component admin page component. \\
+\filepath{frontend/src/app/features/admin/admin.routes.ts} & Declares feature routes and lazy-loading configuration for admin routes. \\
+\filepath{frontend/src/app/features/admin/models/admin-user.models.ts} & Defines frontend data types used by admin user models. \\
+\filepath{frontend/src/app/features/admin/services/admin-user.service.spec.ts} & Tests the admin user service behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/admin/services/admin-user.service.ts} & Provides frontend API or feature operations for admin user service. \\
+\filepath{frontend/src/app/features/admin/users/admin-users.component.html} & Provides the Angular template markup for the associated UI component. \\
+\filepath{frontend/src/app/features/admin/users/admin-users.component.spec.ts} & Tests the admin users component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/admin/users/admin-users.component.ts} & Implements the Angular UI component admin users component. \\
+\filepath{frontend/src/app/features/auth/admin-sign-in/admin-sign-in.component.spec.ts} & Tests the admin sign in component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/auth/admin-sign-in/admin-sign-in.component.ts} & Implements the Angular UI component admin sign in component. \\
+\filepath{frontend/src/app/features/auth/auth.routes.spec.ts} & Tests the auth routes behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/auth/auth.routes.ts} & Declares feature routes and lazy-loading configuration for auth routes. \\
+\filepath{frontend/src/app/features/auth/google-callback/google-callback.component.ts} & Implements the Angular UI component google callback component. \\
+\filepath{frontend/src/app/features/auth/sign-in/sign-in.component.spec.ts} & Tests the sign in component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/auth/sign-in/sign-in.component.ts} & Implements the Angular UI component sign in component. \\
+\filepath{frontend/src/app/features/auth/sign-up/sign-up.component.spec.ts} & Tests the sign up component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/auth/sign-up/sign-up.component.ts} & Implements the Angular UI component sign up component. \\
+\filepath{frontend/src/app/features/contracts/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/features/error/error-page.component.html} & Provides the Angular template markup for the associated UI component. \\
+\filepath{frontend/src/app/features/error/error-page.component.spec.ts} & Tests the error page component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/error/error-page.component.ts} & Implements the Angular UI component error page component. \\
+\filepath{frontend/src/app/features/listings/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/features/listings/components/property-card/property-card.component.html} & Provides the Angular template markup for the associated UI component. \\
+\filepath{frontend/src/app/features/listings/components/property-card/property-card.component.spec.ts} & Tests the property card component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/listings/components/property-card/property-card.component.ts} & Implements the Angular UI component property card component. \\
+\filepath{frontend/src/app/features/listings/components/property-filter-panel/property-filter-panel.component.html} & Provides the Angular template markup for the associated UI component. \\
+\filepath{frontend/src/app/features/listings/components/property-filter-panel/property-filter-panel.component.spec.ts} & Tests the property filter panel component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/listings/components/property-filter-panel/property-filter-panel.component.ts} & Implements the Angular UI component property filter panel component. \\
+\filepath{frontend/src/app/features/listings/components/property-search-bar/property-search-bar.component.html} & Provides the Angular template markup for the associated UI component. \\
+\filepath{frontend/src/app/features/listings/components/property-search-bar/property-search-bar.component.spec.ts} & Tests the property search bar component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/listings/components/property-search-bar/property-search-bar.component.ts} & Implements the Angular UI component property search bar component. \\
+\filepath{frontend/src/app/features/listings/listings-page.component.html} & Provides the Angular template markup for the associated UI component. \\
+\filepath{frontend/src/app/features/listings/listings-page.component.spec.ts} & Tests the listings page component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/listings/listings-page.component.ts} & Implements the Angular UI component listings page component. \\
+\filepath{frontend/src/app/features/listings/listings.routes.ts} & Declares feature routes and lazy-loading configuration for listings routes. \\
+\filepath{frontend/src/app/features/listings/models/property-browse.model.ts} & Defines frontend data types used by property browse model. \\
+\filepath{frontend/src/app/features/listings/services/property-browse.service.spec.ts} & Tests the property browse service behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/listings/services/property-browse.service.ts} & Provides frontend API or feature operations for property browse service. \\
+\filepath{frontend/src/app/features/maintenance/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/features/offers/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/features/properties/browse/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/features/properties/models/property.model.ts} & Defines frontend data types used by property model. \\
+\filepath{frontend/src/app/features/properties/my-properties/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/features/properties/my-properties/my-properties.component.html} & Provides the Angular template markup for the associated UI component. \\
+\filepath{frontend/src/app/features/properties/my-properties/my-properties.component.spec.ts} & Tests the my properties component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/properties/my-properties/my-properties.component.ts} & Implements the Angular UI component my properties component. \\
+\filepath{frontend/src/app/features/properties/properties.routes.ts} & Declares feature routes and lazy-loading configuration for properties routes. \\
+\filepath{frontend/src/app/features/properties/property-detail/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/features/properties/property-form/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/features/properties/property-form/property-form.component.html} & Provides the Angular template markup for the associated UI component. \\
+\filepath{frontend/src/app/features/properties/property-form/property-form.component.spec.ts} & Tests the property form component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/properties/property-form/property-form.component.ts} & Implements the Angular UI component property form component. \\
+\filepath{frontend/src/app/features/properties/services/property-image.service.ts} & Provides frontend API or feature operations for property image service. \\
+\filepath{frontend/src/app/features/properties/services/property.service.spec.ts} & Tests the property service behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/properties/services/property.service.ts} & Provides frontend API or feature operations for property service. \\
+\filepath{frontend/src/app/features/reviews/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/features/roommates/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/features/viewings/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/features/viewings/availability-form/availability-form.component.spec.ts} & Tests the availability form component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/viewings/availability-form/availability-form.component.ts} & Implements the Angular UI component availability form component. \\
+\filepath{frontend/src/app/features/viewings/models/viewing-slot.model.ts} & Defines frontend data types used by viewing slot model. \\
+\filepath{frontend/src/app/features/viewings/models/viewing.model.ts} & Defines frontend data types used by viewing model. \\
+\filepath{frontend/src/app/features/viewings/my-viewings/my-viewings.component.spec.ts} & Tests the my viewings component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/viewings/my-viewings/my-viewings.component.ts} & Implements the Angular UI component my viewings component. \\
+\filepath{frontend/src/app/features/viewings/request-viewing-form/request-viewing-form.component.spec.ts} & Tests the request viewing form component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/viewings/request-viewing-form/request-viewing-form.component.ts} & Implements the Angular UI component request viewing form component. \\
+\filepath{frontend/src/app/features/viewings/services/viewing-slot.service.spec.ts} & Tests the viewing slot service behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/viewings/services/viewing-slot.service.ts} & Provides frontend API or feature operations for viewing slot service. \\
+\filepath{frontend/src/app/features/viewings/services/viewing.service.spec.ts} & Tests the viewing service behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/features/viewings/services/viewing.service.ts} & Provides frontend API or feature operations for viewing service. \\
+\filepath{frontend/src/app/features/viewings/viewings-page.component.ts} & Implements the Angular UI component viewings page component. \\
+\filepath{frontend/src/app/features/viewings/viewings.routes.ts} & Declares feature routes and lazy-loading configuration for viewings routes. \\
+\filepath{frontend/src/app/shared/components/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/shared/components/navbar/navbar.component.spec.ts} & Tests the navbar component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/shared/components/navbar/navbar.component.ts} & Implements the Angular UI component navbar component. \\
+\filepath{frontend/src/app/shared/components/ui-button/ui-button.component.spec.ts} & Tests the ui button component behavior, API, or security rules represented by the matching application module. \\
+\filepath{frontend/src/app/shared/components/ui-button/ui-button.component.ts} & Implements the Angular UI component ui button component. \\
+\filepath{frontend/src/app/shared/directives/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/app/shared/pipes/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{frontend/src/index.html} & Supports the project build, development, documentation, or deployment workflow. \\
+\filepath{frontend/src/main.ts} & Configures or implements main for the frontend toolchain. \\
+\filepath{frontend/src/styles.css} & Defines shared styles and visual design rules for the frontend. \\
+\end{longtable}
+\section{Frontend end-to-end tests}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.48\textwidth}>{\raggedright\arraybackslash}p{0.48\textwidth}@{}}
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endfirsthead
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endhead
+\filepath{frontend/e2e/login-then-browse.spec.ts} & Tests the login then browse behavior, API, or security rules represented by the matching application module. \\
+\end{longtable}
+\section{Project documentation and design}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.48\textwidth}>{\raggedright\arraybackslash}p{0.48\textwidth}@{}}
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endfirsthead
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endhead
+\filepath{docs/admin-users/SCRUM-69-sequence.puml} & Defines a PlantUML source diagram documenting scrum 69 sequence. \\
+\filepath{docs/admin-users/SCRUM-69-use-case.puml} & Defines a PlantUML source diagram documenting scrum 69 use case. \\
+\filepath{docs/design-spikes/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{docs/design-spikes/Contracts-Payments/SCRUM-111-entity-list.md} & Documents project requirements, design, process, or milestone information about scrum 111 entity list. \\
+\filepath{docs/design-spikes/Offers/Offer Sequence digram .svg} & Provides a rendered diagram or visual design artifact for offer sequence digram. \\
+\filepath{docs/design-spikes/Offers/Offer Status State Machine Diagram.svg} & Provides a rendered diagram or visual design artifact for offer status state machine diagram. \\
+\filepath{docs/design-spikes/Offers/Offer class diagram.svg} & Provides a rendered diagram or visual design artifact for offer class diagram. \\
+\filepath{docs/design-spikes/Offers/Scheduled Offer Expiry Sequence Diagram (Idempotent).svg} & Provides a rendered diagram or visual design artifact for scheduled offer expiry sequence diagram (idempotent). \\
+\filepath{docs/diagrams/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{docs/diagrams/SCRUM-56-sequence.png} & Provides a rendered diagram or visual design artifact for scrum 56 sequence. \\
+\filepath{docs/diagrams/SCRUM-56-use-case.png} & Provides a rendered diagram or visual design artifact for scrum 56 use case. \\
+\filepath{docs/diagrams/SCRUM-69-sequence.png} & Provides a rendered diagram or visual design artifact for scrum 69 sequence. \\
+\filepath{docs/diagrams/SCRUM-69-use-case.png} & Provides a rendered diagram or visual design artifact for scrum 69 use case. \\
+\filepath{docs/diagrams/m1-identity-use-cases.png} & Provides a rendered diagram or visual design artifact for m1 identity use cases. \\
+\filepath{docs/diagrams/m1-identity-use-cases.puml} & Defines a PlantUML source diagram documenting m1 identity use cases. \\
+\filepath{docs/diagrams/rbac-use-case.png} & Provides a rendered diagram or visual design artifact for rbac use case. \\
+\filepath{docs/diagrams/seqdiagramscrum-65.png} & Provides a rendered diagram or visual design artifact for seqdiagramscrum 65. \\
+\filepath{docs/diagrams/usecasescrum-61.png} & Provides a rendered diagram or visual design artifact for usecasescrum 61. \\
+\filepath{docs/milestone-1/.gitkeep} & Keeps this currently empty module or resource directory in version control. \\
+\filepath{docs/milestone-1/M1-identity-use-cases-and-stories.md} & Documents project requirements, design, process, or milestone information about m1 identity use cases and stories. \\
+\filepath{docs/milestone-1/RELEASE_CANDIDATE_REPORT.md} & Documents project requirements, design, process, or milestone information about release candidate report. \\
+\filepath{docs/milestone-1/SCRUM-38.txt} & Documents project requirements, design, process, or milestone information about scrum 38. \\
+\filepath{docs/milestone-1/SCRUM-86-explain-indexes.sql} & Documents or demonstrates the database/query topic scrum 86 explain indexes. \\
+\filepath{docs/milestone1/Sakan_03_Milestone1_Jira_Breakdown.md} & Documents project requirements, design, process, or milestone information about sakan 03 milestone1 jira breakdown. \\
+\filepath{docs/openapi.json} & Provides the OpenAPI contract snapshot for the backend endpoints. \\
+\filepath{docs/rbac/SCRUM-65-rbac-decisions.md} & Documents project requirements, design, process, or milestone information about scrum 65 rbac decisions. \\
+\filepath{docs/rbac/rbac-flow.puml} & Defines a PlantUML source diagram documenting rbac flow. \\
+\filepath{docs/rbac/rbac-use-case.puml} & Defines a PlantUML source diagram documenting rbac use case. \\
+\filepath{docs/requirements/Sakan_01_Project_Proposal.md} & Documents project requirements, design, process, or milestone information about sakan 01 project proposal. \\
+\filepath{docs/requirements/Sakan_02_Requirements_FR_NFR.md} & Documents project requirements, design, process, or milestone information about sakan 02 requirements fr nfr. \\
+\filepath{google sign-in setup/Google OAuth setup.md} & Documents setup, configuration, or development guidance for google oauth setup. \\
+\end{longtable}
+\section{Reports created for this request}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.48\textwidth}>{\raggedright\arraybackslash}p{0.48\textwidth}@{}}
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endfirsthead
+\textbf{Repository path} & \textbf{Objective} \\ \hline
+\endhead
+\filepath{docs/reports/Project_Report.tex} & Presents the overall project purpose, implementation status, architecture, workflows, stack, quality practices, and next work. \\
+\filepath{docs/reports/Project_File_Catalog.tex} & Catalogs each tracked project file and the two reports created for this request, with its objective. \\
+\end{longtable}
+\end{document}

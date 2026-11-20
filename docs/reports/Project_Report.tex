@@ -1,0 +1,116 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=25mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{titlesec}
+\definecolor{SakanBlue}{HTML}{164E78}
+\titleformat{\section}{\Large\bfseries\color{SakanBlue}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\large\bfseries\color{SakanBlue}}{\thesubsection}{0.7em}{}
+\setlist{nosep,leftmargin=1.5em}
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{0pt}
+\hypersetup{pdftitle={Sakan Project Report},pdfauthor={Sakan Project Team}}
+
+\title{Sakan\ Project Report\\\large Real Estate Marketplace and Management Platform}
+\author{Sakan Project Team\\CSE322 Software Engineering}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Project Overview}
+\subsection{Problem and purpose}
+Property information and rental workflows are fragmented across listing sites, brokers, messaging applications, and paper records. Sakan aims to give buyers, tenants, owners, and agents one place to publish and discover properties, arrange viewings, negotiate, and manage later rental activities. It is tailored to the Egyptian context through Arabic and English interfaces, support for EGP and USD, and a hierarchical location model.
+
+\subsection{Project goals}
+The proposal sets out a marketplace with searchable sale and rental listings, role-appropriate property management, a structured viewing workflow, and a foundation for offers, rental records, maintenance, lead tracking, agent reviews, moderation, and roommate matching. The repository shows that the first set of marketplace foundations has been implemented; the remaining capabilities are future scope rather than assumed completed functionality.
+
+\subsection{Intended users}
+\begin{itemize}
+  \item Buyers and tenants search listings and request viewings.
+  \item Owners and agents create and manage listings and make availability visible.
+  \item Administrators manage user access and roles.
+  \item Maintenance staff, reviewers, offer participants, and roommates are included in the long-term product vision.
+\end{itemize}
+
+\section{Scope and Current Status}
+\begin{tabularx}{\textwidth}{@{}p{0.27\textwidth}X@{}}
+\toprule
+Area & Repository evidence and status \\
+\midrule
+Authentication and access & Username/password and Google OAuth flows, JWT support, protected routes, role-aware UI and API security are present. Dedicated admin sign-in and admin-user management are also present. \\
+Property management & Property domain, API, image handling, owner/agent property views, and create/edit forms are present. \\
+Search and discovery & Browse/listings pages, filters, search services, API search criteria, location hierarchy, and database indexes are present. \\
+Viewings & Slot creation, requests, status handling, conflict checks, and associated frontend views/services are present. \\
+Localization & English and Arabic translation resources and a language service are present; the proposal intends Arabic right-to-left support. \\
+Offers, contracts, payments & Planning/design artifacts and reserved module directories exist; a complete implementation is not evident in the current source tree. \\
+Maintenance, leads, reviews, roommates & These appear in the proposal and reserved directories, but no complete feature implementation is evident in the inspected source tree. \\
+Moderation & Included in the intended product scope; the available admin implementation is centered on user administration. \\
+\bottomrule
+\end{tabularx}
+
+
+
+\section{System Architecture}
+\subsection{High-level structure}
+The application is organized as a three-service Docker Compose stack:
+\begin{enumerate}
+  \item \textbf{Web client:} an Angular single-page application served by Nginx.
+  \item \textbf{API:} a Java 21 Spring Boot modular monolith exposing REST endpoints and OpenAPI/Swagger documentation.
+  \item \textbf{Database:} PostgreSQL 16 with PostGIS, initialized and evolved through Flyway migrations.
+\end{enumerate}
+The Nginx configuration proxies API requests to the backend. Docker volumes preserve database data and uploaded property images.
+
+\subsection{Backend modules}
+The implemented backend code is grouped into authentication, users, administration, properties, locations, viewings, common security, error handling, and status-transition utilities. Controllers define HTTP boundaries; services hold application behavior; repositories use Spring Data JPA; DTOs define request and response shapes; domain classes represent persisted entities. Additional domain folders are scaffolded for planned capabilities.
+
+\subsection{Frontend structure}
+The Angular application uses standalone components and feature-oriented routes. Shared/core code handles API access, authentication tokens, authorization guards, request interceptors, localization, and common UI. Feature areas cover authentication, administration, listings, property ownership, and viewings. Component and service tests accompany many implemented features.
+
+\subsection{Persistence and API contract}
+Flyway SQL scripts define the schema and incremental changes for users and roles, property browsing and search indexes, images, viewing slots and requests, location compatibility, and Google OAuth handoffs. The OpenAPI document and backend Swagger configuration provide API contract documentation. PostgreSQL/PostGIS is the target database; the current product scope does not demonstrate an active map feature.
+
+\section{Key Workflows}
+\subsection{Sign-in and authorization}
+Users can authenticate through the configured username/password path or Google OAuth exchange. The backend issues JWTs, and the frontend stores token data and attaches credentials to API calls. API security rules and frontend guards restrict routes and operations by role. Authentication includes rate-limiting support, and administrative user management allows role changes.
+
+\subsection{Property discovery and management}
+Owners and agents can create or update property details, with image support handled through a storage abstraction. Prospective tenants and buyers browse listings using search criteria and filters. Server-side property specifications and sort validation support querying; migrations add indexes for browsing and full-text search.
+
+\subsection{Viewing appointments}
+Owners or agents publish viewing slots. A buyer or tenant requests a viewing, and backend checks prevent conflicts. Status transitions and event support keep viewing state changes explicit. The Angular feature includes availability, request, and personal viewing screens.
+
+\section{Technology Stack}
+\begin{tabularx}{\textwidth}{@{}p{0.22\textwidth}X@{}}
+\toprule
+Layer & Technologies evidenced in repository \\
+\midrule
+Backend & Java 21, Spring Boot 4.x, Spring Security, Spring Data JPA, OAuth2 client/resource server, JWT, Flyway, MapStruct, Lombok \\
+Frontend & Angular 22, TypeScript, RxJS, Transloco, Tailwind CSS, Vitest, ESLint \\
+Database & PostgreSQL 16 with PostGIS \\
+API documentation & Springdoc OpenAPI, generated OpenAPI JSON artifact \\
+Testing & JUnit, Spring test support, Testcontainers, JaCoCo, Angular tests, Playwright \\
+Packaging and delivery & Docker, Docker Compose, Nginx, GitHub Actions \\
+\bottomrule
+\end{tabularx}
+
+
+
+\section{Security and Reliability}
+Security is implemented at both the API and client routing layers. The backend defines authentication entry points, access-denied handling, current-user resolution, role-based rules, and resource ownership checks. Tests exercise authentication, role matrices, JWT tampering, login rate limiting, and property/viewing access. Database changes are versioned rather than applied as ad hoc schema edits. Image storage is behind an interface, which allows the implementation to evolve beyond local container storage.
+
+Development defaults in Compose are explicitly for local use. Deployment environments must supply strong database, admin, and JWT secrets; OAuth credentials are optional for local development but required for a configured Google sign-in integration.
+
+\section{Quality and Delivery Process}
+The backend Maven build includes a JaCoCo line-coverage gate configured for 60\% at verification. Test tags distinguish unit, integration, and regression suites; integration tests use Testcontainers with PostGIS. The frontend provides lint, unit test, production build, and Playwright end-to-end commands. GitHub Actions configuration runs repository CI checks, and a pull-request workflow enforces Jira-key naming. The README documents local and Docker workflows, test conventions, and troubleshooting.
+\end{document}
