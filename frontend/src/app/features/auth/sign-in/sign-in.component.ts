@@ -15,13 +15,23 @@ import { AuthService } from '../../../core/services/auth.service';
       <form class="mt-6 space-y-4" [formGroup]="form" (ngSubmit)="submit()">
         <label class="block">
           <span class="text-sm text-slate-700">Username</span>
-          <input class="mt-1 w-full rounded border border-slate-300 ps-3 pe-3 py-2"
+          <input class="mt-1 w-full rounded border ps-3 pe-3 py-2"
+                 [class.border-red-600]="usernameInvalid()" [class.border-slate-300]="!usernameInvalid()"
+                 [attr.aria-invalid]="usernameInvalid()" aria-describedby="username-error"
                  formControlName="username" autocomplete="username" />
+          @if (usernameInvalid()) {
+            <span id="username-error" class="text-sm text-red-600">Enter your username.</span>
+          }
         </label>
         <label class="block">
           <span class="text-sm text-slate-700">Password</span>
-          <input class="mt-1 w-full rounded border border-slate-300 ps-3 pe-3 py-2"
+          <input class="mt-1 w-full rounded border ps-3 pe-3 py-2"
+                 [class.border-red-600]="passwordInvalid()" [class.border-slate-300]="!passwordInvalid()"
+                 [attr.aria-invalid]="passwordInvalid()" aria-describedby="password-error"
                  type="password" formControlName="password" autocomplete="current-password" />
+          @if (passwordInvalid()) {
+            <span id="password-error" class="text-sm text-red-600">Enter your password.</span>
+          }
         </label>
 
         @if (error()) {
@@ -55,6 +65,15 @@ export class SignInComponent implements OnInit {
   readonly error = signal(false);
   readonly submitting = signal(false);
   readonly googleError = signal(false);
+  readonly authenticationFailed = signal(false);
+
+  usernameInvalid(): boolean {
+    return (this.form.controls.username.touched && this.form.controls.username.invalid) || this.authenticationFailed();
+  }
+
+  passwordInvalid(): boolean {
+    return (this.form.controls.password.touched && this.form.controls.password.invalid) || this.authenticationFailed();
+  }
 
   ngOnInit(): void {
     this.googleError.set(this.route.snapshot.queryParamMap.has('googleError'));
@@ -71,6 +90,7 @@ export class SignInComponent implements OnInit {
       return;
     }
     this.error.set(false);
+    this.authenticationFailed.set(false);
     this.submitting.set(true);
     const { username, password } = this.form.getRawValue();
     this.auth.login(username, password).subscribe({
@@ -81,6 +101,8 @@ export class SignInComponent implements OnInit {
       error: () => {
         this.submitting.set(false);
         this.error.set(true);
+        // Keep both fields visually invalid so the response does not disclose which credential failed.
+        this.authenticationFailed.set(true);
       },
     });
   }

@@ -15,27 +15,36 @@ import { AuthService } from '../../../core/services/auth.service';
       <form class="mt-6 space-y-4" [formGroup]="form" (ngSubmit)="submit()">
         <label class="block">
           <span class="text-sm text-slate-700">Username</span>
-          <input class="mt-1 w-full rounded border border-slate-300 ps-3 pe-3 py-2"
-                 formControlName="username" autocomplete="username" />
+          <input class="mt-1 w-full rounded border ps-3 pe-3 py-2"
+                 [class.border-red-600]="fieldInvalid('username')" [class.border-slate-300]="!fieldInvalid('username')"
+                 [attr.aria-invalid]="fieldInvalid('username')" formControlName="username" autocomplete="username" />
+          @if (fieldInvalid('username')) { <span class="text-sm text-red-600">Use 3–50 letters, digits, dots, dashes, or underscores.</span> }
         </label>
         <label class="block">
           <span class="text-sm text-slate-700">Email</span>
-          <input class="mt-1 w-full rounded border border-slate-300 ps-3 pe-3 py-2"
-                 type="email" formControlName="email" autocomplete="email" />
+          <input class="mt-1 w-full rounded border ps-3 pe-3 py-2"
+                 [class.border-red-600]="fieldInvalid('email')" [class.border-slate-300]="!fieldInvalid('email')"
+                 [attr.aria-invalid]="fieldInvalid('email')" type="email" formControlName="email" autocomplete="email" />
+          @if (fieldInvalid('email')) { <span class="text-sm text-red-600">Enter a valid email address.</span> }
         </label>
         <label class="block">
           <span class="text-sm text-slate-700">Password (8+ characters, a letter and a digit)</span>
-          <input class="mt-1 w-full rounded border border-slate-300 ps-3 pe-3 py-2"
-                 type="password" formControlName="password" autocomplete="new-password" />
+          <input class="mt-1 w-full rounded border ps-3 pe-3 py-2"
+                 [class.border-red-600]="fieldInvalid('password')" [class.border-slate-300]="!fieldInvalid('password')"
+                 [attr.aria-invalid]="fieldInvalid('password')" type="password" formControlName="password" autocomplete="new-password" />
+          @if (fieldInvalid('password')) { <span class="text-sm text-red-600">Password must be 8–72 characters and include a letter and a digit.</span> }
         </label>
         <label class="block">
           <span class="text-sm text-slate-700">Phone (+201012345678)</span>
-          <input class="mt-1 w-full rounded border border-slate-300 ps-3 pe-3 py-2"
-                 type="tel" formControlName="phone" autocomplete="tel" />
+          <input class="mt-1 w-full rounded border ps-3 pe-3 py-2"
+                 [class.border-red-600]="fieldInvalid('phone')" [class.border-slate-300]="!fieldInvalid('phone')"
+                 [attr.aria-invalid]="fieldInvalid('phone')" type="tel" formControlName="phone" autocomplete="tel" />
+          @if (fieldInvalid('phone')) { <span class="text-sm text-red-600">Enter a phone number in international format, such as +201012345678.</span> }
         </label>
         <label class="block">
           <span class="text-sm text-slate-700">I am a</span>
-          <select class="mt-1 w-full rounded border border-slate-300 ps-3 pe-3 py-2" formControlName="role">
+          <select class="mt-1 w-full rounded border ps-3 pe-3 py-2"
+                  [class.border-red-600]="fieldInvalid('role')" [class.border-slate-300]="!fieldInvalid('role')" formControlName="role">
             @for (r of roles; track r) {
               <option [value]="r">{{ r }}</option>
             }
@@ -65,6 +74,11 @@ export class SignUpComponent {
 
   readonly error = signal('');
   readonly submitting = signal(false);
+
+  fieldInvalid(name: 'username' | 'email' | 'password' | 'phone' | 'role'): boolean {
+    const control = this.form.controls[name];
+    return control.invalid && control.touched;
+  }
 
   readonly form = new FormGroup({
     username: new FormControl('', {
