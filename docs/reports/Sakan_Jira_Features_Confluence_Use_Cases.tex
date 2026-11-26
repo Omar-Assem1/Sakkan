@@ -1,0 +1,837 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=0.8in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+
+% This file is expected to be in docs/reports.
+% Keep docs/usecases/mileston1 in the uploaded Overleaf project.
+\graphicspath{{../usecases/mileston1/}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlist[enumerate]{leftmargin=2em,itemsep=2pt}
+\setlist[itemize]{leftmargin=1.5em,itemsep=2pt}
+
+\newcommand{\storydiagram}[2]{%
+  \par\medskip
+  \begin{center}
+    \includegraphics[width=0.96\textwidth,height=0.48\textheight,keepaspectratio]{#1}\par
+    \smallskip{\small\textit{#2}}
+  \end{center}
+  \medskip
+}
+
+\newcommand{\storytitle}[1]{%
+  \par\bigskip\noindent{\Large\bfseries #1}\par\smallskip\nopagebreak[4]
+  \addcontentsline{toc}{subsection}{#1}%
+}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\Huge\bfseries Sakan}\\[0.6cm]
+{\LARGE Milestone 1}\\[0.3cm]
+{\Large Confluence Stories and Use Cases}\\[1cm]
+\rule{0.8\textwidth}{0.8pt}\\[0.8cm]
+Stories, objectives, full documented flows, and use-case diagrams\\[2cm]
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\storytitle{SCRUM-9: CI pipeline}
+\label{story:SCRUM-9}
+
+\textbf{Related use case (UC-08).} Configure and Run the CI Pipeline.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for CI pipeline.
+
+\textbf{Actors.} Contributor.
+
+\textbf{Preconditions.} repository and pull request exist.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The contributor pushes a branch or opens a pull request.
+  \item CI checks out the code and runs backend build and tests.
+  \item CI generates the JaCoCo report and checks the 60\% backend coverage gate.
+  \item CI runs Angular lint, unit tests, and production build.
+  \item CI reports the result to the pull request; a passing result permits merge under branch protection.
+\end{enumerate}
+
+\textbf{Alternate flows.} Any failed job or coverage below 60\% marks the check failed and blocks merge until corrected.
+
+\textbf{Postcondition.} the pull request has a reproducible pass/fail result.
+
+\textbf{Jira traceability.} SKN-5 is tracked as SCRUM-9 in the populated Sprint M1.
+
+\storydiagram{SCRUM-9_UC-08_Flow.png}{SCRUM-9 activity flow: Configure and Run the CI Pipeline.}
+
+\storytitle{SCRUM-14: Docker Compose and executable build}
+\label{story:SCRUM-14}
+
+\textbf{Related use case (UC-09).} Start the Application with Docker Compose.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Docker Compose and executable build.
+
+\textbf{Actors.} Developer or evaluator.
+
+\textbf{Preconditions.} Docker is installed and the repository is available.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The actor follows the README run guide and starts the Compose stack.
+  \item Compose starts PostgreSQL/PostGIS, API, and web services and mounts the uploads volume.
+  \item The API connects to the database and the web app becomes available.
+  \item The actor opens the login page.
+\end{enumerate}
+
+\textbf{Alternate flows.} A service fails to build or start; Compose reports the failing service and startup does not count as successful.
+
+\textbf{Postcondition.} the app is runnable from a clean clone with persistent upload storage.
+
+\textbf{Jira traceability.} SKN-6 is tracked as SCRUM-14 in the populated Sprint M1.
+
+\storydiagram{SCRUM-14_UC-09_Flow.png}{SCRUM-14 activity flow: Start the Application with Docker Compose.}
+
+\storytitle{SCRUM-18: Test infrastructure}
+\label{story:SCRUM-18}
+
+\textbf{Related use case (UC-10).} Run the Automated Test Suites.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Test infrastructure.
+
+\textbf{Actors.} Contributor or CI.
+
+\textbf{Preconditions.} backend and frontend test dependencies are available.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The actor starts the regression suite.
+  \item Integration tests provision PostgreSQL using Testcontainers; MockMvc helpers exercise authentication and authorization responses.
+  \item Playwright opens the application, signs in, and browses listings.
+  \item The suite reports results by test tag.
+\end{enumerate}
+
+\textbf{Alternate flows.} A test or required container fails; the suite reports the failure and the build is not accepted.
+
+\textbf{Postcondition.} test results cover unit, integration, authorization, and browser smoke paths.
+
+\textbf{Jira traceability.} SKN-7 is tracked as SCRUM-18 in the populated Sprint M1.
+
+\storydiagram{SCRUM-18_UC-10_Flow.png}{SCRUM-18 activity flow: Run the Automated Test Suites.}
+
+\storytitle{SCRUM-23: Flyway baseline schema and seed data}
+\label{story:SCRUM-23}
+
+\textbf{Related use case (UC-11).} Initialize the Application Database.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Flyway baseline schema and seed data.
+
+\textbf{Actors.} Application operator.
+
+\textbf{Preconditions.} an empty PostgreSQL database is configured.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The application starts and Flyway checks the schema history.
+  \item Flyway applies the baseline schema for identity, location, amenities, properties, images, and viewings.
+  \item Seed data inserts bilingual locations, amenities, and property types.
+  \item Constraints and indexes enforce valid and efficient data access.
+\end{enumerate}
+
+\textbf{Alternate flows.} A migration or seed operation fails; startup reports the failed migration and does not proceed as initialized.
+
+\textbf{Postcondition.} the database has the versioned M1 schema and reference data.
+
+\textbf{Jira traceability.} SKN-8 is tracked as SCRUM-23 in the populated Sprint M1.
+
+\storydiagram{SCRUM-23_UC-11_Flow.png}{SCRUM-23 activity flow: Initialize the Application Database.}
+
+\storytitle{SCRUM-28: Location API (cascading data)}
+\label{story:SCRUM-28}
+
+\textbf{Related use case (UC-12).} Retrieve Locality Options.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Location API (cascading data).
+
+\textbf{Actors.} Property owner or listing editor.
+
+\textbf{Preconditions.} the client is creating or editing a property.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The client requests governorates.
+  \item The actor selects a governorate; the client requests its cities.
+  \item The actor selects a city; the client requests districts, then compounds as applicable.
+  \item The API returns each level filtered by its parent and localized using Accept-Language.
+\end{enumerate}
+
+\textbf{Alternate flows.} The parent has no child locations; the API returns an empty list. Unsupported language falls back to the default locale.
+
+\textbf{Postcondition.} the client has valid cascading locality choices.
+
+\textbf{Jira traceability.} SKN-9 is tracked as SCRUM-28 in the populated Sprint M1.
+
+\storydiagram{SCRUM-28_UC-12_Flow.png}{SCRUM-28 activity flow: Retrieve Locality Options.}
+
+\storytitle{SCRUM-31: Shared status-transition framework}
+\label{story:SCRUM-31}
+
+\textbf{Related use case (UC-13).} Apply a Valid Status Transition.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Shared status-transition framework.
+
+\textbf{Actors.} Application service.
+
+\textbf{Preconditions.} a property or viewing exists with a current status.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item A service requests a transition from the current status to a target status.
+  \item The shared transition framework checks the allowed-transition map.
+  \item If allowed, the service stores the new status.
+\end{enumerate}
+
+\textbf{Alternate flows.} A transition is not in the map; the framework rejects it and the record remains unchanged.
+
+\textbf{Postcondition.} only legal property and viewing status changes are applied.
+
+\textbf{Jira traceability.} SKN-10 is tracked as SCRUM-31 in the populated Sprint M1.
+
+\storydiagram{SCRUM-31_UC-13_Flow.png}{SCRUM-31 activity flow: Apply a Valid Status Transition.}
+
+\storytitle{SCRUM-35: Demo dataset generator}
+\label{story:SCRUM-35}
+
+\textbf{Related use case (UC-14).} Generate Development Demo Listings.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Demo dataset generator.
+
+\textbf{Actors.} Developer.
+
+\textbf{Preconditions.} the development profile is enabled and reference data exists.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The developer starts the application in the development profile.
+  \item The generator creates 5,000 varied property listings across locations and types.
+  \item The developer uses the listings to exercise browse and search flows.
+\end{enumerate}
+
+\textbf{Alternate flows.} The test profile is active; the generator is skipped.
+
+\textbf{Postcondition.} development has representative demo data and automated tests remain isolated from it.
+
+\textbf{Jira traceability.} SKN-11 is tracked as SCRUM-35 in the populated Sprint M1.
+
+\storydiagram{SCRUM-35_UC-14_Flow.png}{SCRUM-35 activity flow: Generate Development Demo Listings.}
+
+\storytitle{SCRUM-38: Angular Shell, Routing, Arabic/English and RTL}
+
+\textbf{Related use case (UC-23).} Configure the Angular Application Shell.
+
+\textbf{Objective.} Provide a bilingual Angular application shell with lazy-loaded feature routes, role-aware navigation, RTL support for Arabic, and JWT attachment on API requests.
+
+\textbf{Actors.} Anonymous visitor; authenticated user with BUYER\_TENANT, OWNER, AGENT, or ADMIN role.
+
+\textbf{Preconditions.} The Angular SPA is loaded in a modern browser. The English and Arabic translation dictionaries are available as static assets.
+
+\textbf{Postconditions.} The application shell renders with the navbar and router outlet. The root HTML element has matching \texttt{lang} and \texttt{dir} values for the active language. Feature bundles load on demand. Requests carry a Bearer token when one is present.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item On startup, LanguageService reads the saved \texttt{sakan\_lang} value from local storage, defaulting to English.
+  \item LanguageService configures Transloco and sets the document language and direction: English uses \texttt{lang=en} and \texttt{dir=ltr}; Arabic uses \texttt{lang=ar} and \texttt{dir=rtl}.
+  \item AppComponent renders NavbarComponent and the router outlet. The navbar reads authentication and role state from TokenStorageService and shows the appropriate navigation links.
+  \item The user switches language from the navbar. The choice is saved, the active translation changes, and the HTML language and direction attributes update. Logical Tailwind properties allow the layout to mirror without component reload.
+  \item The user selects a route. Angular loads the relevant auth, admin, listings, or viewings feature route configuration. Protected routes check authentication before activation.
+  \item For an API request, authInterceptor reads the stored token and adds the \texttt{Authorization: Bearer} header when a token exists.
+\end{enumerate}
+
+\textbf{Alternate flows.} An unauthenticated visitor attempting a protected route is redirected to authentication. Requests without a token, such as public browsing or login, pass through without an Authorization header. On a 401 response, the interceptor clears the stale token, redirects to authentication, and returns the error to the caller.
+
+\storydiagram{SCRUM-38_Angular_Shell_Routing_AR-EN_RTL.png}
+{SCRUM-38 use-case diagram: Angular shell, routing, language switching, and RTL.}
+\storydiagram{SCRUM-38_UC-23_Flow.png}{SCRUM-38 activity flow: Configure the Angular Application Shell.}
+
+\storytitle{SCRUM-43: Global error handling, OpenAPI, generated client}
+\label{story:SCRUM-43}
+
+\textbf{Related use case (UC-15).} Return a Consistent API Error and API Description.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Global error handling, OpenAPI, generated client.
+
+\textbf{Actors.} API client or developer.
+
+\textbf{Preconditions.} the API is running.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item A client submits an invalid or unauthorized request.
+  \item The API advice handler converts the exception into a ProblemDetail response.
+  \item A developer opens the published OpenAPI specification.
+  \item The build generates the Angular API client from that specification.
+\end{enumerate}
+
+\textbf{Alternate flows.} A valid request proceeds normally; an undocumented response is treated as a specification defect.
+
+\textbf{Postcondition.} clients receive a consistent error shape and developers can use the generated client.
+
+\textbf{Jira traceability.} SKN-13 is tracked as SCRUM-43 in the populated Sprint M1.
+
+\storydiagram{SCRUM-43_UC-15_Flow.png}{SCRUM-43 activity flow: Return a Consistent API Error and API Description.}
+
+\storytitle{SCRUM-47: Process setup: Jira/Confluence, sprint report}
+\label{story:SCRUM-47}
+
+\textbf{Related use case (UC-16).} Prepare the Team's Jira and Confluence Process.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Process setup: Jira/Confluence, sprint report.
+
+\textbf{Actors.} Project team member.
+
+\textbf{Preconditions.} project tools are accessible.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The member configures the Jira board, issue types, workflow columns, and repository linking.
+  \item The member prepares Confluence spaces and templates.
+  \item The member creates a sprint report skeleton.
+\end{enumerate}
+
+\textbf{Alternate flows.} A required permission or integration is unavailable; the member records the blocker for the project team.
+
+\textbf{Postcondition.} the team has a consistent workflow and reporting structure.
+
+\textbf{Jira traceability.} SKN-14 is tracked as SCRUM-47 in the populated Sprint M1.
+
+\storydiagram{SCRUM-47_UC-16_Flow.png}{SCRUM-47 activity flow: Prepare the Team's Jira and Confluence Process.}
+
+\storytitle{SCRUM-51: Register and Login with JWT}
+
+\textbf{Related use case (UC-24).} Register and Sign In with JWT.
+
+\textbf{Objective.} Let visitors create eligible local accounts and let registered members authenticate with a signed Sakan JWT.
+
+\textbf{Actors.} Visitor; registered member.
+
+\textbf{Shared rules.} Passwords are stored as BCrypt hashes and are never returned in API responses or JWT claims. Authentication is stateless. A successful login returns an HS256 Bearer JWT with a 24-hour expiry.
+
+\textbf{UC-01: Register an account.}
+\begin{itemize}
+  \item \textbf{Precondition:} The visitor is not signed in. Self-service roles BUYER\_TENANT, OWNER, and AGENT exist.
+  \item \textbf{Main flow:} The visitor submits username, email, password, phone number, and role. The server validates the fields, normalizes the email, checks username and email uniqueness, hashes the password with BCrypt, and creates a LOCAL account. The server returns HTTP 201 with a user summary. Registration does not issue a token; the visitor signs in separately.
+  \item \textbf{Alternates:} Invalid or missing values return HTTP 400 without creating an account. Duplicate username or email returns HTTP 409. ADMIN and MAINTENANCE\_STAFF cannot be selected for self-service registration.
+  \item \textbf{Postcondition:} One account exists with an eligible role, normalized email, and BCrypt password hash.
+\end{itemize}
+
+\textbf{UC-02: Sign in.}
+\begin{itemize}
+  \item \textbf{Precondition:} The member has an enabled LOCAL account and knows the username and password.
+  \item \textbf{Main flow:} The member submits credentials. The server checks the password against the BCrypt hash and returns HTTP 200 with a signed HS256 JWT. The client stores the token and sends it as a Bearer token on protected requests.
+  \item \textbf{Alternates:} Unknown username, incorrect password, disabled account, and Google-only account return the same generic HTTP 401 response. More than five failed attempts in the configured 15-minute window returns HTTP 429. Missing, expired, or tampered tokens return HTTP 401 on protected requests.
+  \item \textbf{Postcondition:} The client holds a signed Sakan JWT; the server creates no HTTP session.
+\end{itemize}
+
+\textbf{API contract.} \texttt{POST /api/auth/register} creates an account and returns a user summary. \texttt{POST /api/auth/login} returns a Bearer JWT for valid LOCAL credentials. \texttt{GET /api/auth/me} returns the authenticated member summary.
+
+\textbf{Acceptance criteria.} Valid registration creates an enabled user with an eligible role and returns no password material. Duplicate usernames and emails are rejected. Prohibited roles and invalid fields are rejected before account creation. Valid LOCAL credentials produce a JWT; invalid login cases share a generic 401 response. Tests cover registration, login, duplicate accounts, password hashing, token claims, expiry, and invalid credentials.
+
+\storydiagram{SCRUM-51_Register_and_Login_with_JWT.png}
+{SCRUM-51 use-case diagram: account registration and JWT sign-in.}
+\storydiagram{SCRUM-51_UC-24_Flow.png}{SCRUM-51 activity flow: Register and Sign In with JWT.}
+
+\storytitle{SCRUM-56: Google OAuth Sign-Up and Sign-In}
+
+\textbf{Related use case (UC-25).} Sign In with Google.
+
+\textbf{Objective.} Allow a visitor to authenticate through Google and use a Sakan account and Sakan-issued JWT afterward.
+
+\textbf{Actors.} Visitor; Sakan frontend; Sakan backend; Google OpenID Connect provider.
+
+\textbf{Preconditions.} Google OAuth client credentials are configured and the callback URI is registered with Google.
+
+\textbf{Returning-user flow.}
+\begin{enumerate}
+  \item The visitor selects Continue with Google.
+  \item Sakan redirects the visitor to Google with OAuth state and the required OpenID Connect scopes.
+  \item Google authenticates the visitor and redirects to the Sakan backend callback.
+  \item Spring Security validates the callback. Sakan resolves the account by Google subject.
+  \item Sakan creates a short-lived, hashed handoff code and redirects to the frontend callback.
+  \item The frontend exchanges the one-time code. Sakan consumes it and returns a Sakan JWT.
+  \item The frontend stores the JWT and navigates into Sakan.
+\end{enumerate}
+
+\textbf{First-time-user flow.} After Google authentication, Sakan verifies the email claim and checks for an existing Google subject or eligible local account. If no account matches, Sakan requests registration. The visitor chooses an available username; Sakan creates a GOOGLE account with BUYER\_TENANT role and returns a Sakan JWT.
+
+\textbf{Alternate flows.} A returning Google subject reuses its account. An eligible verified local account may be linked under the documented account-linking rule. An email collision that does not satisfy the linking rule is rejected. Unverified email, expired, unknown, or replayed handoff codes are rejected. Invalid or taken usernames may be retried while the handoff remains valid. Google failure or cancellation returns the visitor to sign-in with an error.
+
+\textbf{Postcondition.} The visitor holds a Sakan JWT and is treated as a Sakan user.
+
+\storydiagram{SCRUM-56_Google_OAuth_Sign-up_and_Sign-in.png}
+{SCRUM-56 use-case diagram: Google OAuth sign-up and sign-in.}
+\storydiagram{SCRUM-56_UC-25_Flow.png}{SCRUM-56 activity flow: Sign In with Google.}
+
+\storytitle{SCRUM-61: Seeded Admin and Admin Sign-In}
+
+\textbf{Related use case (UC-26).} Seed an Administrator and Sign In.
+
+\textbf{Objective.} Create exactly one seeded administrator from environment configuration and provide a dedicated admin sign-in flow.
+
+\textbf{Actors.} Startup runner; developer configuring the environment; administrator.
+
+\textbf{UC-05: Seed the administrator.}
+\begin{itemize}
+  \item \textbf{Precondition:} \texttt{ADMIN\_USERNAME} and \texttt{ADMIN\_PASSWORD} are configured.
+  \item \textbf{Main flow:} At startup, the runner checks whether a user with \texttt{is\_seeded\_admin=true} exists. If none exists, it creates one account using the configured credentials, stores a BCrypt hash, assigns ADMIN, and marks the account as seeded.
+  \item \textbf{Alternates:} If a seeded administrator already exists, the runner does nothing. Missing or blank required variables cause startup to fail clearly. Credential values are never logged.
+  \item \textbf{Postcondition:} Exactly one seeded administrator exists.
+\end{itemize}
+
+\textbf{UC-04: Admin sign-in.}
+\begin{itemize}
+  \item \textbf{Precondition:} A seeded or promoted administrator exists.
+  \item \textbf{Main flow:} The administrator submits username and password through the dedicated admin form. Sakan verifies the credentials and ADMIN role, returns a Sakan JWT, and the SPA opens the admin area.
+  \item \textbf{Alternates:} Wrong credentials or valid credentials without ADMIN role return the same generic HTTP 401 response.
+\end{itemize}
+
+\textbf{Acceptance criteria.} The startup runner is idempotent; the seeded administrator cannot be deleted or demoted; the dedicated form accepts only ADMIN users; secrets are not logged or committed; and the admin login endpoint is rate limited.
+
+\storydiagram{SCRUM-61_Seeded_Admin_and_Admin_Sign-in.png}
+{SCRUM-61 use-case diagram: idempotent admin seeding and administrator sign-in.}
+\storydiagram{SCRUM-61_UC-26_Flow.png}{SCRUM-61 activity flow: Seed an Administrator and Sign In.}
+
+\storytitle{SCRUM-65: Role-Based Access Control}
+
+\textbf{Related use case (UC-27).} Enforce Role-Based Access Control.
+
+\textbf{Objective.} Restrict API endpoints and Angular routes by role, and enforce resource ownership in the service layer.
+
+\textbf{Actors.} Anonymous visitor; BUYER\_TENANT; OWNER; AGENT; MAINTENANCE\_STAFF; ADMIN.
+
+\textbf{Precondition.} The request either carries a valid JWT with role claims or targets an explicitly public route.
+
+\textbf{Main flow.}
+\begin{enumerate}
+  \item The client requests an API endpoint with a Bearer JWT.
+  \item The JWT filter checks signature, algorithm, expiry, and subject, then maps role claims to authorities.
+  \item URL security rules and controller method security check the caller's role.
+  \item The service checks ownership and visibility where the operation concerns a specific property.
+  \item The operation proceeds and Sakan returns the response. Angular route guards apply matching role checks for navigation.
+\end{enumerate}
+
+\textbf{Alternate flows.} Missing, expired, tampered, or invalid tokens return HTTP 401. A valid token with an insufficient role returns HTTP 403. A caller with the required role but without ownership or assignment is denied by the service. An outsider requesting an inaccessible draft or archived resource may receive 404 to avoid revealing that it exists.
+
+\textbf{Security rules.} Access is denied by default except for explicitly public routes. Backend URL rules and method-level authorization both apply. Frontend guards are for navigation only; the server remains authoritative. A user holding several roles is allowed when any held role satisfies the rule. Disabled or deleted users are rejected even if their JWT has not expired.
+
+\textbf{Postcondition.} Protected actions run only for callers with the required role and, where applicable, ownership or assignment. Error responses do not expose passwords, hashes, or tokens.
+
+\storydiagram{SCRUM-65_Role-Based_Access_Control.png}
+{SCRUM-65 use-case diagram: authentication, role checks, and ownership enforcement.}
+\storydiagram{SCRUM-65_UC-27_Flow.png}{SCRUM-65 activity flow: Enforce Role-Based Access Control.}
+
+\storytitle{SCRUM-69: Admin Manage Users and Promote}
+
+\textbf{Related use case (UC-28).} Manage Users and Roles.
+
+\textbf{Objective.} Allow administrators to list and filter users and grant or revoke roles while protecting seeded and last-admin accounts.
+
+\textbf{Actors.} Enabled administrator; anonymous or non-admin visitor.
+
+\textbf{Preconditions.} The administrator is signed in and has the ADMIN role. Users and roles exist in the database.
+
+\textbf{UC-1: List and filter users.}
+\begin{enumerate}
+  \item The administrator opens the Manage Users page.
+  \item The system checks that the caller is still an enabled administrator.
+  \item The administrator submits optional search, role, enabled-status, and page filters.
+  \item The system returns a paginated user list, which the page displays or shows as an empty state.
+\end{enumerate}
+
+\textbf{UC-2: Grant a role.}
+\begin{enumerate}
+  \item The administrator selects a role toggle for a user.
+  \item The system verifies the administrator's current database status and checks that the target user exists.
+  \item The selected role is added while existing roles are preserved.
+  \item The system records the acting administrator and grant time, returns the updated user, and refreshes the row.
+\end{enumerate}
+
+\textbf{UC-3: Revoke a role.}
+\begin{enumerate}
+  \item The administrator selects a role held by the target user.
+  \item The system checks seeded-admin, self-demotion, last-admin, and last-role protections.
+  \item If allowed, only the selected role is removed; the updated user is returned and the row refreshes.
+\end{enumerate}
+
+\textbf{Alternate flows.} Anonymous requests return 401. Signed-in non-admin requests return 403. Seeded-admin role revocation and self-demotion return 403. Unknown target user returns 404. Removing the last ADMIN role or a user's last role returns 409. Invalid role or pagination/sort input returns 400. No matching search results return an empty page.
+
+\textbf{Postcondition.} List operations do not change user data. Successful grants or revocations affect only the selected role association. Rejected changes leave role associations unchanged.
+
+\storydiagram{SCRUM-69_Admin_Manage_Users_and_Promote.png}
+{SCRUM-69 use-case diagram: user listing, role grants, and protected role revocation.}
+\storydiagram{SCRUM-69_UC-28_Flow.png}{SCRUM-69 activity flow: Manage Users and Roles.}
+
+\storytitle{SCRUM-73: Property CRUD API and lifecycle}
+\label{story:SCRUM-73}
+
+\textbf{Related use case (UC-29).} Create and Manage a Property Listing.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Property CRUD API and lifecycle.
+
+\textbf{Actors.} Owner or assigned agent.
+
+\textbf{Preconditions.} the actor is authenticated and permitted to manage the property.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The actor submits property details for creation.
+  \item The system validates the details and stores the listing as a draft.
+  \item The actor updates the listing, then publishes it or archives it when ready.
+  \item The system checks ownership and applies each allowed lifecycle transition.
+\end{enumerate}
+
+\textbf{Alternate flows.} Invalid data is rejected; a non-owner or unassigned agent cannot edit or archive; an illegal status transition is rejected.
+
+\textbf{Postcondition.} the listing is saved with an allowed status and the correct owner.
+
+\textbf{Jira traceability.} SKN-20 is tracked as SCRUM-73 in the populated Sprint M1.
+
+\storydiagram{SCRUM-73_UC-29_Flow.png}{SCRUM-73 activity flow: Create and Manage a Property Listing.}
+
+\storytitle{SCRUM-77: Add/Edit Property form and My Properties (forms 4, 5)}
+\label{story:SCRUM-77}
+
+\textbf{Related use case (UC-30).} Add or Edit Property and Review My Properties.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Add/Edit Property form and My Properties (forms 4, 5).
+
+\textbf{Actors.} Owner or assigned agent.
+
+\textbf{Preconditions.} the actor is signed in and has permission for the listing.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The actor opens the add or edit property form.
+  \item The actor enters listing details and selects locality from cascading location controls.
+  \item The system validates the form and displays localized messages.
+  \item The actor saves the listing and opens My Properties to view its status and actions.
+\end{enumerate}
+
+\textbf{Alternate flows.} Invalid fields are highlighted; changing a parent location clears dependent selections; the actor cannot edit a listing they do not control.
+
+\textbf{Postcondition.} the listing is saved and appears in the actor's permitted property list.
+
+\textbf{Jira traceability.} SKN-21 is tracked as SCRUM-77 in the populated Sprint M1.
+
+\storydiagram{SCRUM-77_UC-30_Flow.png}{SCRUM-77 activity flow: Add or Edit Property and Review My Properties.}
+
+\storytitle{SCRUM-81: Browse Properties with filters and pagination (listing 3)}
+\label{story:SCRUM-81}
+
+\textbf{Related use case (UC-31).} Browse Properties with Filters.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Browse Properties with filters and pagination (listing 3).
+
+\textbf{Actors.} Visitor or signed-in buyer/tenant.
+
+\textbf{Preconditions.} published listings are available.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The actor opens the browse listings page.
+  \item The actor applies location, price, type, purpose, bedroom, and amenity filters.
+  \item The system returns matching published listings with pagination and sorting.
+  \item The actor moves between result pages or changes the sort order.
+\end{enumerate}
+
+\textbf{Alternate flows.} No listings match; the page shows an empty state and allows the actor to adjust filters. Invalid filter values are rejected.
+
+\textbf{Postcondition.} the actor sees the requested page of matching published listings.
+
+\textbf{Jira traceability.} SKN-22 is tracked as SCRUM-81 in the populated Sprint M1.
+
+\storydiagram{SCRUM-81_UC-31_Flow.png}{SCRUM-81 activity flow: Browse Properties with Filters.}
+
+\storytitle{SCRUM-85: Full-text search}
+\label{story:SCRUM-85}
+
+\textbf{Related use case (UC-32).} Search Listings by Text.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Full-text search.
+
+\textbf{Actors.} Visitor or signed-in buyer/tenant.
+
+\textbf{Preconditions.} the browse listings service is available.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The actor enters a search phrase in Arabic or English.
+  \item The system searches listing titles and descriptions and applies any selected listing filters.
+  \item The system returns matching published listings in the browse results.
+\end{enumerate}
+
+\textbf{Alternate flows.} No result matches; the page shows an empty state. Search input is treated as data and cannot alter the query structure.
+
+\textbf{Postcondition.} the displayed results match the submitted text query.
+
+\textbf{Jira traceability.} SKN-23 is tracked as SCRUM-85 in the populated Sprint M1.
+
+\storydiagram{SCRUM-85_UC-32_Flow.png}{SCRUM-85 activity flow: Search Listings by Text.}
+
+\storytitle{SCRUM-89: Image upload, validation, compression}
+\label{story:SCRUM-89}
+
+\textbf{Related use case (UC-17).} Upload Property Images.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Image upload, validation, compression.
+
+\textbf{Actors.} Property owner or authorized agent.
+
+\textbf{Preconditions.} the actor can edit the property and the property exists.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The actor selects images in the property editor.
+  \item The client compresses the images before upload.
+  \item The API validates media type, file size, and image count.
+  \item The system stores accepted originals and generates thumbnails.
+  \item The property view displays the stored images.
+\end{enumerate}
+
+\textbf{Alternate flows.} Invalid type, excess size, or excess count is rejected with an actionable error; rejected images are not attached.
+
+\textbf{Postcondition.} validated images and thumbnails are associated with the property.
+
+\textbf{Jira traceability.} SKN-24 is tracked as SCRUM-89 in the populated Sprint M1.
+
+\storydiagram{SCRUM-89_UC-17_Flow.png}{SCRUM-89 activity flow: Upload Property Images.}
+
+\storytitle{SCRUM-94: Set Viewing Availability}
+
+\textbf{Related use case (UC-33).} Set Viewing Availability.
+
+\textbf{Objective.} Allow a property owner or assigned agent to publish future, non-overlapping viewing slots for a published property.
+
+\textbf{Actors.} OWNER; assigned AGENT; BUYER\_TENANT viewing open slots.
+
+\textbf{Preconditions.} The actor is authenticated. The property exists, is PUBLISHED, and the actor is its owner or assigned agent.
+
+\textbf{Main flow.}
+\begin{enumerate}
+  \item The owner or agent opens availability management for the property.
+  \item The frontend requests the current viewing slots and displays localized dates.
+  \item The actor selects a future start and end time, where the end is later than the start.
+  \item The frontend validates the time range and submits the new slot.
+  \item The backend validates the request, verifies property status and ownership or assignment, and checks for overlaps.
+  \item If valid, the backend saves the slot and returns HTTP 201. The frontend adds it to the list and displays a localized success message.
+\end{enumerate}
+
+\textbf{Alternate flows.} Invalid or past time ranges return HTTP 400. Missing authentication returns 401; insufficient role or ownership returns 403. Nonexistent property returns 404. An overlapping slot returns 409. Adjacent slots are allowed when one ends exactly as the next begins. The owner or agent may delete an unbooked slot; successful deletion returns HTTP 204.
+
+\textbf{Postcondition.} A valid slot is persisted, or an existing unbooked slot is removed. Failures do not change state and return a ProblemDetail response.
+
+\storydiagram{SCRUM-94_Set_Viewing_Availability.png}
+{SCRUM-94 use-case diagram: managing and viewing property availability.}
+\storydiagram{SCRUM-94_UC-33_Flow.png}{SCRUM-94 activity flow: Set Viewing Availability.}
+
+\storytitle{SCRUM-98: Request Viewing with Conflict Detection}
+
+\textbf{Related use case (UC-34).} Request a Viewing Without Double-Booking.
+
+\textbf{Objective.} Allow a buyer or tenant to request an available viewing slot while preventing self-booking and double booking, including concurrent requests.
+
+\textbf{Actors.} BUYER\_TENANT; property OWNER and assigned AGENT are excluded from booking their own property.
+
+\textbf{Preconditions.} The buyer is authenticated with BUYER\_TENANT role. The property is PUBLISHED and has an available slot.
+
+\textbf{Main flow.}
+\begin{enumerate}
+  \item The buyer opens a published property and views its available slots.
+  \item The buyer selects a slot and may enter a short note.
+  \item The frontend submits the selected slot ID and note.
+  \item The backend validates the request and begins a transaction.
+  \item ViewingConflictChecker locks the slot row, verifies the slot exists, and rejects a request from the property's owner or assigned agent.
+  \item The service checks that no active viewing for the slot is already REQUESTED or CONFIRMED.
+  \item If clear, the service stores a viewing with REQUESTED status and returns HTTP 201. The frontend shows a localized confirmation.
+\end{enumerate}
+
+\textbf{Conflict protection.} A pessimistic write lock on the slot and a partial unique index for active viewings ensure that concurrent requests cannot both claim the same slot.
+
+\textbf{Alternate flows.} Missing or invalid authentication returns 401. An unauthorized role or self-booking attempt is rejected. A slot already held by an active viewing, including a concurrent race, returns 409. A cancelled viewing does not block a new request. A nonexistent slot returns 404. Failures do not create a viewing record.
+
+\textbf{Postcondition.} One REQUESTED viewing is stored for the slot, or no state changes and the system returns an error response.
+
+\storydiagram{SCRUM-98_Request_Viewing_with_Conflict_Detection.png}
+{SCRUM-98 use-case diagram: requesting a viewing and rejecting booking conflicts.}
+\storydiagram{SCRUM-98_UC-34_Flow.png}{SCRUM-98 activity flow: Request a Viewing Without Double-Booking.}
+
+\storytitle{SCRUM-102: Viewing Status Transitions and My Viewings}
+
+\textbf{Related use case (UC-35).} Manage Viewing Status and My Viewings.
+
+\textbf{Objective.} Allow viewing participants to see their own viewings and perform only the transitions permitted by their role and the current status.
+
+\textbf{Actors.} BUYER\_TENANT; property OWNER; assigned AGENT.
+
+\textbf{Preconditions.} The user is authenticated and one or more viewing records exist.
+
+\textbf{Main flow.}
+\begin{enumerate}
+  \item The user opens My Viewings. The frontend requests a paginated list with optional status filter.
+  \item The backend limits results to the caller: buyers see viewings where they are the buyer; owners and agents see viewings for properties they own or are assigned to.
+  \item The page shows localized status badges and only the actions allowed for the caller and state.
+  \item For REQUESTED viewings, an owner or agent may confirm; buyer, owner, or agent may cancel.
+  \item For CONFIRMED viewings, an owner or agent may complete; buyer, owner, or agent may cancel.
+  \item The service verifies participant access and validates the transition through the shared status-transition framework.
+  \item The updated viewing is saved and returned; the frontend updates the row.
+\end{enumerate}
+
+\textbf{Alternate flows.} Invalid transitions, such as completing a REQUESTED viewing or changing a CANCELLED or COMPLETED viewing, are rejected. A buyer attempting to confirm or complete is denied. Non-participants receive 403. Unauthenticated requests receive 401.
+
+\textbf{Postcondition.} Listing returns only role-scoped results. A successful transition updates the viewing; rejected requests leave its state unchanged. CANCELLED and COMPLETED are terminal states.
+
+\storydiagram{SCRUM-102_Viewing_Status_Transitions_and_My_Viewings.png}
+{SCRUM-102 use-case diagram: role-scoped viewing lists and status transitions.}
+\storydiagram{SCRUM-102_UC-35_Flow.png}{SCRUM-102 activity flow: Manage Viewing Status and My Viewings.}
+
+\clearpage
+\storytitle{SCRUM-106: Maintenance module design spike}
+\label{story:SCRUM-106}
+
+\textbf{Related use case (UC-20).} Explore the Maintenance Module Design.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Maintenance module design spike.
+
+\textbf{Actors.} Design team member.
+
+\textbf{Preconditions.} maintenance requirements are available for the design spike.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The member identifies maintenance entities and responsibilities.
+  \item The member writes CRC cards.
+  \item The member drafts a sequence diagram for a maintenance workflow.
+\end{enumerate}
+
+\textbf{Alternate flows.} A requirement is unclear; it is recorded as an open design question.
+
+\textbf{Postcondition.} a draft design is available to guide the later maintenance module.
+
+\textbf{Jira traceability.} SKN-28 is tracked as SCRUM-106 in the populated Sprint M1.
+
+\storydiagram{SCRUM-106_UC-20_Flow.png}{SCRUM-106 activity flow: Explore the Maintenance Module Design.}
+
+\storytitle{SCRUM-110: Contracts and payments design spike}
+\label{story:SCRUM-110}
+
+\textbf{Related use case (UC-21).} Explore the Contracts and Payments Design.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Contracts and payments design spike.
+
+\textbf{Actors.} Design team member.
+
+\textbf{Preconditions.} contract and payment requirements are available for the design spike.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The member identifies contract and payment entities and responsibilities.
+  \item The member writes CRC cards.
+  \item The member drafts a sequence diagram for a contract or payment workflow.
+\end{enumerate}
+
+\textbf{Alternate flows.} A policy or state rule is unclear; it is recorded as an open design question.
+
+\textbf{Postcondition.} a draft design is available to guide the later contracts and payments module.
+
+\textbf{Jira traceability.} SKN-29 is tracked as SCRUM-110 in the populated Sprint M1.
+
+\storydiagram{SCRUM-110_UC-21_Flow.png}{SCRUM-110 activity flow: Explore the Contracts and Payments Design.}
+
+\storytitle{SCRUM-114: Offers module design spike}
+\label{story:SCRUM-114}
+
+\textbf{Related use case (UC-22).} Explore the Offers Module Design.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Offers module design spike.
+
+\textbf{Actors.} Design team member.
+
+\textbf{Preconditions.} offer requirements are available for the design spike.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The member identifies offer entities and responsibilities.
+  \item The member writes CRC cards.
+  \item The member drafts a sequence diagram for submitting and responding to an offer.
+\end{enumerate}
+
+\textbf{Alternate flows.} An offer rule is unclear; it is recorded as an open design question.
+
+\textbf{Postcondition.} a draft design is available to guide the later offers module.
+
+\textbf{Jira traceability.} SKN-30 is tracked as SCRUM-114 in the populated Sprint M1.
+
+\storydiagram{SCRUM-114_UC-22_Flow.png}{SCRUM-114 activity flow: Explore the Offers Module Design.}
+
+\storytitle{SCRUM-118: M1 release candidate: regression run and packaging}
+\label{story:SCRUM-118}
+
+\textbf{Related use case (UC-18).} Record the M1 Release Candidate.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for M1 release candidate: regression run and packaging.
+
+\textbf{Actors.} Release owner.
+
+\textbf{Preconditions.} M1 changes are merged to the milestone branch.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The owner runs the full regression suite.
+  \item The owner builds the executable and rehearses it on a clean machine.
+  \item After successful verification, the owner tags the release candidate and merges the milestone branch to main.
+\end{enumerate}
+
+\textbf{Alternate flows.} Regression or clean-machine startup fails; the owner records the failure and resolves it before tagging.
+
+\textbf{Postcondition.} a verified M1 release candidate is available.
+
+\textbf{Jira traceability.} SKN-31 is tracked as SCRUM-118 in the populated Sprint M1.
+
+\storydiagram{SCRUM-118_UC-18_Flow.png}{SCRUM-118 activity flow: Record the M1 Release Candidate.}
+
+\storytitle{SCRUM-122: Domain event publisher for status changes}
+\label{story:SCRUM-122}
+
+\textbf{Related use case (UC-19).} Publish a Status-Changed Domain Event.
+
+\textbf{Objective.} Deliver the Milestone 1 capability for Domain event publisher for status changes.
+
+\textbf{Actors.} Application service and event listener.
+
+\textbf{Preconditions.} a legal status transition is requested.
+
+\textbf{Documented flow.}
+\begin{enumerate}
+  \item The transition framework validates and applies the new status.
+  \item The application publishes a StatusChangedEvent with the relevant transition context.
+  \item Registered listeners receive the event.
+\end{enumerate}
+
+\textbf{Alternate flows.} An illegal transition is rejected and no status-changed event is emitted.
+
+\textbf{Postcondition.} downstream application components can react to successful status changes.
+
+\textbf{Jira traceability.} SKN-32 is tracked as SCRUM-122 in the populated Sprint M1.
+
+\storydiagram{SCRUM-122_UC-19_Flow.png}{SCRUM-122 activity flow: Publish a Status-Changed Domain Event.}
+
+\end{document}
