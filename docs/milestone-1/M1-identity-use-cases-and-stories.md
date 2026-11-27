@@ -10,6 +10,20 @@ Epic: Auth and User Management. Diagram: `docs/diagrams/m1-identity-use-cases.pn
 | SCRUM-65 | UC-06 Enforce RBAC | FR-08 | none |
 | SCRUM-69 | UC-07 Manage Users | FR-06, FR-48 | Listing 22 |
 
+### Identifier cross-reference
+
+This Member 1 note uses local UC-01–UC-07 identifiers. The Milestone 1 report numbers the same identity use cases within the full project sequence:
+
+| Local identifier | Milestone report identifier | Story |
+|---|---|---|
+| UC-01 Register; UC-02 Login | UC-24 Register and Sign In with JWT | SCRUM-51 |
+| UC-03 Google Sign-In | UC-25 Sign In with Google | SCRUM-56 |
+| UC-04 Admin Sign-In; UC-05 Seed Admin | UC-26 Seed an Administrator and Sign In | SCRUM-61 |
+| UC-06 Enforce RBAC | UC-27 Enforce Role-Based Access Control | SCRUM-65 |
+| UC-07 Manage Users | UC-28 Manage Users and Roles | SCRUM-69 |
+
+The standalone RBAC documents use their own UC-08 label. The SCRUM-69 diagram's UC-22.1–UC-22.3 labels identify actions in Listing 22; they are not report-level use-case numbers.
+
 ---
 
 ## UC-01 Register (SCRUM-51)
@@ -44,15 +58,15 @@ Epic: Auth and User Management. Diagram: `docs/diagrams/m1-identity-use-cases.pn
 - **Main flow:**
     1. The visitor clicks "Continue with Google".
     2. Spring Security redirects to Google and the visitor consents.
-    3. Google redirects back and Spring exchanges the code for the profile (email, sub).
-    4. The success handler finds the user by email.
-    5. If none exists, it creates one (GOOGLE, google_sub, BUYER_TENANT, phone empty).
-    6. The system issues Sakan's own JWT and redirects the SPA to /auth/callback.
-    7. The SPA stores the token.
+    3. Google redirects to the backend callback. Spring validates the OAuth response and the success handler stores a short-lived handoff record, then redirects the SPA with an opaque one-time code.
+    4. The SPA exchanges the code. The backend validates the verified email and resolves a returning account by Google subject (`sub`).
+    5. If this is a new account, the SPA asks the visitor for an available username and completes registration using the same handoff code. The backend creates a GOOGLE account with BUYER_TENANT role and no local password.
+    6. The backend consumes the handoff code and returns a Sakan JWT; the SPA stores the token and opens the application.
 - **Alternate flows:**
-    - Returning user: reuse the account, no new row.
-    - Email already used by a LOCAL account: see Decision D1.
-    - Google error or consent denied: redirect to sign-in with an error.
+    - A returning Google subject reuses its account; no new user row is created.
+    - A verified email may link to an eligible LOCAL account only when Google is authoritative for that email domain (Gmail, or a matching hosted domain). Other email collisions return 409.
+    - An unverified email, invalid/expired/replayed handoff code, or Google error is rejected; Google cancellation redirects to sign-in with an error.
+    - An invalid or already-used username can be retried while the handoff code remains valid.
 - **Postcondition:** the user holds a Sakan JWT and is handled like a local user.
 
 ## UC-04 Admin Sign-In (SCRUM-61)
@@ -104,8 +118,8 @@ Epic: Auth and User Management. Diagram: `docs/diagrams/m1-identity-use-cases.pn
 
 ---
 
-## Decisions to confirm with the team
-- **D1 (Google email collision):** if the Google email matches a LOCAL account and Google reports email_verified = true, link the account (store google_sub, keep the password). Otherwise reject with 409. This is an assumption.
-- **D2:** a new Google user has an empty phone and the default role BUYER_TENANT. The SPA asks for phone and role afterwards (per the Design doc, 8.1).
+## Decisions and implementation notes
+- **D1 (Google email collision):** linking requires a verified email, an enabled LOCAL account, and an authoritative Google domain (Gmail or a matching hosted domain). The existing password is retained and `google_sub` is attached. Other collisions return 409.
+- **D2:** a new Google account gets the BUYER_TENANT role and an empty phone; username completion is required before the handoff code is consumed and the Sakan JWT is returned.
 - **D3:** registration returns 201 without a token; the user then logs in.
 - **D4:** attempts to demote or delete the seeded admin return 403.
