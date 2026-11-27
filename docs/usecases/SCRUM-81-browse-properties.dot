@@ -1,0 +1,21 @@
+digraph BrowseProperties {
+  graph [rankdir=LR, splines=polyline, bgcolor="white", pad=0.25, nodesep=0.45, ranksep=0.8, fontname="DejaVu Sans", fontsize=18, labelloc=t, label="SCRUM-81 | Browse Properties"];
+  node [fontname="DejaVu Sans", fontsize=10, color="#164E78", fontcolor="#18364A", penwidth=1.4];
+  edge [fontname="DejaVu Sans", fontsize=8, color="#64748B", fontcolor="#334155", arrowsize=0.7];
+
+  visitor [shape=plaintext, label="VISITOR", fontsize=11];
+  buyer [shape=plaintext, label="BUYER / TENANT", fontsize=11];
+  subgraph cluster_sakan {
+    label="Sakan | Public property discovery"; color="#164E78"; penwidth=1.5; style="rounded"; fontname="DejaVu Sans"; fontsize=12;
+    browse [shape=ellipse, style=filled, fillcolor="#F1F7FB", label="Browse published\nproperties"];
+    filters [shape=ellipse, style=filled, fillcolor="#F1F7FB", label="Filter by location, price,\ntype, purpose, bedrooms,\nand amenities"];
+    search [shape=ellipse, style=filled, fillcolor="#F1F7FB", label="Search listing text\n(Arabic or English)\nSCRUM-85"];
+    sortpage [shape=ellipse, style=filled, fillcolor="#F1F7FB", label="Sort and move between\npages"];
+    results [shape=ellipse, style=filled, fillcolor="#E7F3EC", label="Show matching published\nlistings or empty state"];
+  }
+  visitor -> browse; buyer -> browse;
+  browse -> filters [style=dashed, label="optionally includes"];
+  browse -> search [style=dashed, label="optionally includes"];
+  browse -> sortpage [style=dashed, label="includes"];
+  filters -> results; search -> results; sortpage -> results;
+}

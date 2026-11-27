@@ -1,0 +1,25 @@
+digraph ManageListings {
+  graph [rankdir=LR, splines=polyline, bgcolor="white", pad=0.25, nodesep=0.42, ranksep=0.85, fontname="DejaVu Sans", fontsize=18, labelloc=t, label="SCRUM-73 / SCRUM-77 | Manage Property Listings"];
+  node [fontname="DejaVu Sans", fontsize=10, color="#164E78", fontcolor="#18364A", penwidth=1.4];
+  edge [fontname="DejaVu Sans", fontsize=8, color="#64748B", fontcolor="#334155", arrowsize=0.7];
+
+  manager [shape=plaintext, label="LISTING MANAGER\n(owner or assigned agent)", fontsize=11];
+  subgraph cluster_sakan {
+    label="Sakan | Property management"; color="#164E78"; penwidth=1.5; style="rounded"; fontname="DejaVu Sans"; fontsize=12;
+    subgraph core {
+      rank=same;
+      create [shape=ellipse, style=filled, fillcolor="#F1F7FB", label="Create listing\n(as Draft)\nSCRUM-73"];
+      edit [shape=ellipse, style=filled, fillcolor="#F1F7FB", label="Edit listing\nSCRUM-73 / 77"];
+      publish [shape=ellipse, style=filled, fillcolor="#F1F7FB", label="Publish listing\nSCRUM-73"];
+      archive [shape=ellipse, style=filled, fillcolor="#F1F7FB", label="Archive listing\nSCRUM-73"];
+      myprops [shape=ellipse, style=filled, fillcolor="#F1F7FB", label="View My Properties\nSCRUM-77"];
+    }
+    rules [shape=note, style=filled, fillcolor="#E7F3EC", label="Each change validates\nproperty data, ownership or\nagent assignment, and allowed\nstatus transitions", color="#4E8A67"];
+  }
+  manager -> create [arrowhead=none]; manager -> edit [arrowhead=none]; manager -> publish [arrowhead=none]; manager -> archive [arrowhead=none]; manager -> myprops [arrowhead=none];
+  create -> edit [style=invis, weight=10];
+  edit -> publish [style=invis, weight=10];
+  publish -> archive [style=invis, weight=10];
+  archive -> myprops [style=invis, weight=10];
+  publish -> rules [style=dashed, arrowhead=none, label="shared rules"];
+}
