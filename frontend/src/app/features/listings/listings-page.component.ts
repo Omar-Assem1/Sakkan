@@ -62,9 +62,25 @@ export class ListingsPageComponent implements OnInit {
   isEmpty = computed(() => !this.isLoading() && this.properties().length === 0);
 
   getLocationName(locationId: number): string {
-    const loc = this.locations().find((l) => l.id === locationId);
+    const all = this.locations();
+    const loc = all.find((l) => l.id === locationId);
     if (!loc) return '';
-    return this.languageService.currentLang() === 'ar' ? loc.nameAr : loc.nameEn;
+    const isAr = this.languageService.currentLang() === 'ar';
+    const currentName = isAr ? loc.nameAr : loc.nameEn;
+    if (loc.parentId) {
+      const parent = all.find((l) => l.id === loc.parentId);
+      if (parent) {
+        const parentName = isAr ? parent.nameAr : parent.nameEn;
+        return `${parentName} • ${currentName}`;
+      }
+    }
+    return currentName;
+  }
+
+  getPropertyTypeName(propertyTypeId: number): string {
+    const type = this.propertyTypes().find((t) => t.id === propertyTypeId);
+    if (!type) return '';
+    return this.languageService.currentLang() === 'ar' ? type.nameAr : type.nameEn;
   }
 
   ngOnInit(): void {

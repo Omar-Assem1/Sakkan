@@ -161,7 +161,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ProblemDetail handleUploadTooLarge(MaxUploadSizeExceededException ex, HttpServletRequest request) {
-        return createProblem(HttpStatus.PAYLOAD_TOO_LARGE, "Payload Too Large",
+        return createProblem(HttpStatus.CONTENT_TOO_LARGE, "Payload Too Large",
                 "Image uploads must not exceed 10 MB per file", "upload-too-large", request);
     }
 

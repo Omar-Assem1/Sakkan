@@ -3,12 +3,14 @@ import { provideRouter } from '@angular/router';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 import { NavbarComponent } from './navbar.component';
 import { LanguageService } from '../../../core/services/language.service';
+import { ThemeService } from '../../../core/services/theme.service';
 import { TokenStorageService } from '../../../core/services/token-storage.service';
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
   let languageService: LanguageService;
+  let themeService: ThemeService;
   let tokenStorage: TokenStorageService;
 
   beforeEach(async () => {
@@ -28,6 +30,9 @@ describe('NavbarComponent', () => {
                 LOGIN: 'Sign In',
                 LOGOUT: 'Sign Out',
                 TOGGLE_LANG: 'العربية',
+                TOGGLE_THEME_DARK: 'Dark',
+                TOGGLE_THEME_LIGHT: 'Light',
+                TOGGLE_THEME_LABEL: 'Toggle color theme',
               },
             },
             ar: {
@@ -40,6 +45,9 @@ describe('NavbarComponent', () => {
                 LOGIN: 'تسجيل الدخول',
                 LOGOUT: 'تسجيل الخروج',
                 TOGGLE_LANG: 'English',
+                TOGGLE_THEME_DARK: 'داكن',
+                TOGGLE_THEME_LIGHT: 'فاتح',
+                TOGGLE_THEME_LABEL: 'تبديل وضع الألوان',
               },
             },
           },
@@ -49,10 +57,11 @@ describe('NavbarComponent', () => {
           },
         }),
       ],
-      providers: [provideRouter([]), LanguageService, TokenStorageService],
+      providers: [provideRouter([]), LanguageService, ThemeService, TokenStorageService],
     }).compileComponents();
 
     languageService = TestBed.inject(LanguageService);
+    themeService = TestBed.inject(ThemeService);
     tokenStorage = TestBed.inject(TokenStorageService);
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
@@ -89,15 +98,30 @@ describe('NavbarComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="nav-viewings"]')).toBeTruthy();
   });
 
-  it('should render my properties link when authenticated and hide it when logged out', () => {
+  it('should render my properties link only when authenticated as OWNER or AGENT and hide it for BUYER_TENANT, ADMIN, or users without those roles', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="nav-my-properties"]')).toBeNull();
 
     tokenStorage.saveToken('user-jwt');
     fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="nav-my-properties"]')).toBeNull();
 
+    tokenStorage.saveRole('BUYER_TENANT');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="nav-my-properties"]')).toBeNull();
+
+    tokenStorage.saveRole('ADMIN');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="nav-my-properties"]')).toBeNull();
+
+    tokenStorage.saveRole('OWNER');
+    fixture.detectChanges();
     const navProperties = fixture.nativeElement.querySelector('[data-testid="nav-my-properties"]');
     expect(navProperties).toBeTruthy();
     expect(navProperties.getAttribute('href')).toBe('/properties/mine');
+
+    tokenStorage.saveRole('AGENT');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="nav-my-properties"]')).toBeTruthy();
   });
 
   it('should hide admin link for non-admin users and display it when role is ADMIN', () => {
@@ -121,6 +145,19 @@ describe('NavbarComponent', () => {
 
     expect(toggleSpy).toHaveBeenCalledTimes(1);
     expect(languageService.currentLang()).toBe('ar');
+  });
+
+  it('should toggle dark mode when the theme switch button is clicked', () => {
+    const toggleSpy = vi.spyOn(themeService, 'toggleTheme');
+    const themeBtn = fixture.nativeElement.querySelector(
+      '[data-testid="theme-toggle"] button',
+    ) as HTMLButtonElement;
+
+    expect(themeBtn).toBeTruthy();
+    themeBtn.click();
+
+    expect(toggleSpy).toHaveBeenCalledTimes(1);
+    expect(themeService.isDark()).toBe(true);
   });
 
   it('should contain zero physical directional Tailwind classes in navbar template', () => {

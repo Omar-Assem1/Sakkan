@@ -157,7 +157,35 @@ describe('PropertyService (SKN-21)', () => {
     service.getLocations().subscribe((locs) => {
       locations = locs;
     });
-    expect(locations.length).toBeGreaterThan(0);
+
+    const govReq = httpMock.expectOne('/api/locations/governorates');
+    expect(govReq.request.method).toBe('GET');
+    govReq.flush([{ id: 1, parentId: null, type: 'GOVERNORATE', name: 'Cairo' }]);
+
+    const cityReq = httpMock.expectOne('/api/locations/cities?parentId=1');
+    cityReq.flush([{ id: 4, parentId: 1, type: 'CITY', name: 'New Cairo' }]);
+
+    const distReq = httpMock.expectOne('/api/locations/districts?parentId=4');
+    distReq.flush([{ id: 10, parentId: 4, type: 'DISTRICT', name: 'Fifth Settlement' }]);
+
+    const compReq = httpMock.expectOne('/api/locations/compounds?parentId=10');
+    compReq.flush([{ id: 18, parentId: 10, type: 'COMPOUND', name: 'Madinaty' }]);
+
+    expect(locations.length).toBe(4);
+    expect(locations.some((l) => l.type === 'GOVERNORATE' && l.nameAr === 'القاهرة')).toBe(true);
+    expect(locations.some((l) => l.type === 'COMPOUND' && l.nameEn === 'Madinaty')).toBe(true);
+  });
+
+  it('should fall back to seeded location hierarchy when location API fails', () => {
+    let locations: LocationNode[] = [];
+    service.getLocations().subscribe((locs) => {
+      locations = locs;
+    });
+
+    const govReq = httpMock.expectOne('/api/locations/governorates');
+    govReq.flush('Offline', { status: 503, statusText: 'Service Unavailable' });
+
+    expect(locations.length).toBe(22);
     expect(locations.some((l) => l.type === 'GOVERNORATE')).toBe(true);
   });
 });

@@ -173,12 +173,20 @@ class PropertyServiceTest {
     }
 
     @Test
-    void publish_archivedListing_isIllegalTransition() {
+    void publish_archivedListing_becomesPublished() {
         when(repository.findById(PROPERTY_ID)).thenReturn(Optional.of(property(PropertyStatus.ARCHIVED)));
+        when(repository.save(any(Property.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        assertThat(service.publish(PROPERTY_ID, OWNER).status()).isEqualTo(PropertyStatus.PUBLISHED);
+    }
+
+    @Test
+    void publish_soldListing_isIllegalTransition() {
+        when(repository.findById(PROPERTY_ID)).thenReturn(Optional.of(property(PropertyStatus.SOLD)));
 
         assertThatThrownBy(() -> service.publish(PROPERTY_ID, OWNER))
                 .isInstanceOf(InvalidStatusTransitionException.class)
-                .hasMessageContaining("ARCHIVED")
+                .hasMessageContaining("SOLD")
                 .hasMessageContaining("PUBLISHED");
 
         verify(repository, never()).save(any());

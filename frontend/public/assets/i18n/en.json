@@ -11,7 +11,10 @@
     "LOGIN": "Sign In",
     "LOGOUT": "Sign Out",
     "TOGGLE_LANG": "العربية",
-    "TOGGLE_LANG_LABEL": "Switch to Arabic"
+    "TOGGLE_LANG_LABEL": "Switch to Arabic",
+    "TOGGLE_THEME_DARK": "Dark",
+    "TOGGLE_THEME_LIGHT": "Light",
+    "TOGGLE_THEME_LABEL": "Toggle color theme"
   },
   "AUTH": {
     "TITLE": "Sign in to Sakan",
@@ -43,7 +46,9 @@
       "FOR_RENT": "For Rent",
       "LOCATION": "Location",
       "SELECT_GOV": "Select Governorate",
+      "SELECT_CITY": "Select City",
       "SELECT_DISTRICT": "Select District",
+      "SELECT_COMPOUND": "Select Compound",
       "PRICE_RANGE": "Price Range",
       "MIN_PRICE": "Min Price",
       "MAX_PRICE": "Max Price",
@@ -59,7 +64,10 @@
       "FOR_RENT": "For Rent",
       "BEDS": "Beds",
       "BATHS": "Baths",
-      "SQM": "m²"
+      "SQM": "m²",
+      "VIEW_DETAILS": "View Details",
+      "REQUEST_VIEWING": "Request Viewing",
+      "YOUR_LISTING": "Your Listing"
     },
     "EMPTY": {
       "TITLE": "No properties found",
@@ -218,7 +226,9 @@
       "CITY": "City",
       "SELECT_CITY": "Select City",
       "DISTRICT": "District",
-      "SELECT_DISTRICT": "Select District"
+      "SELECT_DISTRICT": "Select District",
+      "COMPOUND": "Compound (Optional)",
+      "SELECT_COMPOUND": "Select Compound (Optional)"
     },
     "PURPOSE": {
       "SALE": "For Sale",
@@ -256,12 +266,21 @@
       "HELP": "Upload up to 10 JPEG, PNG, or WebP images. Each file must be 10 MB or smaller.",
       "CHOOSE": "Choose photos",
       "REMOVE": "Remove",
+      "PRIMARY": "Cover",
+      "SET_PRIMARY": "Set cover",
       "UPLOADING": "Uploading",
       "MAX_COUNT": "A property can have at most 10 photos.",
       "INVALID_TYPE": "Choose a JPEG, PNG, or WebP image.",
       "TOO_LARGE": "Each image must be 10 MB or smaller.",
       "COMPRESSION_FAILED": "This image could not be processed.",
       "UPLOAD_FAILED": "Photos could not be uploaded. You can retry by editing this property."
+    },
+    "DETAIL": {
+      "BACK_TO_LISTINGS": "Back to Listings",
+      "NO_DESCRIPTION": "No additional description provided for this property.",
+      "NO_AMENITIES": "No specific amenities listed for this property.",
+      "OPEN_FULL_BOOKING": "Open full viewing request page",
+      "OWNER_SLOTS_SUBTITLE": "Manage available viewing time slots and incoming requests for your property."
     }
   },
   "MY_PROPERTIES": {
@@ -280,7 +299,13 @@
     "ACTIONS": {
       "EDIT": "Edit",
       "PUBLISH": "Publish",
-      "ARCHIVE": "Archive"
+      "REPUBLISH": "Republish",
+      "ARCHIVE": "Archive",
+      "AVAILABILITY": "Availability"
+    },
+    "PAGINATION": {
+      "PREVIOUS": "Previous",
+      "NEXT": "Next"
     },
     "EMPTY": {
       "TITLE": "No properties found",

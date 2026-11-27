@@ -33,8 +33,16 @@ import {
 export class PropertyFilterPanelComponent implements OnInit, OnChanges {
   private readonly languageService = inject(LanguageService);
 
+  private readonly locationsState = signal<LocationNode[]>([]);
+
   @Input() initialFilters: PropertyFilterCriteria = {};
-  @Input() locations: LocationNode[] = [];
+  @Input()
+  set locations(value: LocationNode[]) {
+    this.locationsState.set(value ?? []);
+  }
+  get locations(): LocationNode[] {
+    return this.locationsState();
+  }
   @Input() propertyTypes: PropertyTypeDto[] = [];
   @Input() amenities: AmenityDto[] = [];
 
@@ -44,6 +52,7 @@ export class PropertyFilterPanelComponent implements OnInit, OnChanges {
   selectedGovernorateId = signal<number | null>(null);
   selectedCityId = signal<number | null>(null);
   selectedDistrictId = signal<number | null>(null);
+  selectedCompoundId = signal<number | null>(null);
 
   minPrice = signal<number | null>(null);
   maxPrice = signal<number | null>(null);
@@ -53,14 +62,31 @@ export class PropertyFilterPanelComponent implements OnInit, OnChanges {
   minBedrooms = signal<number | null>(null);
   selectedAmenityIds = signal<number[]>([]);
 
-  governorates = computed(() => this.locations.filter((l) => l.type === 'GOVERNORATE'));
+  governorates = computed(() => this.locationsState().filter((l) => l.type === 'GOVERNORATE'));
   cities = computed(() => {
     const govId = this.selectedGovernorateId();
-    return govId ? this.locations.filter((l) => l.type === 'CITY' && l.parentId === govId) : [];
+    return govId ? this.locationsState().filter((l) => l.type === 'CITY' && l.parentId === govId) : [];
   });
   districts = computed(() => {
-    const parentId = this.selectedCityId() || this.selectedGovernorateId();
-    return parentId ? this.locations.filter((l) => l.type === 'DISTRICT' && l.parentId === parentId) : [];
+    const all = this.locationsState();
+    const cityId = this.selectedCityId();
+    if (cityId) {
+      return all.filter((l) => l.type === 'DISTRICT' && l.parentId === cityId);
+    }
+    const govId = this.selectedGovernorateId();
+    if (!govId) {
+      return [];
+    }
+    const cityIds = new Set(
+      all.filter((l) => l.type === 'CITY' && l.parentId === govId).map((l) => l.id)
+    );
+    return all.filter(
+      (l) => l.type === 'DISTRICT' && (l.parentId === govId || (l.parentId !== null && cityIds.has(l.parentId)))
+    );
+  });
+  compounds = computed(() => {
+    const distId = this.selectedDistrictId();
+    return distId ? this.locationsState().filter((l) => l.type === 'COMPOUND' && l.parentId === distId) : [];
   });
 
   isRtl = computed(() => this.languageService.currentLang() === 'ar');
@@ -90,23 +116,49 @@ export class PropertyFilterPanelComponent implements OnInit, OnChanges {
   }
 
   private resolveLocationHierarchy(locationId: number | null): void {
-    if (!locationId || this.locations.length === 0) {
+    const all = this.locationsState();
+    if (!locationId || all.length === 0) {
       if (!locationId) {
         this.selectedGovernorateId.set(null);
         this.selectedCityId.set(null);
         this.selectedDistrictId.set(null);
+        this.selectedCompoundId.set(null);
       }
       return;
     }
-    const loc = this.locations.find((l) => l.id === locationId);
+    const loc = all.find((l) => l.id === locationId);
     if (loc) {
-      if (loc.type === 'DISTRICT') {
+      if (loc.type === 'COMPOUND') {
+        this.selectedCompoundId.set(loc.id);
+        const district = all.find((l) => l.id === loc.parentId);
+        const city = district ? all.find((l) => l.id === district.parentId) : undefined;
+        this.selectedDistrictId.set(district?.id ?? null);
+        this.selectedCityId.set(city?.id ?? null);
+        this.selectedGovernorateId.set(city?.parentId ?? district?.parentId ?? null);
+      } else if (loc.type === 'DISTRICT') {
+        this.selectedCompoundId.set(null);
         this.selectedDistrictId.set(loc.id);
+        const parent = all.find((l) => l.id === loc.parentId);
+        if (parent?.type === 'CITY') {
+          this.selectedCityId.set(parent.id);
+          this.selectedGovernorateId.set(parent.parentId);
+        } else {
+          this.selectedCityId.set(null);
+          if (loc.parentId) {
+            this.selectedGovernorateId.set(loc.parentId);
+          }
+        }
+      } else if (loc.type === 'CITY') {
+        this.selectedCompoundId.set(null);
+        this.selectedCityId.set(loc.id);
+        this.selectedDistrictId.set(null);
         if (loc.parentId) {
           this.selectedGovernorateId.set(loc.parentId);
         }
       } else if (loc.type === 'GOVERNORATE') {
+        this.selectedCompoundId.set(null);
         this.selectedGovernorateId.set(loc.id);
+        this.selectedCityId.set(null);
         this.selectedDistrictId.set(null);
       }
     }
@@ -117,12 +169,20 @@ export class PropertyFilterPanelComponent implements OnInit, OnChanges {
     this.selectedGovernorateId.set(id);
     this.selectedCityId.set(null);
     this.selectedDistrictId.set(null);
+    this.selectedCompoundId.set(null);
   }
 
   onCityChange(idVal: string | number | null): void {
     const id = idVal ? Number(idVal) : null;
     this.selectedCityId.set(id);
     this.selectedDistrictId.set(null);
+    this.selectedCompoundId.set(null);
+  }
+
+  onDistrictChange(idVal: string | number | null): void {
+    const id = idVal ? Number(idVal) : null;
+    this.selectedDistrictId.set(id);
+    this.selectedCompoundId.set(null);
   }
 
   toggleAmenity(id: number): void {
@@ -133,7 +193,13 @@ export class PropertyFilterPanelComponent implements OnInit, OnChanges {
   }
 
   resolveTargetLocationId(): number | null {
-    return this.selectedDistrictId() || this.selectedCityId() || this.selectedGovernorateId() || null;
+    return (
+      this.selectedCompoundId() ||
+      this.selectedDistrictId() ||
+      this.selectedCityId() ||
+      this.selectedGovernorateId() ||
+      null
+    );
   }
 
   applyFilters(): void {
@@ -155,6 +221,7 @@ export class PropertyFilterPanelComponent implements OnInit, OnChanges {
     this.selectedGovernorateId.set(null);
     this.selectedCityId.set(null);
     this.selectedDistrictId.set(null);
+    this.selectedCompoundId.set(null);
     this.minPrice.set(null);
     this.maxPrice.set(null);
     this.currency.set('EGP');

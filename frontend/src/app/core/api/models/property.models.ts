@@ -1,29 +1,36 @@
 export interface PropertyRequest {
   title: string;
-  description: string;
+  description?: string;
   price: number;
-  currency?: string;
+  currency: 'EGP' | 'USD';
   purpose: 'SALE' | 'RENT';
-  type: string;
-  bedrooms?: number;
-  bathrooms?: number;
+  propertyTypeId: number;
+  bedrooms: number;
+  bathrooms: number;
   areaSqm: number;
-  locationId?: number;
+  locationId: number;
+  amenityIds?: number[];
 }
 
 export interface PropertyResponse {
   id: number;
+  ownerId: number;
+  agentId?: number | null;
   title: string;
-  description: string;
+  description?: string;
   price: number;
-  currency: string;
-  purpose: string;
-  type: string;
-  status: string;
-  bedrooms?: number;
-  bathrooms?: number;
+  currency: 'EGP' | 'USD';
+  purpose: 'SALE' | 'RENT';
+  propertyTypeId: number;
+  locationId: number;
+  amenityIds: number[];
+  status: 'DRAFT' | 'PUBLISHED' | 'RENTED' | 'SOLD' | 'ARCHIVED';
+  bedrooms: number;
+  bathrooms: number;
   areaSqm: number;
-  createdAt?: string;
+  createdAt: string;
+  updatedAt?: string;
+  thumbnailUrl?: string | null;
 }
 
 export interface PropertyPageResponse {
@@ -31,5 +38,5 @@ export interface PropertyPageResponse {
   totalElements: number;
   totalPages: number;
   size: number;
-  number: number;
+  page: number;
 }

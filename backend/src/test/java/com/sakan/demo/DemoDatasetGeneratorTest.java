@@ -44,6 +44,7 @@ class DemoDatasetGeneratorTest {
 
         new DemoDatasetGenerator(jdbc).generateIfNeeded();
 
+        @SuppressWarnings("unchecked")
         ArgumentCaptor<List<Object[]>> batch = ArgumentCaptor.forClass(List.class);
         verify(jdbc).batchUpdate(anyString(), batch.capture());
         assertThat(batch.getValue()).hasSize(5000);

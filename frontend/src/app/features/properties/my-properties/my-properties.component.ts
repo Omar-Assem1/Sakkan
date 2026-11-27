@@ -75,16 +75,26 @@ export class MyPropertiesComponent implements OnInit {
     this.router.navigate(['/properties', id, 'edit']);
   }
 
+  onManageAvailability(id: number): void {
+    this.router.navigate(['/viewings/availability', id]);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 0 && page < this.totalPages()) {
+      this.loadMyProperties(page);
+    }
+  }
+
   getStatusClass(status: PropertyStatus): string {
     switch (status) {
       case 'PUBLISHED':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800';
       case 'DRAFT':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
+        return 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-800';
       case 'ARCHIVED':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700';
       default:
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-sky-100 text-sky-800 border-sky-200 dark:bg-sky-950/70 dark:text-sky-300 dark:border-sky-800';
     }
   }
 }

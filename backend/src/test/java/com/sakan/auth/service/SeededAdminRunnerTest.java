@@ -51,7 +51,7 @@ class SeededAdminRunnerTest {
     @BeforeEach
     void attachLogAppender() {
         logger = (Logger) LoggerFactory.getLogger(SeededAdminRunner.class);
-        logger.setLevel(Level.ALL);
+        logger.setLevel(Level.TRACE);
         appender = new ListAppender<>();
         appender.start();
         logger.addAppender(appender);

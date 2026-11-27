@@ -29,7 +29,7 @@ public class GoogleOAuthSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
         if (!(authentication.getPrincipal() instanceof OidcUser oidcUser)) {
-            response.sendRedirect("/auth/sign-in?googleError=1");
+            response.sendRedirect(signInErrorUrl());
             return;
         }
 
@@ -39,7 +39,7 @@ public class GoogleOAuthSuccessHandler implements AuthenticationSuccessHandler {
         boolean verified = Boolean.TRUE.equals(claims.get("email_verified"));
         String hostedDomain = claims.get("hd") instanceof String value ? value : null;
         if (subject == null || email == null || email.isBlank()) {
-            response.sendRedirect("/auth/sign-in?googleError=1");
+            response.sendRedirect(signInErrorUrl());
             return;
         }
 
@@ -49,5 +49,12 @@ public class GoogleOAuthSuccessHandler implements AuthenticationSuccessHandler {
                 .queryParam("code", code)
                 .build().encode().toUriString();
         response.sendRedirect(callback);
+    }
+
+    private String signInErrorUrl() {
+        return UriComponentsBuilder.fromUriString(frontendUrl)
+                .path("/auth/sign-in")
+                .queryParam("googleError", "1")
+                .build().encode().toUriString();
     }
 }

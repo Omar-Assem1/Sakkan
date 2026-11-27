@@ -23,7 +23,8 @@ class PropertyStatusTest {
             "PUBLISHED->ARCHIVED",
             "RENTED->PUBLISHED",
             "RENTED->ARCHIVED",
-            "SOLD->ARCHIVED");
+            "SOLD->ARCHIVED",
+            "ARCHIVED->PUBLISHED");
 
     static Stream<Arguments> everyPair() {
         Stream.Builder<Arguments> pairs = Stream.builder();
@@ -42,8 +43,8 @@ class PropertyStatusTest {
     }
 
     @Test
-    void archivedIsTerminal() {
-        assertThat(PropertyStatus.ARCHIVED.allowedTargets()).isEmpty();
+    void archivedCanOnlyBeRepublished() {
+        assertThat(PropertyStatus.ARCHIVED.allowedTargets()).containsExactly(PropertyStatus.PUBLISHED);
     }
 
     @Test

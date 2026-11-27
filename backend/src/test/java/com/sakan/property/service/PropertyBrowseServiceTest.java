@@ -25,13 +25,17 @@ import org.springframework.data.jpa.domain.Specification;
 import com.sakan.common.domain.Currency;
 import com.sakan.common.response.PageResponse;
 import com.sakan.property.domain.Property;
+import com.sakan.property.domain.PropertyImage;
 import com.sakan.property.domain.PropertyPurpose;
 import com.sakan.property.domain.PropertyStatus;
 import com.sakan.property.dto.PropertyMapper;
 import com.sakan.property.dto.PropertySearchCriteria;
 import com.sakan.property.dto.PropertySummaryResponse;
+import com.sakan.property.repository.PropertyImageRepository;
 import com.sakan.property.repository.PropertyRepository;
 import com.sakan.support.tags.RegressionTest;
+
+import org.springframework.test.util.ReflectionTestUtils;
 
 @RegressionTest
 @ExtendWith(MockitoExtension.class)
@@ -49,10 +53,14 @@ class PropertyBrowseServiceTest {
     @Mock
     private PropertySortValidator sortValidator;
 
+    @Mock
+    private PropertyImageRepository imageRepository;
+
     @InjectMocks
     private PropertyService propertyService;
 
     @Test
+    @SuppressWarnings("unchecked")
     @DisplayName("browse() coordinates location hierarchy expansion, sorting, specification query, and DTO projection")
     void testBrowseCoordinatesSuccessfully() {
         PropertySearchCriteria criteria = new PropertySearchCriteria(
@@ -75,12 +83,20 @@ class PropertyBrowseServiceTest {
                 .thenReturn(List.of(5L, 10L, 11L));
 
         Property property = new Property();
+        ReflectionTestUtils.setField(property, "id", 1L);
         property.setTitle("P1");
         property.setStatus(PropertyStatus.PUBLISHED);
 
         Page<Property> pagedProperties = new PageImpl<>(List.of(property));
         when(repository.findAll(any(Specification.class), any(Pageable.class)))
                 .thenReturn(pagedProperties);
+
+        PropertyImage primaryImg = new PropertyImage();
+        primaryImg.setPropertyId(1L);
+        primaryImg.setThumbnailPath("thumb-1.jpg");
+        primaryImg.setPrimary(true);
+        when(imageRepository.findByPropertyIdInAndArchivedFalseOrderByDisplayOrderAsc(List.of(1L)))
+                .thenReturn(List.of(primaryImg));
 
         PropertySummaryResponse summary = new PropertySummaryResponse(
                 1L, "P1", "Desc", PropertyPurpose.SALE, 1L, 10L,
@@ -96,5 +112,6 @@ class PropertyBrowseServiceTest {
         assertThat(response.content()).hasSize(1);
         assertThat(response.totalElements()).isEqualTo(1);
         assertThat(response.content().getFirst().title()).isEqualTo("P1");
+        assertThat(response.content().getFirst().thumbnailUrl()).isEqualTo("/api/property-images/thumb-1.jpg");
     }
 }
